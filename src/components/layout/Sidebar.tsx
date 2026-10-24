@@ -13,9 +13,10 @@ import {
   FolderDot,
   Plus,
   HelpCircle,
+  Smartphone,
 } from 'lucide-react';
 
-export function Sidebar() {
+export function Sidebar({ onClose }: { onClose?: () => void }) {
   const {
     todayStr,
     tasks,
@@ -28,6 +29,7 @@ export function Sidebar() {
     setIsSaturdayReviewModalOpen,
     setIsBackupModalOpen,
     openTutorial,
+    openPwaPrompt,
     t,
   } = useTodo();
 
@@ -55,11 +57,11 @@ export function Sidebar() {
         {/* Logo / Brand Header */}
         <div className="flex items-center justify-between px-2 pt-1">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-stone-900 dark:bg-stone-100 flex items-center justify-center text-white dark:text-stone-900 shadow-xs font-semibold text-sm">
-              ✓
+            <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center text-white shadow-xs font-bold text-sm tracking-tight shrink-0">
+              Do
             </div>
             <div>
-              <h1 className="font-semibold text-sm tracking-tight text-stone-900 dark:text-stone-100">
+              <h1 className="font-bold text-sm tracking-tight text-stone-900 dark:text-stone-100">
                 {t.appName}
               </h1>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
@@ -71,7 +73,10 @@ export function Sidebar() {
 
         {/* Quick Add Button */}
         <button
-          onClick={() => openCreateModal()}
+          onClick={() => {
+            openCreateModal();
+            onClose?.();
+          }}
           className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white text-xs font-medium transition-all shadow-xs cursor-pointer active:scale-[0.98]"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -88,7 +93,10 @@ export function Sidebar() {
           </p>
 
           <button
-            onClick={() => setViewMode('today')}
+            onClick={() => {
+              setViewMode('today');
+              onClose?.();
+            }}
             className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               viewMode === 'today'
                 ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold'
@@ -107,7 +115,10 @@ export function Sidebar() {
           </button>
 
           <button
-            onClick={() => setViewMode('upcoming')}
+            onClick={() => {
+              setViewMode('upcoming');
+              onClose?.();
+            }}
             className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               viewMode === 'upcoming'
                 ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold'
@@ -130,6 +141,7 @@ export function Sidebar() {
             onClick={() => {
               setViewMode('review');
               setIsSaturdayReviewModalOpen(true);
+              onClose?.();
             }}
             className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer relative ${
               viewMode === 'review'
@@ -147,7 +159,10 @@ export function Sidebar() {
           </button>
 
           <button
-            onClick={() => setViewMode('all')}
+            onClick={() => {
+              setViewMode('all');
+              onClose?.();
+            }}
             className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               viewMode === 'all'
                 ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold'
@@ -162,7 +177,10 @@ export function Sidebar() {
           </button>
 
           <button
-            onClick={() => setViewMode('completed')}
+            onClick={() => {
+              setViewMode('completed');
+              onClose?.();
+            }}
             className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               viewMode === 'completed'
                 ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold'
@@ -195,7 +213,10 @@ export function Sidebar() {
 
           <div className="space-y-0.5">
             <button
-              onClick={() => setSelectedCategory('All')}
+              onClick={() => {
+                setSelectedCategory('All');
+                onClose?.();
+              }}
               className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs cursor-pointer transition-colors ${
                 selectedCategory === 'All'
                   ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-medium'
@@ -211,7 +232,10 @@ export function Sidebar() {
               return (
                 <button
                   key={cat.key}
-                  onClick={() => setSelectedCategory(cat.key)}
+                  onClick={() => {
+                    setSelectedCategory(cat.key);
+                    onClose?.();
+                  }}
                   className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs cursor-pointer transition-colors ${
                     selectedCategory === cat.key
                       ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-medium'
@@ -231,9 +255,23 @@ export function Sidebar() {
       </div>
 
       {/* Bottom Footer Section */}
-      <div className="p-3 border-t border-[var(--color-border)] space-y-1.5">
+      <div className="p-3 border-t border-[var(--color-border)] space-y-1">
         <button
-          onClick={openTutorial}
+          onClick={() => {
+            openPwaPrompt();
+            onClose?.();
+          }}
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer font-medium"
+        >
+          <Smartphone className="w-3.5 h-3.5 text-stone-500" />
+          <span>{t.pwaInstallBtn}</span>
+        </button>
+
+        <button
+          onClick={() => {
+            openTutorial();
+            onClose?.();
+          }}
           className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5 text-stone-400" />
@@ -241,7 +279,10 @@ export function Sidebar() {
         </button>
 
         <button
-          onClick={() => setIsBackupModalOpen(true)}
+          onClick={() => {
+            setIsBackupModalOpen(true);
+            onClose?.();
+          }}
           className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
         >
           <Database className="w-3.5 h-3.5 text-stone-400" />

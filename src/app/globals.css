@@ -9,6 +9,18 @@
   --muted: #f4f2ed;
   --muted-foreground: #78716c;
   --accent: #d97706;
+
+  --font-app-sans: var(--font-vazirmatn), var(--font-plus-jakarta-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[dir="ltr"],
+html[lang="en"] {
+  --font-app-sans: var(--font-plus-jakarta-sans), var(--font-vazirmatn), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[dir="rtl"],
+html[lang="fa"] {
+  --font-app-sans: var(--font-vazirmatn), var(--font-plus-jakarta-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @theme inline {
@@ -19,7 +31,8 @@
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-app-sans);
+  --font-serif: var(--font-app-sans);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -39,7 +52,7 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-app-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

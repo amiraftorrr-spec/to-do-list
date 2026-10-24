@@ -5,81 +5,10 @@ const TASKS_STORAGE_KEY = 'todo_app_tasks_v1';
 const REVIEWS_STORAGE_KEY = 'todo_app_weekly_reviews_v1';
 const DISMISSED_SAT_KEY = 'todo_app_sat_modal_dismissed_week';
 
-export function getInitialSeedTasks(): Task[] {
-  const today = getTodayString();
-  const tomorrow = getTomorrowString();
-  const dayAfterTomorrow = addDays(today, 2);
-  const now = new Date().toISOString();
+const SEED_TASK_IDS = new Set(['task-1', 'task-2', 'task-3', 'task-4', 'task-5']);
 
-  return [
-    {
-      id: 'task-1',
-      title: 'Welcome to your mindful workspace 👋',
-      description: 'Everything is saved locally on your device. Zero servers, zero tracking, blazing fast and offline-ready.',
-      completed: true,
-      completedAt: now,
-      dueDate: today,
-      priority: 'high',
-      category: 'General',
-      subtasks: [
-        { id: 'sub-1', title: 'Tap the checkbox to complete a task', completed: true },
-        { id: 'sub-2', title: 'Expand to view notes or subtasks', completed: true },
-      ],
-      createdAt: now,
-      updatedAt: now,
-    },
-    {
-      id: 'task-2',
-      title: 'Plan tomorrow’s key priorities 🎯',
-      description: 'Great days begin the night before. Add 2-3 essential tasks for tomorrow in the Upcoming planner.',
-      completed: false,
-      dueDate: today,
-      priority: 'urgent',
-      category: 'Work',
-      subtasks: [
-        { id: 'sub-3', title: 'Pick the single most important task', completed: false },
-        { id: 'sub-4', title: 'Estimate realistic time blocks', completed: false },
-      ],
-      createdAt: now,
-      updatedAt: now,
-    },
-    {
-      id: 'task-3',
-      title: 'Deep work session: 45 minutes of uninterrupted focus',
-      description: 'Turn off notifications, put phone in another room, and write clean code or read.',
-      completed: false,
-      dueDate: today,
-      priority: 'medium',
-      category: 'Learning',
-      subtasks: [],
-      createdAt: now,
-      updatedAt: now,
-    },
-    {
-      id: 'task-4',
-      title: 'Prepare healthy lunch and hydration check 💧',
-      description: 'Drink at least 2 liters of water and prepare a balanced meal.',
-      completed: false,
-      dueDate: tomorrow,
-      priority: 'low',
-      category: 'Health',
-      subtasks: [],
-      createdAt: now,
-      updatedAt: now,
-    },
-    {
-      id: 'task-5',
-      title: 'Review weekly progress on Saturday morning 🏆',
-      description: 'Every Saturday morning, check your weekly score out of 100 based on completed tasks, consistency, and focus.',
-      completed: false,
-      dueDate: dayAfterTomorrow,
-      priority: 'high',
-      category: 'Personal',
-      subtasks: [],
-      createdAt: now,
-      updatedAt: now,
-    },
-  ];
+export function getInitialSeedTasks(): Task[] {
+  return [];
 }
 
 export function loadTasksFromStorage(): Task[] {
@@ -87,15 +16,20 @@ export function loadTasksFromStorage(): Task[] {
   try {
     const raw = localStorage.getItem(TASKS_STORAGE_KEY);
     if (!raw) {
-      const seed = getInitialSeedTasks();
-      saveTasksToStorage(seed);
-      return seed;
+      return [];
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+
+    // Filter out previous seed/dummy tasks so the site is clean of default content
+    const cleaned = parsed.filter((t) => !SEED_TASK_IDS.has(t.id));
+    if (cleaned.length !== parsed.length) {
+      saveTasksToStorage(cleaned);
+    }
+    return cleaned;
   } catch (err) {
     console.error('Failed to load tasks from localStorage:', err);
-    return getInitialSeedTasks();
+    return [];
   }
 }
 

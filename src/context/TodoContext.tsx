@@ -98,6 +98,8 @@ interface TodoContextType {
 
   // PWA Prompt
   isPwaPromptOpen: boolean;
+  isPwaInstallable: boolean;
+  openPwaPrompt: () => void;
   dismissPwaPrompt: () => void;
   installPwa: () => void;
 }
@@ -106,7 +108,7 @@ const TodoContext = createContext<TodoContextType | null>(null);
 
 export function TodoProvider({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
-  const [lang, setLangState] = useState<Language>('en');
+  const [lang, setLangState] = useState<Language>('fa');
   const [todayStr, setTodayStr] = useState('');
   const [tomorrowStr, setTomorrowStr] = useState('');
   const [isSaturdayToday, setIsSaturdayToday] = useState(false);
@@ -139,7 +141,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const setLang = useCallback((newLang: Language) => {
     setLangState(newLang);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('cadence_lang', newLang);
+      localStorage.setItem('tedlist_lang', newLang);
       document.documentElement.dir = newLang === 'fa' ? 'rtl' : 'ltr';
       document.documentElement.lang = newLang;
     }
@@ -165,11 +167,15 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setModalDefaultDate(today);
 
     // Load language preference
-    const savedLang = localStorage.getItem('cadence_lang') as Language;
+    const savedLang = localStorage.getItem('tedlist_lang') as Language;
     if (savedLang === 'fa' || savedLang === 'en') {
       setLangState(savedLang);
       document.documentElement.dir = savedLang === 'fa' ? 'rtl' : 'ltr';
       document.documentElement.lang = savedLang;
+    } else {
+      setLangState('fa');
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = 'fa';
     }
 
     const loaded = loadTasksFromStorage();
@@ -177,16 +183,10 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     const reviews = loadWeeklyReviewsFromStorage();
     setWeeklyReviews(reviews);
 
-    // Onboarding tutorial check
-    const tutorialSeen = localStorage.getItem('cadence_tutorial_seen_v1');
+    // First-time onboarding: Tutorial first, then PWA install prompt
+    const tutorialSeen = localStorage.getItem('tedlist_tutorial_seen_v1');
     if (!tutorialSeen) {
       setIsTutorialOpen(true);
-    } else if (isSat) {
-      // Auto-prompt Saturday morning review if it is Saturday and not yet dismissed this week
-      const weekId = `week-${prevRange.start}`;
-      if (!isSaturdayModalDismissed(weekId)) {
-        setIsSaturdayReviewModalOpen(true);
-      }
     }
 
     // Capture PWA beforeinstallprompt event
@@ -207,15 +207,19 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setIsTutorialOpen(true);
   }, []);
 
+  const openPwaPrompt = useCallback(() => {
+    setIsPwaPromptOpen(true);
+  }, []);
+
   const completeTutorial = useCallback(() => {
     setIsTutorialOpen(false);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('cadence_tutorial_seen_v1', 'true');
-      const pwaPrompted = localStorage.getItem('cadence_pwa_prompted');
+      localStorage.setItem('tedlist_tutorial_seen_v1', 'true');
+      const pwaPrompted = localStorage.getItem('tedlist_pwa_prompted');
       if (!pwaPrompted) {
         setTimeout(() => {
           setIsPwaPromptOpen(true);
-        }, 500);
+        }, 400);
       }
     }
   }, []);
@@ -223,7 +227,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const dismissPwaPrompt = useCallback(() => {
     setIsPwaPromptOpen(false);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('cadence_pwa_prompted', 'true');
+      localStorage.setItem('tedlist_pwa_prompted', 'true');
     }
   }, []);
 
@@ -526,6 +530,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         openTutorial,
         completeTutorial,
         isPwaPromptOpen,
+        isPwaInstallable: !!deferredPrompt,
+        openPwaPrompt,
         dismissPwaPrompt,
         installPwa,
       }}

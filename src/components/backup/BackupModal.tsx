@@ -49,10 +49,9 @@ export function BackupModal() {
 
   const handleReset = () => {
     if (window.confirm(t.resetConfirm)) {
-      const seeds = getInitialSeedTasks();
-      saveTasksToStorage(seeds);
+      saveTasksToStorage([]);
       reloadFromStorage();
-      setMessage(t.backupDownloaded);
+      setMessage(t.restoredSuccess(0));
       setIsSuccess(true);
     }
   };

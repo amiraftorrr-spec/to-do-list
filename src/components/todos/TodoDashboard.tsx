@@ -121,7 +121,7 @@ export function TodoDashboard() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <Sidebar />
+              <Sidebar onClose={() => setIsMobileMenuOpen(false)} />
             </div>
           </div>
         </div>
@@ -131,22 +131,6 @@ export function TodoDashboard() {
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Header */}
         <AppHeader onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
-
-        {/* Saturday Banner Reminder if Saturday */}
-        {isSaturdayToday && (
-          <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 md:px-8 py-2.5 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200">
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <span>{t.saturdayBannerText}</span>
-            </div>
-            <button
-              onClick={() => setIsSaturdayReviewModalOpen(true)}
-              className="px-2.5 py-1 rounded bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors cursor-pointer text-[11px]"
-            >
-              {t.startReviewBtn}
-            </button>
-          </div>
-        )}
 
         {/* Scrollable View Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
@@ -344,49 +328,50 @@ export function TodoDashboard() {
         </main>
 
         {/* Mobile Bottom Navigation Bar (PWA Style) */}
-        <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)] flex items-center justify-around py-2 px-3 shrink-0">
+        <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur-md flex items-center justify-around py-2.5 px-3 shrink-0 shadow-lg z-20">
           <button
             onClick={() => setViewMode('today')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
-              viewMode === 'today' ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400'
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+              viewMode === 'today' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
             }`}
           >
             <Sun className="w-4 h-4" />
-            <span>Today</span>
+            <span>{t.today}</span>
           </button>
 
           <button
             onClick={() => setViewMode('upcoming')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
-              viewMode === 'upcoming' ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400'
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+              viewMode === 'upcoming' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
             }`}
           >
             <CalendarDays className="w-4 h-4" />
-            <span>Planner</span>
+            <span>{t.planner}</span>
           </button>
 
           {/* Quick Floating Add */}
           <button
             onClick={() => openCreateModal()}
-            className="w-10 h-10 rounded-full bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 flex items-center justify-center -mt-5 shadow-lg active:scale-90 transition-transform"
+            className="w-11 h-11 rounded-2xl bg-black text-white flex items-center justify-center -mt-6 shadow-xl active:scale-90 transition-transform cursor-pointer border-2 border-[var(--color-card)] font-bold text-lg"
+            title={t.newTask}
           >
             <Plus className="w-5 h-5" />
           </button>
 
           <button
-            onClick={() => setIsSaturdayReviewModalOpen(true)}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
-              isSaturdayToday ? 'text-amber-600 animate-pulse' : 'text-stone-400'
+            onClick={() => setViewMode('completed')}
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+              viewMode === 'completed' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
             }`}
           >
-            <Award className="w-4 h-4" />
-            <span>{t.saturdayReview}</span>
+            <CheckCircle2 className="w-4 h-4" />
+            <span>{t.completedLog}</span>
           </button>
 
           <button
             onClick={() => setViewMode('all')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors ${
-              viewMode === 'all' ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400'
+            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+              viewMode === 'all' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
             }`}
           >
             <Layers className="w-4 h-4" />
