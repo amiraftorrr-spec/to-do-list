@@ -1,11 +1,14 @@
 // Service Worker for tedlist
-const CACHE_NAME = 'tedlist-v1';
+const CACHE_NAME = 'tedlist-v2';
 const STATIC_ASSETS = [
   '/',
+  '/?source=pwa',
   '/manifest.webmanifest',
   '/icon.svg',
   '/icon-192.png',
   '/icon-512.png',
+  '/icon-maskable-192.png',
+  '/icon-maskable-512.png',
   '/apple-touch-icon.png',
 ];
 
