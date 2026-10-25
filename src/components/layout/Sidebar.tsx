@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { ViewMode, Category } from '@/types/todo';
+import { Capacitor } from '@capacitor/core';
 import {
   Sun,
   CalendarDays,
@@ -17,6 +18,18 @@ import {
 } from 'lucide-react';
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
+  const [isNative, setIsNative] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        setIsNative(Capacitor.isNativePlatform());
+      } catch {
+        setIsNative(false);
+      }
+    }
+  }, []);
+
   const {
     todayStr,
     tasks,
@@ -256,16 +269,23 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
       {/* Bottom Footer Section */}
       <div className="p-3 border-t border-[var(--color-border)] space-y-1">
-        <button
-          onClick={() => {
-            openPwaPrompt();
-            onClose?.();
-          }}
-          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer font-medium"
-        >
-          <Smartphone className="w-3.5 h-3.5 text-stone-500" />
-          <span>{t.pwaInstallBtn}</span>
-        </button>
+        {!isNative && (
+          <button
+            onClick={() => {
+              openPwaPrompt();
+              onClose?.();
+            }}
+            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer font-medium"
+          >
+            <div className="flex items-center gap-2">
+              <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{t.apkTitle}</span>
+            </div>
+            <span className="text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 px-1.5 py-0.5 rounded">
+              APK
+            </span>
+          </button>
+        )}
 
         <button
           onClick={() => {
@@ -289,10 +309,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <span>{t.localBackup}</span>
         </button>
 
-        <div className="px-2 pt-1">
-          <p className="text-[10px] text-stone-400 dark:text-stone-500 leading-tight">
+        <div className="px-2 pt-1 flex items-center justify-between text-[10px] text-stone-400 dark:text-stone-500">
+          <p className="leading-tight">
             {t.localPrivacyNote}
           </p>
+          <span className="font-mono font-medium shrink-0 ps-2">
+            v2.3.2
+          </span>
         </div>
       </div>
     </aside>

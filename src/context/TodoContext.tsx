@@ -20,6 +20,8 @@ import {
 } from '@/lib/date-utils';
 import { translations, TranslationDictionary } from '@/lib/translations';
 import confetti from 'canvas-confetti';
+import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 
 interface TodoContextType {
   isMounted: boolean;
@@ -130,10 +132,9 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const [isSaturdayReviewModalOpen, setIsSaturdayReviewModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
 
-  // Tutorial & PWA states
+  // Tutorial & APK states
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isPwaPromptOpen, setIsPwaPromptOpen] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   const t = useMemo(() => translations[lang], [lang]);
   const dir = useMemo(() => (lang === 'fa' ? 'rtl' : 'ltr'), [lang]);
@@ -183,24 +184,13 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     const reviews = loadWeeklyReviewsFromStorage();
     setWeeklyReviews(reviews);
 
-    // First-time onboarding: Tutorial first, then PWA install prompt
+    // First-time onboarding: Tutorial first, then APK prompt
     const tutorialSeen = localStorage.getItem('tedlist_tutorial_seen_v1');
     if (!tutorialSeen) {
       setIsTutorialOpen(true);
     }
 
-    // Capture PWA beforeinstallprompt event
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
     setIsMounted(true);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
   }, []);
 
   const openTutorial = useCallback(() => {
@@ -216,7 +206,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('tedlist_tutorial_seen_v1', 'true');
       const pwaPrompted = localStorage.getItem('tedlist_pwa_prompted');
-      if (!pwaPrompted) {
+      // Only open APK download prompt on web browsers, not inside native app
+      if (!pwaPrompted && !Capacitor.isNativePlatform()) {
         setTimeout(() => {
           setIsPwaPromptOpen(true);
         }, 400);
@@ -231,17 +222,55 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const installPwa = useCallback(async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult && choiceResult.outcome === 'accepted') {
-        console.log('User accepted PWA install');
-      }
-      setDeferredPrompt(null);
+  const installPwa = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      const link = document.createElement('a');
+      link.href = '/tedlist.apk';
+      link.download = 'tedlist.apk';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     }
     dismissPwaPrompt();
-  }, [deferredPrompt, dismissPwaPrompt]);
+  }, [dismissPwaPrompt]);
+
+  // Handle Android hardware back button gracefully
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const backListener = CapApp.addListener('backButton', ({ canGoBack }) => {
+          if (isTaskModalOpen) {
+            setIsTaskModalOpen(false);
+            setEditingTask(null);
+          } else if (isSaturdayReviewModalOpen) {
+            setIsSaturdayReviewModalOpen(false);
+          } else if (isBackupModalOpen) {
+            setIsBackupModalOpen(false);
+          } else if (isTutorialOpen) {
+            setIsTutorialOpen(false);
+          } else if (isPwaPromptOpen) {
+            setIsPwaPromptOpen(false);
+          } else if (canGoBack) {
+            window.history.back();
+          } else {
+            CapApp.exitApp();
+          }
+        });
+        return () => {
+          backListener.then((h) => h.remove?.()).catch(() => {});
+        };
+      }
+    } catch {
+      // Non-native fallback
+    }
+  }, [
+    isTaskModalOpen,
+    isSaturdayReviewModalOpen,
+    isBackupModalOpen,
+    isTutorialOpen,
+    isPwaPromptOpen,
+  ]);
 
   const reloadFromStorage = useCallback(() => {
     const loaded = loadTasksFromStorage();
@@ -530,7 +559,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         openTutorial,
         completeTutorial,
         isPwaPromptOpen,
-        isPwaInstallable: !!deferredPrompt,
+        isPwaInstallable: true,
         openPwaPrompt,
         dismissPwaPrompt,
         installPwa,

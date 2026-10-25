@@ -166,12 +166,21 @@ export interface TranslationDictionary {
   tutorialStart: string;
   tutorialSkip: string;
 
-  // PWA Prompt
+  // APK Download Modal
   pwaTitle: string;
   pwaDesc: string;
   pwaIosHint: string;
   pwaInstallBtn: string;
   pwaLaterBtn: string;
+  apkTitle: string;
+  apkDesc: string;
+  apkInstallBtn: string;
+  apkLaterBtn: string;
+  apkBadge: string;
+  apkOfflineBadge: string;
+  apkStep1: string;
+  apkStep2: string;
+  apkStep3: string;
 }
 
 export const translations: Record<Language, TranslationDictionary> = {
@@ -330,11 +339,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     tutorialStart: 'Get Started',
     tutorialSkip: 'Skip Tour',
 
-    pwaTitle: 'Install tedlist App',
-    pwaDesc: 'Install tedlist on your home screen or desktop for fast, offline access with a clean app feel.',
-    pwaIosHint: "On iPhone/iPad: tap the Share button in Safari, then select 'Add to Home Screen'.",
-    pwaInstallBtn: 'Install App',
+    pwaTitle: 'Download Android APK',
+    pwaDesc: 'Download the standalone Android APK to run tedlist natively, fast, and 100% offline on your device.',
+    pwaIosHint: 'Download and install the APK directly on your Android phone.',
+    pwaInstallBtn: 'Download APK',
     pwaLaterBtn: 'Maybe Later',
+    apkTitle: 'Download Android APK',
+    apkDesc: 'Download tedlist APK directly for Android. Install and use it completely offline and locally on your phone with zero tracking and maximum performance.',
+    apkInstallBtn: 'Download APK File',
+    apkLaterBtn: 'Maybe Later',
+    apkBadge: 'Android APK',
+    apkOfflineBadge: '100% Offline & Local',
+    apkStep1: 'Download the APK file onto your Android device.',
+    apkStep2: 'Open the downloaded file and tap Install (allow unknown sources if prompted).',
+    apkStep3: 'Enjoy tedlist with full offline storage and zero internet required.',
   },
   fa: {
     appName: 'tedlist',
@@ -491,10 +509,19 @@ export const translations: Record<Language, TranslationDictionary> = {
     tutorialStart: 'شروع کار با برنامه',
     tutorialSkip: 'رد شدن',
 
-    pwaTitle: 'نصب اپلیکیشن tedlist',
-    pwaDesc: 'tedlist را برای دسترسی سریع، تمام‌صفحه و آفلاین روی صفحه اصلی گوشی یا دسکتاپ خود نصب کنید.',
-    pwaIosHint: 'در مرورگر سافاری آیفون: دکمه Share (مربع با فلش رو به بالا) را بزنید و سپس "Add to Home Screen" را انتخاب کنید.',
-    pwaInstallBtn: 'نصب اپلیکیشن',
+    pwaTitle: 'دانلود نسخه اندروید (APK)',
+    pwaDesc: 'فایل نصبی مستقیم (APK) برنامه tedlist را برای گوشی اندروید دریافت کنید. کاملاً آفلاین، با ذخیره محلی و بدون نیاز به اینترنت.',
+    pwaIosHint: 'فایل نصبی اندروید (APK) را دانلود کرده و مستقیماً روی گوشی نصب کنید.',
+    pwaInstallBtn: 'دانلود فایل APK',
     pwaLaterBtn: 'شاید بعداً',
+    apkTitle: 'دانلود نسخه اندروید (APK)',
+    apkDesc: 'فایل نصبی مستقیم (APK) برنامه tedlist را برای گوشی اندروید خود دانلود کنید. کاملاً آفلاین، با ذخیره‌سازی محلی روی گوشی و بدون نیاز به اینترنت.',
+    apkInstallBtn: 'دانلود مستقیم فایل APK',
+    apkLaterBtn: 'شاید بعداً',
+    apkBadge: 'اپلیکیشن اندروید (APK)',
+    apkOfflineBadge: '۱۰۰٪ آفلاین و محلی',
+    apkStep1: 'فایل نصبی APK را دانلود کنید.',
+    apkStep2: 'فایل دانلود شده را باز کرده و Install را بزنید (در صورت درخواست، مجوز نصب را تأیید کنید).',
+    apkStep3: 'برنامه روی گوشی نصب شده و تمام داده‌ها در حافظه محلی ذخیره خواهند شد.',
   },
 };

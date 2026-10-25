@@ -2,33 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
-import { Download, X, CheckCircle2 } from 'lucide-react';
+import { Download, X, CheckCircle2, Smartphone, ShieldCheck, Sparkles } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 
 export function PwaInstallPromptModal() {
   const {
     isPwaPromptOpen,
-    isPwaInstallable,
     dismissPwaPrompt,
     installPwa,
     lang,
     t,
   } = useTodo();
 
-  const [isIos, setIsIos] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [isNative, setIsNative] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const ua = navigator.userAgent;
-      const iosCheck = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      setIsIos(iosCheck);
-
-      const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
-      setIsStandalone(standaloneCheck);
+      try {
+        setIsNative(Capacitor.isNativePlatform());
+      } catch {
+        setIsNative(false);
+      }
     }
   }, []);
 
-  if (!isPwaPromptOpen || isStandalone) return null;
+  // Do not show APK prompt if running inside the native APK or modal is closed
+  if (!isPwaPromptOpen || isNative) return null;
 
   const isRtl = lang === 'fa';
 
@@ -41,15 +40,20 @@ export function PwaInstallPromptModal() {
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-black flex items-center justify-center text-white font-black text-base tracking-tight shrink-0 shadow-sm border border-stone-800">
-              Do
+            <div className="w-11 h-11 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-base tracking-tight shrink-0 shadow-sm">
+              <Smartphone className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
-                {t.pwaTitle}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                  {t.apkTitle}
+                </h3>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                  {t.apkBadge}
+                </span>
+              </div>
               <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                tedlist PWA • {isRtl ? 'نصب روی گوشی و تبلت' : 'Install on Mobile & Tablet'}
+                tedlist Android v2.3.2 • {t.apkOfflineBadge}
               </p>
             </div>
           </div>
@@ -63,47 +67,39 @@ export function PwaInstallPromptModal() {
 
         {/* Description */}
         <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-          {t.pwaDesc}
+          {t.apkDesc}
         </p>
 
-        {/* Platform Specific Instructions */}
-        {isIos ? (
-          /* iOS Safari Guide */
-          <div className="p-3.5 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 space-y-2 text-xs">
-            <p className="font-semibold text-stone-800 dark:text-stone-200 text-[11px]">
-              {isRtl ? 'راهنمای نصب در آیفون (Safari):' : 'Install Guide for iPhone (Safari):'}
-            </p>
-            <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
-              <span className="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
-              <svg className="w-3.5 h-3.5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
-              <span>{isRtl ? 'در نوار پایین مرورگر، دکمه اشتراک‌گذاری (Share) را بزنید.' : 'Tap the Share button at the bottom of Safari.'}</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
-              <span className="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
-              <svg className="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              <span>{isRtl ? 'گزینه «Add to Home Screen» (افزودن به صفحه اصلی) را انتخاب کنید.' : "Select 'Add to Home Screen' from the menu."}</span>
-            </div>
+        {/* Feature badges */}
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="p-2.5 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 flex items-center gap-2 text-stone-700 dark:text-stone-300">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="text-[11px] font-medium">{t.apkOfflineBadge}</span>
           </div>
-        ) : (
-          /* Android / Desktop Instructions */
-          <div className="p-3 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 space-y-1.5 text-xs text-stone-600 dark:text-stone-300">
-            <div className="flex items-center gap-2 text-stone-700 dark:text-stone-200 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>{isRtl ? 'قابلیت نصب آفلاین و آیکون اختصاصی روی صفحه گوشی' : 'Offline ready & standalone app experience'}</span>
-            </div>
-            {!isPwaInstallable && (
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 pt-0.5">
-                {isRtl
-                  ? 'اگر دکمه نصب باز نشد، در منوی ۳ نقطه مرورگر (⋮)، گزینه «Install app» یا «افزودن به صفحه اصلی» را انتخاب کنید.'
-                  : "If prompt doesn't open, tap browser menu (⋮) and select 'Install app' or 'Add to Home screen'."}
-              </p>
-            )}
+          <div className="p-2.5 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 flex items-center gap-2 text-stone-700 dark:text-stone-300">
+            <Sparkles className="w-4 h-4 text-blue-500 shrink-0" />
+            <span className="text-[11px] font-medium">{isRtl ? 'نصب مستقل روی گوشی' : 'Standalone App'}</span>
           </div>
-        )}
+        </div>
+
+        {/* Step-by-step install guide */}
+        <div className="p-3.5 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 space-y-2 text-xs">
+          <p className="font-semibold text-stone-800 dark:text-stone-200 text-[11px]">
+            {isRtl ? 'راهنمای نصب:' : 'Installation Steps:'}
+          </p>
+          <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
+            <span className="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+            <span>{t.apkStep1}</span>
+          </div>
+          <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
+            <span className="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+            <span>{t.apkStep2}</span>
+          </div>
+          <div className="flex items-center gap-2.5 text-stone-600 dark:text-stone-300">
+            <span className="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+            <span>{t.apkStep3}</span>
+          </div>
+        </div>
 
         {/* Action Buttons */}
         <div className="pt-3 border-t border-[var(--color-border)] flex items-center justify-end gap-2">
@@ -111,16 +107,20 @@ export function PwaInstallPromptModal() {
             onClick={dismissPwaPrompt}
             className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer transition-colors"
           >
-            {t.pwaLaterBtn}
+            {t.apkLaterBtn}
           </button>
 
-          <button
-            onClick={installPwa}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white shadow-xs cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
+          <a
+            href="/tedlist.apk"
+            download="tedlist.apk"
+            onClick={() => {
+              installPwa();
+            }}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>{isIos ? (isRtl ? 'متوجه شدم' : 'Got it') : t.pwaInstallBtn}</span>
-          </button>
+            <span>{t.apkInstallBtn}</span>
+          </a>
         </div>
       </div>
     </div>

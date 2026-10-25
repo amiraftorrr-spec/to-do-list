@@ -325,9 +325,16 @@ export function TodoDashboard() {
               </button>
             </div>
           )}
+
+          {/* Version tag */}
+          <div className="pt-10 pb-4 text-center">
+            <span className="text-[10px] font-mono text-stone-400 dark:text-stone-600">
+              tedlist v2.3.2
+            </span>
+          </div>
         </main>
 
-        {/* Mobile Bottom Navigation Bar (PWA Style) */}
+        {/* Mobile Bottom Navigation Bar */}
         <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur-md flex items-center justify-around py-2.5 px-3 shrink-0 shadow-lg z-20">
           <button
             onClick={() => setViewMode('today')}
