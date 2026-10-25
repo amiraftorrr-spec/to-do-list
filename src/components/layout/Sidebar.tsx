@@ -314,7 +314,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             {t.localPrivacyNote}
           </p>
           <span className="font-mono font-medium shrink-0 ps-2">
-            v2.3.2
+            v2.3.3
           </span>
         </div>
       </div>

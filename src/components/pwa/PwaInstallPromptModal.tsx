@@ -53,7 +53,7 @@ export function PwaInstallPromptModal() {
                 </span>
               </div>
               <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                tedlist Android v2.3.2 • {t.apkOfflineBadge}
+                tedlist Android v2.3.3 • {t.apkOfflineBadge}
               </p>
             </div>
           </div>

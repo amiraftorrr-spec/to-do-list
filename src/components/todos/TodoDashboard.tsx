@@ -329,7 +329,7 @@ export function TodoDashboard() {
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
             <span className="text-[10px] font-mono text-stone-400 dark:text-stone-600">
-              tedlist v2.3.2
+              tedlist v2.3.3
             </span>
           </div>
         </main>
