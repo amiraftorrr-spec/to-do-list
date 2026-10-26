@@ -3,8 +3,8 @@
 import React from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Priority } from '@/types/todo';
-import { Search, Plus, Award, Filter, X, Sun, Moon } from 'lucide-react';
-import { formatDisplayDate, getTodayString } from '@/lib/date-utils';
+import { Search, Plus, Filter, X, Sun, Moon, Bell } from 'lucide-react';
+import { formatDisplayDate } from '@/lib/date-utils';
 
 export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void }) {
   const {
@@ -15,8 +15,7 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
     selectedPriority,
     setSelectedPriority,
     openCreateModal,
-    isSaturdayToday,
-    setIsSaturdayReviewModalOpen,
+    runNotificationTest30s,
     lang,
     toggleLanguage,
     theme,
@@ -67,7 +66,12 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
   ];
 
   return (
-    <header className="border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md sticky top-0 z-20 px-4 md:px-8 py-4 space-y-4">
+    <header
+      className="border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md sticky top-0 z-20 px-4 md:px-8 py-4 space-y-4"
+      style={{
+        paddingTop: 'max(env(safe-area-inset-top, 0px), 1rem)',
+      }}
+    >
       {/* Top Bar: Title & Primary Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
@@ -120,13 +124,14 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
             <span>{lang === 'en' ? 'فارسی' : 'English'}</span>
           </button>
 
-          {/* Saturday Review Quick Button */}
+          {/* Test 30s Notification Button */}
           <button
-            onClick={() => setIsSaturdayReviewModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
+            onClick={runNotificationTest30s}
+            className="p-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+            title={lang === 'fa' ? 'تست اعلان (۳۰ ثانیه بعد)' : 'Test 30s Notification'}
+            aria-label="Test Notification"
           >
-            <Award className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-            <span>{t.weeklyReviewBtn}</span>
+            <Bell className="w-4 h-4 text-indigo-500 hover:text-indigo-400" />
           </button>
 
           {/* New Task Button */}

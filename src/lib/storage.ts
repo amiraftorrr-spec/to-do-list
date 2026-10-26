@@ -1,4 +1,4 @@
-import { Task, WeeklyScore } from '@/types/todo';
+import { Task, WeeklyScore, Language } from '@/types/todo';
 import { getTodayString, getTomorrowString, addDays } from './date-utils';
 
 const TASKS_STORAGE_KEY = 'todo_app_tasks_v1';
@@ -89,7 +89,8 @@ export function setSaturdayModalDismissed(weekId: string): void {
 export function calculateWeeklyScore(
   tasks: Task[],
   weekStart: string,
-  weekEnd: string
+  weekEnd: string,
+  lang: Language = 'en'
 ): Omit<WeeklyScore, 'id' | 'reflection' | 'reviewedAt'> {
   // Filter tasks that fell into this week's window
   const weekTasks = tasks.filter((t) => t.dueDate >= weekStart && t.dueDate <= weekEnd);
@@ -103,9 +104,12 @@ export function calculateWeeklyScore(
       completedTasks: 0,
       urgentHighCompleted: 0,
       urgentHighTotal: 0,
-      consistencyScore: 100,
-      ratingLabel: 'Clean Slate',
-      feedback: 'No tasks were logged for this week. A peaceful week to recharge or prepare for what lies ahead.',
+      consistencyScore: 15,
+      ratingLabel: lang === 'fa' ? 'شروع آرام و پاک 🎯' : 'Clean Slate 🎯',
+      feedback:
+        lang === 'fa'
+          ? 'کاری در این بازه هفتگی ثبت نشده است. فرصتی آرام برای برنامه‌ریزی هدفمند هفته آینده.'
+          : 'No tasks were logged for this week. A peaceful week to recharge or prepare for what lies ahead.',
     };
   }
 
@@ -135,20 +139,35 @@ export function calculateWeeklyScore(
   let feedback = '';
 
   if (totalScore >= 90) {
-    ratingLabel = 'Exceptional Flow 🌟';
-    feedback = 'Outstanding discipline! You crushed almost all commitments, conquered high-priority goals, and maintained steady momentum.';
+    ratingLabel = lang === 'fa' ? 'تمرکز و بازدهی عالی 🌟' : 'Exceptional Flow 🌟';
+    feedback =
+      lang === 'fa'
+        ? 'عملکرد درخشان و فوق‌العاده! تقریباً تمام برنامه‌ها و اهداف مهم را با استمرار کامل به سرانجام رساندید.'
+        : 'Outstanding discipline! You crushed almost all commitments, conquered high-priority goals, and maintained steady momentum.';
   } else if (totalScore >= 80) {
-    ratingLabel = 'Strong Momentum 💪';
-    feedback = 'Great job this week! High completion and reliable execution. Keep sharpening your focus on the critical few.';
+    ratingLabel = lang === 'fa' ? 'انگیزه و پیشرفت قوی 💪' : 'Strong Momentum 💪';
+    feedback =
+      lang === 'fa'
+        ? 'هفته بسیار موفقی بود! درصد بالای تکمیل کارها و پایبندی به اهداف کلیدی. همین مسیر را ادامه دهید.'
+        : 'Great job this week! High completion and reliable execution. Keep sharpening your focus on the critical few.';
   } else if (totalScore >= 65) {
-    ratingLabel = 'Steady Progress 📈';
-    feedback = 'Solid effort. You tackled a meaningful chunk of your plan. Consider trimming non-essential tasks to finish what matters most.';
+    ratingLabel = lang === 'fa' ? 'پیشرفت مستمر 📈' : 'Steady Progress 📈';
+    feedback =
+      lang === 'fa'
+        ? 'تلاش قابل تحسین. بخش عمده‌ای از برنامه‌ها را پیش بردید. برای هفته بعد روی کارهای اولویت‌دار تمرکز بیشتری بگذارید.'
+        : 'Solid effort. You tackled a meaningful chunk of your plan. Consider trimming non-essential tasks to finish what matters most.';
   } else if (totalScore >= 50) {
-    ratingLabel = 'Mixed Execution ⚖️';
-    feedback = 'You made progress, but several tasks slipped. Review whether your schedule was over-ambitious or derailed by distractions.';
+    ratingLabel = lang === 'fa' ? 'عملکرد متوسط ⚖️' : 'Mixed Execution ⚖️';
+    feedback =
+      lang === 'fa'
+        ? 'پیشرفت داشتید اما تعدادی از کارها به تعویق افتاد. برنامه‌ریزی هفته را سبک‌تر کنید تا کارهای کلیدی حتماً تمام شوند.'
+        : 'You made progress, but several tasks slipped. Review whether your schedule was over-ambitious or derailed by distractions.';
   } else {
-    ratingLabel = 'Rebuild & Reset 🔄';
-    feedback = 'A challenging week, but every Saturday is an opportunity to wipe the slate clean and start fresh with simpler, clearer goals.';
+    ratingLabel = lang === 'fa' ? 'شروع دوباره و بازسازی 🔄' : 'Rebuild & Reset 🔄';
+    feedback =
+      lang === 'fa'
+        ? 'هفته چالش‌برانگیزی بود، اما هر شنبه یک فرصت طلایی است تا با انرژی تازه و اهدافی شفاف‌تر هفته جدید را آغاز کنید.'
+        : 'A challenging week, but every Saturday is an opportunity to wipe the slate clean and start fresh with simpler, clearer goals.';
   }
 
   return {

@@ -4,4 +4,9 @@
     <string name="title_activity_main">tedlist</string>
     <string name="package_name">com.tedlist.app</string>
     <string name="custom_url_scheme">com.tedlist.app</string>
+
+    <string name="widget_small_name">tedlist کوچک</string>
+    <string name="widget_small_desc">نمایش وضعیت کارهای امروز و پیشرفت</string>
+    <string name="widget_large_name">tedlist بزرگ</string>
+    <string name="widget_large_desc">لیست کارهای امروز و دسترسی سریع</string>
 </resources>

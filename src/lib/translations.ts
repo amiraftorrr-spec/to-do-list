@@ -35,6 +35,19 @@ export interface TranslationDictionary {
   weeklyReviewBtn: string;
   themeToggleDark: string;
   themeToggleLight: string;
+  themeDarkShort: string;
+  themeLightShort: string;
+  showingTaskCount: (count: number) => string;
+  noTasksMatchingFilters: string;
+  archivedAccomplishments: (count: number) => string;
+  noCompletedTasksYet: string;
+  satReviewHeroTitle: string;
+  satReviewHeroDesc: string;
+  urgentHighBadge: string;
+  ptsLabel: string;
+  historyTaskSummary: (completed: number, total: number, urgentHigh: number) => string;
+  markComplete: string;
+  markIncomplete: string;
   
   // Saturday banner
   saturdayBannerText: string;
@@ -93,6 +106,22 @@ export interface TranslationDictionary {
   stepsLabel: string;
   createTaskBtn: string;
   saveChangesBtn: string;
+
+  // Habit & Recurrence
+  recurrenceLabel: string;
+  recNone: string;
+  recDaily: string;
+  recWeekdays: string;
+  recWeekly: string;
+  streakBadge: (count: number) => string;
+
+  // Quick Add & Calendar
+  quickAddPlaceholder: string;
+  quickAddButton: string;
+  calendarTab: string;
+  plannerTab: string;
+  planForThisDay: string;
+  noTasksOnSelectedDay: string;
 
   // Priority labels & desc
   priorityUrgent: string;
@@ -220,6 +249,19 @@ export const translations: Record<Language, TranslationDictionary> = {
     weeklyReviewBtn: 'Weekly Review',
     themeToggleDark: 'Dark Mode',
     themeToggleLight: 'Light Mode',
+    themeDarkShort: 'Dark',
+    themeLightShort: 'Light',
+    showingTaskCount: (count) => `Showing ${count} ${count === 1 ? 'task' : 'tasks'}`,
+    noTasksMatchingFilters: 'No tasks match your active filters.',
+    archivedAccomplishments: (count) => `Archived accomplishments: ${count} total finished`,
+    noCompletedTasksYet: 'No completed tasks yet. Finish a task today to see it celebrated here!',
+    satReviewHeroTitle: 'Saturday Weekly Review & Scoring',
+    satReviewHeroDesc: 'Click below to launch your weekly evaluation modal, calculate your score out of 100, and audit what was accomplished versus what slipped.',
+    urgentHighBadge: 'Urgent/High',
+    ptsLabel: 'Pts',
+    historyTaskSummary: (completed, total, urgentHigh) => `Completed ${completed} of ${total} tasks (${urgentHigh} high priority)`,
+    markComplete: 'Mark completed',
+    markIncomplete: 'Mark uncompleted',
 
     saturdayBannerText: "It's Saturday morning! Your weekly retrospective is ready to evaluate.",
     startReviewBtn: 'Start Review',
@@ -273,6 +315,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     stepsLabel: 'Checklist / Steps',
     createTaskBtn: 'Create Task',
     saveChangesBtn: 'Save Changes',
+
+    recurrenceLabel: 'Repeat',
+    recNone: 'Once',
+    recDaily: 'Daily',
+    recWeekdays: 'Weekdays',
+    recWeekly: 'Weekly',
+    streakBadge: (count) => `${count}d streak`,
+
+    quickAddPlaceholder: 'Quick add (e.g. Buy groceries tomorrow 6pm #personal !high)...',
+    quickAddButton: 'Add Task',
+    calendarTab: 'Monthly Calendar',
+    plannerTab: 'Next 7 Days',
+    planForThisDay: 'Plan for this day',
+    noTasksOnSelectedDay: 'No tasks scheduled for this day',
 
     priorityUrgent: 'Urgent',
     priorityUrgentDesc: 'Must do now',
@@ -390,8 +446,21 @@ export const translations: Record<Language, TranslationDictionary> = {
     allFilter: 'همه',
     addTaskBtn: 'افزودن کار',
     weeklyReviewBtn: 'ارزیابی هفتگی',
-    themeToggleDark: 'حالت دارک',
-    themeToggleLight: 'حالت لایت',
+    themeToggleDark: 'حالت تیره',
+    themeToggleLight: 'حالت روشن',
+    themeDarkShort: 'تیره',
+    themeLightShort: 'روشن',
+    showingTaskCount: (count) => `نمایش ${count} کار`,
+    noTasksMatchingFilters: 'هیچ کاری با فیلترهای فعال شما همخوانی ندارد.',
+    archivedAccomplishments: (count) => `دستاوردهای آرشیو شده: مجموعاً ${count} کار تکمیل‌شده`,
+    noCompletedTasksYet: 'هنوز کاری تکمیل نشده است. کارهای امروز را تکمیل کنید تا موفقیت شما اینجا ثبت شود!',
+    satReviewHeroTitle: 'ارزیابی هفتگی و نمره‌دهی شنبه',
+    satReviewHeroDesc: 'برای باز شدن پنجره ارزیابی، محاسبه نمره از ۱۰۰ و بررسی کارهای انجام‌شده و عقب‌افتاده، دکمه زیر را بزنید.',
+    urgentHighBadge: 'فوری / بالا',
+    ptsLabel: 'امتیاز',
+    historyTaskSummary: (completed, total, urgentHigh) => `${completed} از ${total} کار انجام شد (${urgentHigh} کار با اولویت بالا)`,
+    markComplete: 'تکمیل شد',
+    markIncomplete: 'ناتمام',
 
     saturdayBannerText: 'صبح شنبه بخیر! ارزیابی و نمره هفته گذشته شما آماده است.',
     startReviewBtn: 'شروع ارزیابی',
@@ -445,6 +514,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     stepsLabel: 'مراحل انجام کار',
     createTaskBtn: 'ثبت کار',
     saveChangesBtn: 'ذخیره تغییرات',
+
+    recurrenceLabel: 'تکرار و استمرار',
+    recNone: 'یک‌بار',
+    recDaily: 'هر روز',
+    recWeekdays: 'روزهای کاری',
+    recWeekly: 'هفتگی',
+    streakBadge: (count) => `${count} روز پیوسته`,
+
+    quickAddPlaceholder: 'افزودن سریع (مثلاً: خرید شیر فردا ساعت ۱۸ #شخصی !مهم)...',
+    quickAddButton: 'ثبت کار',
+    calendarTab: 'تقویم ماهانه',
+    plannerTab: '۷ روز آینده',
+    planForThisDay: 'افزودن کار به این تاریخ',
+    noTasksOnSelectedDay: 'کاری برای این تاریخ ثبت نشده است',
 
     priorityUrgent: 'فوری',
     priorityUrgentDesc: 'باید فوراً انجام شود',

@@ -1,11 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Vazirmatn, Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 
-const vazirmatn = Vazirmatn({
-  variable: "--font-vazirmatn",
-  subsets: ["arabic", "latin"],
+const shabnam = localFont({
+  src: [
+    {
+      path: "./fonts/Shabnam-Thin.woff2",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Shabnam-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Shabnam.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Shabnam-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Shabnam-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-shabnam",
   display: "swap",
 });
 
@@ -63,7 +90,7 @@ export default function RootLayout({
     <html
       lang="fa"
       dir="rtl"
-      className={`dark ${vazirmatn.variable} ${plusJakartaSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${shabnam.variable} ${plusJakartaSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[var(--color-background)] text-[var(--color-foreground)]">
         <ServiceWorkerRegister />

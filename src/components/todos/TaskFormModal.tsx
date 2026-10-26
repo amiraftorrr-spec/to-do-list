@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
-import { Priority, Category } from '@/types/todo';
-import { getTodayString, getTomorrowString, addDays, getSaturdayOfWeek, getLocalDateString } from '@/lib/date-utils';
-import { X, Calendar, Clock, Plus, Trash2 } from 'lucide-react';
+import { Priority, Category, Recurrence } from '@/types/todo';
+import { getTodayString, getTomorrowString, addDays, getNextSaturday, parseDate, getLocalDateString } from '@/lib/date-utils';
+import { X, Calendar, Clock, Plus, Trash2, Repeat } from 'lucide-react';
 
 export function TaskFormModal() {
   const {
@@ -16,6 +16,7 @@ export function TaskFormModal() {
     editTask,
     todayStr,
     tomorrowStr,
+    lang,
     t,
   } = useTodo();
 
@@ -25,10 +26,11 @@ export function TaskFormModal() {
   const [dueTime, setDueTime] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
   const [category, setCategory] = useState<Category>('General');
+  const [recurrence, setRecurrence] = useState<Recurrence>('none');
   const [subtasks, setSubtasks] = useState<{ title: string }[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
 
-  const nextSatStr = todayStr ? getLocalDateString(getSaturdayOfWeek(new Date(todayStr))) : '';
+  const nextSatStr = todayStr ? getLocalDateString(getNextSaturday(parseDate(todayStr))) : '';
 
   useEffect(() => {
     if (editingTask) {
@@ -38,6 +40,7 @@ export function TaskFormModal() {
       setDueTime(editingTask.dueTime || '');
       setPriority(editingTask.priority);
       setCategory(editingTask.category);
+      setRecurrence(editingTask.recurrence || 'none');
       setSubtasks(editingTask.subtasks.map((s) => ({ title: s.title })));
     } else {
       setTitle('');
@@ -46,6 +49,7 @@ export function TaskFormModal() {
       setDueTime('');
       setPriority('medium');
       setCategory('General');
+      setRecurrence('none');
       setSubtasks([]);
       setNewSubtask('');
     }
@@ -87,6 +91,15 @@ export function TaskFormModal() {
         dueTime: dueTime || undefined,
         priority,
         category,
+        recurrence,
+        subtasks: subtasks.map((s, idx) => {
+          const existing = editingTask.subtasks[idx];
+          return {
+            id: existing ? existing.id : `sub_${Date.now()}_${idx}`,
+            title: s.title.trim(),
+            completed: existing ? existing.completed : false,
+          };
+        }),
       });
     } else {
       addTask({
@@ -96,6 +109,7 @@ export function TaskFormModal() {
         dueTime: dueTime || undefined,
         priority,
         category,
+        recurrence,
         subtasks,
       });
     }
@@ -152,7 +166,7 @@ export function TaskFormModal() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t.titlePlaceholder}
-              className="w-full text-sm font-medium px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-900 dark:text-slate-100"
+              className="w-full text-sm font-medium px-3 py-2 rounded-lg bg-slate-100/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
           </div>
 
@@ -166,7 +180,7 @@ export function TaskFormModal() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t.notesPlaceholder}
-              className="w-full text-xs px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-800 dark:text-slate-200 resize-none"
+              className="w-full text-xs px-3 py-2 rounded-lg bg-slate-100/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none"
             />
           </div>
 
@@ -233,7 +247,7 @@ export function TaskFormModal() {
                   required
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full text-xs pl-8 rtl:pl-2 rtl:pr-8 pr-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:outline-hidden focus:border-indigo-500"
+                  className="w-full text-xs pl-8 rtl:pl-2 rtl:pr-8 pr-2 py-1.5 rounded-lg bg-slate-100/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 dark:[color-scheme:dark] [color-scheme:light]"
                 />
               </div>
 
@@ -243,8 +257,8 @@ export function TaskFormModal() {
                   type="time"
                   value={dueTime}
                   onChange={(e) => setDueTime(e.target.value)}
-                  placeholder="Optional time"
-                  className="w-full text-xs pl-8 rtl:pl-2 rtl:pr-8 pr-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:outline-hidden focus:border-indigo-500"
+                  placeholder={lang === 'fa' ? 'زمان اختیاری' : 'Optional time'}
+                  className="w-full text-xs pl-8 rtl:pl-2 rtl:pr-8 pr-2 py-1.5 rounded-lg bg-slate-100/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 dark:[color-scheme:dark] [color-scheme:light]"
                 />
               </div>
             </div>
@@ -264,7 +278,7 @@ export function TaskFormModal() {
                   className={`p-2 rounded-lg border text-left rtl:text-right cursor-pointer transition-all ${
                     priority === p.value
                       ? 'border-indigo-500 bg-indigo-600/10 text-indigo-600 dark:border-indigo-500 dark:bg-indigo-500/15 dark:text-indigo-300 font-semibold shadow-xs'
-                      : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850/40 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
+                      : 'border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'
                   }`}
                 >
                   <p className="text-xs font-semibold">{p.label}</p>
@@ -292,6 +306,34 @@ export function TaskFormModal() {
                   }`}
                 >
                   {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Recurrence & Habits */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              {t.recurrenceLabel}
+            </label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {[
+                { value: 'none', label: t.recNone },
+                { value: 'daily', label: t.recDaily },
+                { value: 'weekdays', label: t.recWeekdays },
+                { value: 'weekly', label: t.recWeekly },
+              ].map((r) => (
+                <button
+                  type="button"
+                  key={r.value}
+                  onClick={() => setRecurrence(r.value as Recurrence)}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-medium cursor-pointer transition-all text-center ${
+                    recurrence === r.value
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'border border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'
+                  }`}
+                >
+                  {r.label}
                 </button>
               ))}
             </div>
@@ -335,7 +377,7 @@ export function TaskFormModal() {
                     handleAddSubtask(e);
                   }
                 }}
-                className="flex-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 focus:outline-hidden focus:border-indigo-500 text-slate-800 dark:text-slate-200"
+                className="flex-1 text-xs px-2.5 py-1.5 rounded-lg bg-slate-100/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
               <button
                 type="button"

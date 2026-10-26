@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Download, X, CheckCircle2, Smartphone, ShieldCheck, Sparkles } from 'lucide-react';
-import { Capacitor } from '@capacitor/core';
+import { isAppInstalledOrNative } from '@/lib/platform';
 
 export function PwaInstallPromptModal() {
   const {
@@ -14,20 +14,14 @@ export function PwaInstallPromptModal() {
     t,
   } = useTodo();
 
-  const [isNative, setIsNative] = useState(false);
+  const [isInstalledOrNative, setIsInstalledOrNative] = useState(() => isAppInstalledOrNative());
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        setIsNative(Capacitor.isNativePlatform());
-      } catch {
-        setIsNative(false);
-      }
-    }
+    setIsInstalledOrNative(isAppInstalledOrNative());
   }, []);
 
   // Do not show APK prompt if running inside the native APK or modal is closed
-  if (!isPwaPromptOpen || isNative) return null;
+  if (!isPwaPromptOpen || isInstalledOrNative) return null;
 
   const isRtl = lang === 'fa';
 
@@ -57,7 +51,7 @@ export function PwaInstallPromptModal() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                tedlist Android v2.4.0 • {t.apkOfflineBadge}
+                tedlist Android v2.5.0 • {t.apkOfflineBadge}
               </p>
             </div>
           </div>

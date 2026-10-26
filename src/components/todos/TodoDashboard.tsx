@@ -11,11 +11,12 @@ import { SaturdayReviewModal } from '@/components/review/SaturdayReviewModal';
 import { BackupModal } from '@/components/backup/BackupModal';
 import { OnboardingTutorialModal } from '@/components/tutorial/OnboardingTutorialModal';
 import { PwaInstallPromptModal } from '@/components/pwa/PwaInstallPromptModal';
+import { QuickAddBar } from '@/components/todos/QuickAddBar';
+import { AppLoadingScreen } from '@/components/ui/AppLoadingScreen';
 import { getTodayString, isOverdue } from '@/lib/date-utils';
 import {
   Sun,
   CalendarDays,
-  Award,
   Layers,
   CheckCircle2,
   Plus,
@@ -39,6 +40,8 @@ export function TodoDashboard() {
     openCreateModal,
     isSaturdayToday,
     setIsSaturdayReviewModalOpen,
+    testNotificationToast,
+    clearTestNotificationToast,
     t,
     lang,
   } = useTodo();
@@ -99,6 +102,9 @@ export function TodoDashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--color-background)]">
+      {/* Premium App Initial Loading Screen */}
+      <AppLoadingScreen isMounted={isMounted} lang={lang} />
+
       {/* Desktop Sidebar */}
       <div className="hidden md:flex h-full">
         <Sidebar />
@@ -111,7 +117,13 @@ export function TodoDashboard() {
             className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="relative w-4/5 max-w-xs bg-[var(--color-card)] h-full z-50 flex flex-col border-r border-[var(--color-border)]">
+          <div
+            className="relative w-4/5 max-w-xs bg-[var(--color-card)] h-full z-50 flex flex-col border-r border-[var(--color-border)]"
+            style={{
+              paddingTop: 'max(env(safe-area-inset-top, 0px), 0.5rem)',
+              paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1rem)',
+            }}
+          >
             <div className="p-3 border-b border-[var(--color-border)] flex justify-end">
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -132,11 +144,35 @@ export function TodoDashboard() {
         {/* Header */}
         <AppHeader onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
 
-        {/* Scrollable View Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+        {/* Scrollable View Content with Bottom Safe Area for Mobile */}
+        <main
+          className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6"
+          style={{
+            paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 3rem)',
+          }}
+        >
+          {/* Notification Toast Alert */}
+          {testNotificationToast && (
+            <div className="max-w-md mx-auto p-3 rounded-xl bg-indigo-600/90 text-white text-xs flex items-center justify-between gap-3 shadow-lg shadow-indigo-600/20 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🔔</span>
+                <span className="font-medium">{testNotificationToast}</span>
+              </div>
+              <button
+                onClick={clearTestNotificationToast}
+                className="p-1 rounded-md hover:bg-white/20 text-white/80 hover:text-white cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* VIEW: TODAY */}
           {viewMode === 'today' && (
             <div className="max-w-3xl mx-auto space-y-6">
+              {/* Quick Add Bar */}
+              <QuickAddBar />
+
               {/* Today's Progress Strip */}
               <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white/60 dark:bg-slate-900/40 p-4 shadow-2xs">
                 <div className="flex items-center justify-between text-xs">
@@ -255,20 +291,20 @@ export function TodoDashboard() {
             <div className="max-w-3xl mx-auto space-y-4">
               <div className="flex items-center justify-between pb-1">
                 <p className="text-xs text-slate-500 font-mono">
-                  Showing {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
+                  {t.showingTaskCount(filteredTasks.length)}
                 </p>
                 <button
                   onClick={() => openCreateModal()}
                   className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New task</span>
+                  <span>{t.newTask}</span>
                 </button>
               </div>
 
               {filteredTasks.length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                  No tasks match your active filters.
+                  {t.noTasksMatchingFilters}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -285,13 +321,13 @@ export function TodoDashboard() {
             <div className="max-w-3xl mx-auto space-y-4">
               <div className="pb-1">
                 <p className="text-xs text-slate-500 font-mono">
-                  Archived accomplishments: {tasks.filter((t) => t.completed).length} total finished
+                  {t.archivedAccomplishments(tasks.filter((t) => t.completed).length)}
                 </p>
               </div>
 
               {tasks.filter((t) => t.completed).length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                  No completed tasks yet. Finish a task today to see it celebrated here!
+                  {t.noCompletedTasksYet}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -305,31 +341,10 @@ export function TodoDashboard() {
             </div>
           )}
 
-          {/* VIEW: SATURDAY REVIEW (If directly navigated) */}
-          {viewMode === 'review' && (
-            <div className="max-w-2xl mx-auto text-center py-8 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto border border-indigo-500/20">
-                <Award className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-serif font-medium text-slate-900 dark:text-slate-100">
-                Saturday Weekly Review & Scoring
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-                Click below to launch your weekly evaluation modal, calculate your score out of 100, and audit what was accomplished versus what slipped.
-              </p>
-              <button
-                onClick={() => setIsSaturdayReviewModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer shadow-sm shadow-indigo-600/30"
-              >
-                <span>Launch Weekly Evaluation</span>
-              </button>
-            </div>
-          )}
-
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">
-              tedlist v2.4.0
+              tedlist v2.5.0
             </span>
           </div>
         </main>

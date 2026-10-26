@@ -10,6 +10,8 @@ export interface Subtask {
 
 export type Category = 'General' | 'Personal' | 'Work' | 'Habits' | 'Learning' | 'Health';
 
+export type Recurrence = 'none' | 'daily' | 'weekdays' | 'weekly';
+
 export interface Task {
   id: string;
   title: string;
@@ -21,6 +23,9 @@ export interface Task {
   priority: Priority;
   category: Category;
   subtasks: Subtask[];
+  recurrence?: Recurrence;
+  streak?: number;
+  lastCompletedDate?: string;
   createdAt: string;
   updatedAt: string;
 }

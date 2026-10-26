@@ -33,7 +33,7 @@ export function SaturdayReviewModal() {
 
   const range = selectedRange === 'prev' ? prevWeekRange : currentWeekRange;
   const reviewScore = range.start && range.end
-    ? calculateWeeklyScore(tasks, range.start, range.end)
+    ? calculateWeeklyScore(tasks, range.start, range.end, lang)
     : {
         weekStart: '',
         weekEnd: '',
@@ -43,8 +43,8 @@ export function SaturdayReviewModal() {
         urgentHighCompleted: 0,
         urgentHighTotal: 0,
         consistencyScore: 100,
-        ratingLabel: 'Ready',
-        feedback: 'No tasks to evaluate.',
+        ratingLabel: lang === 'fa' ? 'آماده ارزیابی 🎯' : 'Ready',
+        feedback: lang === 'fa' ? 'کاری برای ارزیابی این هفته ثبت نشده است.' : 'No tasks to evaluate.',
       };
   const weekLabel = range.start && range.end ? formatWeekLabel(range.start, range.end, lang) : '';
 
@@ -259,7 +259,7 @@ export function SaturdayReviewModal() {
                   <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
                     {reviewScore.urgentHighCompleted}/{reviewScore.urgentHighTotal}
                   </span>
-                  <span className="text-xs text-slate-500">Urgent/High</span>
+                  <span className="text-xs text-slate-500">{t.urgentHighBadge}</span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1.5">
                   {t.keyPrioritiesWeight}
@@ -274,7 +274,7 @@ export function SaturdayReviewModal() {
                   <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
                     {reviewScore.consistencyScore}/15
                   </span>
-                  <span className="text-xs text-slate-500">Pts</span>
+                  <span className="text-xs text-slate-500">{t.ptsLabel}</span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1.5">
                   {t.consistencyDesc}
@@ -382,7 +382,7 @@ export function SaturdayReviewModal() {
                         </span>
                       </div>
                       <p className="text-xs text-slate-500">
-                        Completed {rev.completedTasks} of {rev.totalTasks} tasks ({rev.urgentHighCompleted} high priority)
+                        {t.historyTaskSummary(rev.completedTasks, rev.totalTasks, rev.urgentHighCompleted)}
                       </p>
                       {rev.reflection && (
                         <p className="text-xs text-slate-600 dark:text-slate-400 italic bg-white dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700 mt-2">

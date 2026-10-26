@@ -3,34 +3,19 @@
 import React from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { TaskItem } from './TaskItem';
-import { getTodayString, getTomorrowString, addDays, formatDisplayDate } from '@/lib/date-utils';
-import { CalendarDays, Plus, ArrowRight } from 'lucide-react';
+import { MonthlyCalendarView } from './MonthlyCalendarView';
+import { CalendarDays, Plus } from 'lucide-react';
 
 export function DailyPlanner() {
   const {
-    todayStr,
     tomorrowStr,
     tasks,
     openCreateModal,
     selectedCategory,
     selectedPriority,
     searchQuery,
-    lang,
     t,
   } = useTodo();
-
-  // Next 7 days
-  const upcomingDays = todayStr
-    ? [
-        tomorrowStr,
-        addDays(todayStr, 2),
-        addDays(todayStr, 3),
-        addDays(todayStr, 4),
-        addDays(todayStr, 5),
-        addDays(todayStr, 6),
-        addDays(todayStr, 7),
-      ]
-    : [];
 
   const filterTask = (t: (typeof tasks)[0]) => {
     if (selectedCategory !== 'All' && t.category !== selectedCategory) return false;
@@ -47,9 +32,9 @@ export function DailyPlanner() {
   const tomorrowTasks = tasks.filter((t) => t.dueDate === tomorrowStr).filter(filterTask);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Hero Planner Banner: Tomorrow Intention */}
-      <div className="rounded-2xl border border-indigo-500/20 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-950/30 via-slate-900/40 to-slate-900 p-5 sm:p-6 shadow-xs">
+      <div className="rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50/70 via-white to-slate-50 dark:from-indigo-950/30 dark:via-slate-900/40 dark:to-slate-900 p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-1.5">
@@ -91,63 +76,8 @@ export function DailyPlanner() {
         </div>
       </div>
 
-      {/* Upcoming Days Timeline */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-          <h3 className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-            {t.next7DaysAhead}
-          </h3>
-          <span className="text-xs text-slate-400 font-mono">
-            {t.proactiveScheduling}
-          </span>
-        </div>
-
-        <div className="space-y-6">
-          {upcomingDays.slice(1).map((dayStr) => {
-            const dayTasks = tasks.filter((t) => t.dueDate === dayStr).filter(filterTask);
-            const dateLabel = formatDisplayDate(dayStr, lang);
-
-            return (
-              <div
-                key={dayStr}
-                className="rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/40 p-4 space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                    <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                      {dateLabel}
-                    </h4>
-                    <span className="text-[11px] font-mono text-slate-400">
-                      {t.taskCountLabel(dayTasks.length)}
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() => openCreateModal(dayStr)}
-                    className="flex items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-500/10 transition-colors cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3" />
-                    <span>{t.addToThisDay}</span>
-                  </button>
-                </div>
-
-                {dayTasks.length > 0 ? (
-                  <div className="space-y-2">
-                    {dayTasks.map((task) => (
-                      <TaskItem key={task.id} task={task} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-slate-400 italic pl-4 rtl:pl-0 rtl:pr-4">
-                    {t.emptySlot}
-                  </p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* Monthly Interactive Calendar */}
+      <MonthlyCalendarView />
     </div>
   );
 }

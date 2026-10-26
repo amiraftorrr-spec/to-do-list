@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { Task, Category, Priority, ViewMode, FilterState, WeeklyScore, Language } from '@/types/todo';
+import { Task, Category, Priority, ViewMode, FilterState, WeeklyScore, Language, Recurrence } from '@/types/todo';
+import { triggerHaptic } from '@/lib/haptics';
 import {
   loadTasksFromStorage,
   saveTasksToStorage,
@@ -20,6 +21,10 @@ import {
   isTodaySaturday,
 } from '@/lib/date-utils';
 import { translations, TranslationDictionary } from '@/lib/translations';
+import { isAppInstalledOrNative } from '@/lib/platform';
+import { syncNativeWidget } from '@/lib/widget-bridge';
+import { scheduleNightlyReminder, schedule30sTestNotification } from '@/lib/notifications';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import confetti from 'canvas-confetti';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
@@ -65,6 +70,7 @@ interface TodoContextType {
     priority: Priority;
     category: Category;
     subtasks?: { title: string }[];
+    recurrence?: Recurrence;
   }) => void;
   editTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
@@ -103,6 +109,12 @@ interface TodoContextType {
   isTutorialOpen: boolean;
   openTutorial: () => void;
   completeTutorial: () => void;
+
+  // Notifications & Widget
+  completeAllTodayTasks: () => void;
+  runNotificationTest30s: () => Promise<boolean>;
+  testNotificationToast: string | null;
+  clearTestNotificationToast: () => void;
 
   // PWA Prompt
   isPwaPromptOpen: boolean;
@@ -237,13 +249,13 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
               {
                 clipPath: clipPath,
                 filter: [
-                  'drop-shadow(0 0 3px rgba(99, 102, 241, 0.9))',
-                  'drop-shadow(0 0 10px rgba(99, 102, 241, 0.6))',
+                  'drop-shadow(0 0 4px rgba(99, 102, 241, 0.9))',
+                  'drop-shadow(0 0 12px rgba(99, 102, 241, 0.6))',
                 ],
               },
               {
-                duration: 480,
-                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                duration: 800,
+                easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
                 pseudoElement: '::view-transition-new(root)',
               }
             );
@@ -296,9 +308,42 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     }
 
     const loaded = loadTasksFromStorage();
-    setTasks(loaded);
+
+    // Check if any recurring habit task was completed in the past and should roll over for today
+    let modified = false;
+    const refreshed = loaded.map((task) => {
+      if (task.recurrence && task.recurrence !== 'none' && task.completed && task.dueDate < today) {
+        modified = true;
+        return {
+          ...task,
+          completed: false,
+          dueDate: today,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return task;
+    });
+
+    if (modified) {
+      saveTasksToStorage(refreshed);
+      setTasks(refreshed);
+    } else {
+      setTasks(loaded);
+    }
+
     const reviews = loadWeeklyReviewsFromStorage();
     setWeeklyReviews(reviews);
+
+    // Saturday Review popup: If today is Saturday and user logged tasks during the week, show review modal
+    if (isSat) {
+      const hasWeekTasks = loaded.some(
+        (t) => t.dueDate >= prevRange.start && t.dueDate <= prevRange.end
+      );
+      const dismissed = isSaturdayModalDismissed(prevRange.start);
+      if (hasWeekTasks && !dismissed) {
+        setIsSaturdayReviewModalOpen(true);
+      }
+    }
 
     // First-time onboarding: Tutorial first, then APK prompt
     const tutorialSeen = localStorage.getItem('tedlist_tutorial_seen_v1');
@@ -314,7 +359,9 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const openPwaPrompt = useCallback(() => {
-    setIsPwaPromptOpen(true);
+    if (!isAppInstalledOrNative()) {
+      setIsPwaPromptOpen(true);
+    }
   }, []);
 
   const completeTutorial = useCallback(() => {
@@ -322,8 +369,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('tedlist_tutorial_seen_v1', 'true');
       const pwaPrompted = localStorage.getItem('tedlist_pwa_prompted');
-      // Only open APK download prompt on web browsers, not inside native app
-      if (!pwaPrompted && !Capacitor.isNativePlatform()) {
+      // Only open APK download prompt on web browsers, not inside native app or installed PWA
+      if (!pwaPrompted && !isAppInstalledOrNative()) {
         setTimeout(() => {
           setIsPwaPromptOpen(true);
         }, 400);
@@ -335,6 +382,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setIsPwaPromptOpen(false);
     if (typeof window !== 'undefined') {
       localStorage.setItem('tedlist_pwa_prompted', 'true');
+      localStorage.setItem('tedlist_apk_installed', 'true');
     }
   }, []);
 
@@ -413,7 +461,9 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
       priority: Priority;
       category: Category;
       subtasks?: { title: string }[];
+      recurrence?: Recurrence;
     }) => {
+      triggerHaptic('light');
       const now = new Date().toISOString();
       const newTask: Task = {
         id: 'task_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
@@ -430,6 +480,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
             title: s.title.trim(),
             completed: false,
           })) || [],
+        recurrence: data.recurrence || 'none',
+        streak: 0,
         createdAt: now,
         updatedAt: now,
       };
@@ -461,6 +513,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         prev.map((t) => {
           if (t.id !== id) return t;
           const nextCompleted = !t.completed;
+          triggerHaptic(nextCompleted ? 'success' : 'light');
+
           if (nextCompleted) {
             try {
               confetti({
@@ -473,16 +527,38 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
               // Ignore if canvas is unavailable
             }
           }
+
+          // Habit streak logic
+          let streak = t.streak || 0;
+          let lastCompletedDate = t.lastCompletedDate;
+          const currentDayStr = todayStr || getTodayString();
+
+          if (t.recurrence && t.recurrence !== 'none') {
+            if (nextCompleted) {
+              if (lastCompletedDate !== currentDayStr) {
+                streak += 1;
+                lastCompletedDate = currentDayStr;
+              }
+            } else {
+              if (lastCompletedDate === currentDayStr) {
+                streak = Math.max(0, streak - 1);
+                lastCompletedDate = undefined;
+              }
+            }
+          }
+
           return {
             ...t,
             completed: nextCompleted,
+            streak,
+            lastCompletedDate,
             completedAt: nextCompleted ? new Date().toISOString() : undefined,
             updatedAt: new Date().toISOString(),
           };
         })
       );
     },
-    [updateTasks]
+    [updateTasks, todayStr]
   );
 
   const rescheduleTask = useCallback(
@@ -495,6 +571,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const addSubtask = useCallback(
     (taskId: string, title: string) => {
       if (!title.trim()) return;
+      triggerHaptic('light');
       updateTasks((prev) =>
         prev.map((t) => {
           if (t.id !== taskId) return t;
@@ -516,6 +593,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
 
   const toggleSubtask = useCallback(
     (taskId: string, subtaskId: string) => {
+      triggerHaptic('selection');
       updateTasks((prev) =>
         prev.map((t) => {
           if (t.id !== taskId) return t;
@@ -621,6 +699,88 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setIsSaturdayReviewModalOpen(false);
   }, [prevWeekRange.start]);
 
+  const completeAllTodayTasks = useCallback(() => {
+    const curToday = todayStr || getTodayString();
+    triggerHaptic('success');
+    updateTasks((prev) =>
+      prev.map((t) => {
+        if (t.dueDate === curToday && !t.completed) {
+          return {
+            ...t,
+            completed: true,
+            completedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return t;
+      })
+    );
+  }, [updateTasks, todayStr]);
+
+  const [testNotificationToast, setTestNotificationToast] = useState<string | null>(null);
+
+  const clearTestNotificationToast = useCallback(() => {
+    setTestNotificationToast(null);
+  }, []);
+
+  const runNotificationTest30s = useCallback(async (): Promise<boolean> => {
+    const curToday = todayStr || getTodayString();
+    const todayPending = tasks.filter((t) => t.dueDate === curToday && !t.completed);
+    const success = await schedule30sTestNotification(todayPending);
+    if (success) {
+      triggerHaptic('success');
+      setTestNotificationToast(
+        lang === 'fa'
+          ? 'اعلان برای ۳۰ ثانیه دیگر زمان‌بندی شد! می‌توانید برنامه را ببندید تا دریافت آن را تست کنید.'
+          : 'Notification scheduled for 30s! Close the app to test.'
+      );
+      setTimeout(() => setTestNotificationToast(null), 7000);
+    }
+    return success;
+  }, [tasks, todayStr, lang]);
+
+  // Sync Native Android Widget & Schedule Nightly 23:00 Tehran Reminder
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return;
+
+    const curToday = todayStr || getTodayString();
+    const todayTasks = tasks.filter((t) => t.dueDate === curToday);
+    const todayPending = todayTasks.filter((t) => !t.completed);
+    const todayCompletedCount = todayTasks.filter((t) => t.completed).length;
+
+    // 1. Sync native Android widget
+    syncNativeWidget(todayTasks, todayCompletedCount);
+
+    // 2. Schedule 23:00 Tehran nightly reminder
+    scheduleNightlyReminder(todayPending);
+  }, [tasks, todayStr, isMounted]);
+
+  // Listen for Notification Action Buttons (e.g. Complete All)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let sub: any;
+    try {
+      LocalNotifications.addListener('localNotificationActionPerformed', (notificationAction) => {
+        if (notificationAction.actionId === 'COMPLETE_ALL') {
+          completeAllTodayTasks();
+        }
+      }).then((s) => {
+        sub = s;
+      });
+    } catch {
+      // ignore
+    }
+
+    return () => {
+      try {
+        sub?.remove?.();
+      } catch {
+        // ignore
+      }
+    };
+  }, [completeAllTodayTasks]);
+
   return (
     <TodoContext.Provider
       value={{
@@ -677,6 +837,10 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         isTutorialOpen,
         openTutorial,
         completeTutorial,
+        completeAllTodayTasks,
+        runNotificationTest30s,
+        testNotificationToast,
+        clearTestNotificationToast,
         isPwaPromptOpen,
         isPwaInstallable: true,
         openPwaPrompt,

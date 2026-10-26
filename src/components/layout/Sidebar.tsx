@@ -3,32 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { ViewMode, Category } from '@/types/todo';
-import { Capacitor } from '@capacitor/core';
+import { isAppInstalledOrNative } from '@/lib/platform';
 import {
   Sun,
   CalendarDays,
-  Award,
   Layers,
   CheckCircle2,
-  Database,
   FolderDot,
   Plus,
   HelpCircle,
   Smartphone,
-  Moon,
 } from 'lucide-react';
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
-  const [isNative, setIsNative] = useState(false);
+  const [isInstalledOrNative, setIsInstalledOrNative] = useState(() => isAppInstalledOrNative());
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        setIsNative(Capacitor.isNativePlatform());
-      } catch {
-        setIsNative(false);
-      }
-    }
+    setIsInstalledOrNative(isAppInstalledOrNative());
   }, []);
 
   const {
@@ -39,13 +30,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     selectedCategory,
     setSelectedCategory,
     openCreateModal,
-    isSaturdayToday,
-    setIsSaturdayReviewModalOpen,
-    setIsBackupModalOpen,
     openTutorial,
     openPwaPrompt,
-    theme,
-    toggleTheme,
     t,
   } = useTodo();
 
@@ -156,28 +142,6 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             )}
           </button>
 
-          {/* Saturday Review Nav Item */}
-          <button
-            onClick={() => {
-              setViewMode('review');
-              setIsSaturdayReviewModalOpen(true);
-              onClose?.();
-            }}
-            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer relative ${
-              viewMode === 'review'
-                ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-500/20'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
-            }`}
-          >
-            <div className="flex items-center gap-2.5">
-              <Award className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-              <span>{t.saturdayReview}</span>
-            </div>
-            <span className="text-xs text-slate-400 font-mono">
-              {isSaturdayToday ? t.saturdayReviewDue : '/100'}
-            </span>
-          </button>
-
           <button
             onClick={() => {
               setViewMode('all');
@@ -275,8 +239,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Bottom Footer Section */}
-      <div className="p-3 border-t border-[var(--color-border)] space-y-1">
-        {!isNative && (
+      <div
+        className="p-3 border-t border-[var(--color-border)] space-y-1"
+        style={{
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1rem)',
+        }}
+      >
+        {!isInstalledOrNative && (
           <button
             onClick={() => {
               openPwaPrompt();
@@ -305,47 +274,28 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <span>{t.tutorialTitle}</span>
         </button>
 
-        <button
-          onClick={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            toggleTheme({
-              clientX: rect.left + rect.width / 2,
-              clientY: rect.top + rect.height / 2,
-            });
-          }}
-          className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            {theme === 'dark' ? (
-              <Sun className="w-3.5 h-3.5 text-amber-400" />
-            ) : (
-              <Moon className="w-3.5 h-3.5 text-indigo-600" />
-            )}
-            <span>{theme === 'dark' ? t.themeToggleLight : t.themeToggleDark}</span>
+        <div className="px-2 pt-1.5 flex flex-col gap-1 text-[10px] text-slate-400 dark:text-slate-500">
+          <div className="flex items-center justify-between">
+            <p className="leading-tight">
+              {t.localPrivacyNote}
+            </p>
+            <span className="font-mono font-medium shrink-0 ps-2">
+              v2.5.0
+            </span>
           </div>
-          <span className="text-[10px] font-mono text-slate-400">
-            {theme === 'dark' ? 'Dark' : 'Light'}
-          </span>
-        </button>
-
-        <button
-          onClick={() => {
-            setIsBackupModalOpen(true);
-            onClose?.();
-          }}
-          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-        >
-          <Database className="w-3.5 h-3.5 text-slate-400" />
-          <span>{t.localBackup}</span>
-        </button>
-
-        <div className="px-2 pt-1 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
-          <p className="leading-tight">
-            {t.localPrivacyNote}
-          </p>
-          <span className="font-mono font-medium shrink-0 ps-2">
-            v2.4.0
-          </span>
+          <div className="flex justify-end text-[10px] font-mono text-slate-400 dark:text-slate-500">
+            <span>
+              made by{' '}
+              <a
+                href="https://aftor.ir"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium transition-colors"
+              >
+                aftor
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </aside>

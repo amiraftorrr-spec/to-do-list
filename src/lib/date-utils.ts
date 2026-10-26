@@ -100,6 +100,15 @@ export function getSaturdayOfWeek(targetDate: Date = new Date()): Date {
   return d;
 }
 
+// Returns the upcoming Saturday (if today is Saturday, returns next Saturday in 7 days)
+export function getNextSaturday(referenceDate: Date = new Date()): Date {
+  const d = new Date(referenceDate);
+  const day = d.getDay(); // 0 is Sun, ..., 6 is Sat
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  d.setDate(d.getDate() + daysUntilSaturday);
+  return d;
+}
+
 // Returns the previous week range: [prev Saturday, prev Friday]
 export function getPreviousWeekRange(referenceDate: Date = new Date()): { start: string; end: string } {
   const currentSaturday = getSaturdayOfWeek(referenceDate);

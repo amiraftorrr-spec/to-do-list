@@ -15,6 +15,8 @@ import {
   Trash2,
   Pencil,
   ArrowRightCircle,
+  Repeat,
+  Flame,
 } from 'lucide-react';
 
 export function TaskItem({ task }: { task: Task }) {
@@ -36,6 +38,56 @@ export function TaskItem({ task }: { task: Task }) {
   const [showMenu, setShowMenu] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
+
+  // Mobile swipe gestures
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  const isRtl = lang === 'fa';
+  const SWIPE_THRESHOLD = 70;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (showMenu || isAddingSubtask) return;
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+    setIsSwiping(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX === null || touchStartY === null) return;
+    const diffX = e.touches[0].clientX - touchStartX;
+    const diffY = e.touches[0].clientY - touchStartY;
+
+    // Do not hijack vertical scrolling
+    if (!isSwiping && Math.abs(diffY) > Math.abs(diffX)) {
+      return;
+    }
+
+    if (Math.abs(diffX) > 10) {
+      setIsSwiping(true);
+      const clamped = Math.max(-110, Math.min(110, diffX * 0.75));
+      setSwipeOffset(clamped);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isSwiping) {
+      const isCompleteAction = isRtl ? swipeOffset < -SWIPE_THRESHOLD : swipeOffset > SWIPE_THRESHOLD;
+      const isPostponeAction = isRtl ? swipeOffset > SWIPE_THRESHOLD : swipeOffset < -SWIPE_THRESHOLD;
+
+      if (isCompleteAction) {
+        toggleTask(task.id);
+      } else if (isPostponeAction && tomorrowStr) {
+        rescheduleTask(task.id, tomorrowStr);
+      }
+    }
+    setTouchStartX(null);
+    setTouchStartY(null);
+    setSwipeOffset(0);
+    setIsSwiping(false);
+  };
 
   const overdue = todayStr ? isOverdue(task.dueDate, task.completed) : false;
   const dateLabel = formatDisplayDate(task.dueDate, lang);
@@ -92,16 +144,54 @@ export function TaskItem({ task }: { task: Task }) {
   };
 
   return (
-    <div
-      className={`group relative rounded-xl border transition-all duration-200 ${
-        task.completed
-          ? 'bg-slate-100/40 border-slate-200/50 dark:bg-slate-900/20 dark:border-slate-800/40 opacity-70'
-          : overdue
-          ? 'bg-rose-50/30 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/40 shadow-xs'
-          : 'bg-[var(--color-card)] border-[var(--color-border)] hover:border-indigo-400/50 dark:hover:border-indigo-500/30 shadow-xs'
-      }`}
-    >
-      <div className="p-3.5 sm:p-4 flex items-start gap-3">
+    <div className="relative overflow-hidden rounded-xl">
+      {/* Mobile Swipe Action Reveal Backgrounds */}
+      {isSwiping && (
+        <div className="absolute inset-0 rounded-xl flex items-center justify-between px-4 text-xs font-semibold select-none pointer-events-none">
+          {/* Postpone Indicator */}
+          <div
+            className={`flex items-center gap-1.5 transition-opacity ${
+              (isRtl ? swipeOffset > 20 : swipeOffset < -20)
+                ? 'opacity-100 text-indigo-500'
+                : 'opacity-0'
+            }`}
+          >
+            <ArrowRightCircle className="w-4 h-4" />
+            <span>{t.moveTomorrow}</span>
+          </div>
+
+          {/* Complete Indicator */}
+          <div
+            className={`flex items-center gap-1.5 transition-opacity ${
+              (isRtl ? swipeOffset < -20 : swipeOffset > 20)
+                ? 'opacity-100 text-emerald-500'
+                : 'opacity-0'
+            }`}
+          >
+            <Check className="w-4 h-4 stroke-[2.5]" />
+            <span>{task.completed ? t.markIncomplete : t.markComplete}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Main Task Card */}
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          transform: `translateX(${swipeOffset}px)`,
+          transition: isSwiping ? 'none' : 'transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)',
+        }}
+        className={`group relative rounded-xl border transition-colors duration-200 ${
+          task.completed
+            ? 'bg-slate-100/40 border-slate-200/50 dark:bg-slate-900/20 dark:border-slate-800/40 opacity-70'
+            : overdue
+            ? 'bg-rose-50/30 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/40 shadow-xs'
+            : 'bg-[var(--color-card)] border-[var(--color-border)] hover:border-indigo-400/50 dark:hover:border-indigo-500/30 shadow-xs'
+        }`}
+      >
+        <div className="p-3.5 sm:p-4 flex items-start gap-3">
         {/* Tactile Checkbox Button */}
         <button
           onClick={() => toggleTask(task.id)}
@@ -110,7 +200,7 @@ export function TaskItem({ task }: { task: Task }) {
               ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30'
               : 'border-slate-300 dark:border-slate-600 hover:border-indigo-500 dark:hover:border-indigo-400 bg-white dark:bg-slate-800/80 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20'
           }`}
-          aria-label={task.completed ? 'Mark uncompleted' : 'Mark completed'}
+          aria-label={task.completed ? t.markIncomplete : t.markComplete}
         >
           {task.completed && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
         </button>
@@ -134,14 +224,14 @@ export function TaskItem({ task }: { task: Task }) {
               <button
                 onClick={() => openEditModal(task)}
                 className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                title="Edit task"
+                title={t.editDetails}
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => deleteTask(task.id)}
                 className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                title="Delete task"
+                title={t.deleteTask}
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -190,6 +280,29 @@ export function TaskItem({ task }: { task: Task }) {
             <span className="text-slate-500 dark:text-slate-400">
               {getCategoryLabel(task.category)}
             </span>
+
+            {/* Recurrence & Streak Badges */}
+            {task.recurrence && task.recurrence !== 'none' && (
+              <>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
+                <span className="inline-flex items-center gap-1 text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                  <Repeat className="w-3 h-3" />
+                  <span>
+                    {task.recurrence === 'daily'
+                      ? t.recDaily
+                      : task.recurrence === 'weekdays'
+                      ? t.recWeekdays
+                      : t.recWeekly}
+                  </span>
+                </span>
+                {typeof task.streak === 'number' && task.streak > 0 && (
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-medium font-mono">
+                    <Flame className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
+                    <span>{task.streak}</span>
+                  </span>
+                )}
+              </>
+            )}
 
             {/* Subtasks Summary */}
             {totalSubtasks > 0 && (
@@ -353,7 +466,7 @@ export function TaskItem({ task }: { task: Task }) {
                     <button
                       type="button"
                       onClick={() => setIsAddingSubtask(false)}
-                      className="px-2 py-1 text-xs rounded text-slate-500 hover:text-slate-800 cursor-pointer"
+                      className="px-2 py-1 text-xs rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer transition-colors"
                     >
                       {t.cancelBtn}
                     </button>
@@ -372,6 +485,7 @@ export function TaskItem({ task }: { task: Task }) {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }
