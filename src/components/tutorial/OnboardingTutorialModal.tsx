@@ -60,7 +60,7 @@ export function OnboardingTutorialModal() {
   const isRtl = lang === 'fa';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div
         className="w-full max-w-md rounded-2xl bg-[var(--color-card)] border border-[var(--color-border)] shadow-2xl overflow-hidden flex flex-col p-6 space-y-6"
         onClick={(e) => e.stopPropagation()}
@@ -68,16 +68,16 @@ export function OnboardingTutorialModal() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-serif font-semibold text-stone-900 dark:text-stone-100">
+            <h2 className="text-base font-serif font-semibold text-slate-900 dark:text-slate-100">
               {t.tutorialTitle}
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {t.tutorialSubtitle}
             </p>
           </div>
           <button
             onClick={completeTutorial}
-            className="p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
             title={t.tutorialSkip}
           >
             <X className="w-4 h-4" />
@@ -86,15 +86,15 @@ export function OnboardingTutorialModal() {
 
         {/* Step Content */}
         <div className="py-4 space-y-4 text-center sm:text-start">
-          <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-800 dark:text-stone-200">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <IconComponent className="w-5 h-5" />
           </div>
 
           <div className="space-y-1.5">
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               {current.title}
             </h3>
-            <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               {current.desc}
             </p>
           </div>
@@ -109,8 +109,8 @@ export function OnboardingTutorialModal() {
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   i === step
-                    ? 'w-6 bg-stone-900 dark:bg-stone-100'
-                    : 'w-1.5 bg-stone-300 dark:bg-stone-700'
+                    ? 'w-6 bg-indigo-600 dark:bg-indigo-500'
+                    : 'w-1.5 bg-slate-300 dark:bg-slate-700'
                 }`}
               />
             ))}
@@ -121,7 +121,7 @@ export function OnboardingTutorialModal() {
             {step > 0 && (
               <button
                 onClick={handlePrev}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center gap-1"
               >
                 {isRtl ? <ArrowRight className="w-3.5 h-3.5" /> : <ArrowLeft className="w-3.5 h-3.5" />}
                 <span>{t.tutorialPrev}</span>
@@ -130,7 +130,7 @@ export function OnboardingTutorialModal() {
 
             <button
               onClick={handleNext}
-              className="px-4 py-1.5 rounded-lg text-xs font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white shadow-xs cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/30 cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
             >
               <span>{isLast ? t.tutorialStart : t.tutorialNext}</span>
               {!isLast && (

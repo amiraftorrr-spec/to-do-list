@@ -79,8 +79,8 @@ export function TodoDashboard() {
   if (!isMounted) {
     return (
       <div className="flex h-screen items-center justify-center bg-[var(--color-background)]">
-        <div className="flex items-center gap-3 text-stone-500 text-xs">
-          <div className="w-5 h-5 border-2 border-stone-400 border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center gap-3 text-slate-400 text-xs">
+          <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           <span>Opening your workspace...</span>
         </div>
       </div>
@@ -108,14 +108,14 @@ export function TodoDashboard() {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden flex">
           <div
-            className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs"
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="relative w-4/5 max-w-xs bg-white dark:bg-stone-900 h-full z-50 flex flex-col">
-            <div className="p-3 border-b border-stone-200 dark:border-stone-800 flex justify-end">
+          <div className="relative w-4/5 max-w-xs bg-[var(--color-card)] h-full z-50 flex flex-col border-r border-[var(--color-border)]">
+            <div className="p-3 border-b border-[var(--color-border)] flex justify-end">
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 rounded text-stone-500 hover:text-stone-800"
+                className="p-1 rounded text-slate-400 hover:text-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -138,23 +138,23 @@ export function TodoDashboard() {
           {viewMode === 'today' && (
             <div className="max-w-3xl mx-auto space-y-6">
               {/* Today's Progress Strip */}
-              <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 p-4 shadow-2xs">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white/60 dark:bg-slate-900/40 p-4 shadow-2xs">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-stone-800 dark:text-stone-200">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {t.todayMomentum}
                     </span>
-                    <span className="text-stone-400 font-mono">
+                    <span className="text-slate-400 dark:text-slate-500 font-mono">
                       {t.tasksDoneSummary(todayCompleted.length, totalTodayGoal)}
                     </span>
                   </div>
-                  <span className="font-mono font-semibold text-stone-700 dark:text-stone-300">
+                  <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">
                     {progressPercent}%
                   </span>
                 </div>
-                <div className="w-full bg-stone-200 dark:bg-stone-800 h-1.5 rounded-full mt-2.5 overflow-hidden">
+                <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full mt-2.5 overflow-hidden">
                   <div
-                    className="bg-stone-900 dark:bg-stone-100 h-full rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -163,7 +163,7 @@ export function TodoDashboard() {
               {/* Overdue Section (if any) */}
               {overdueTasks.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
                     <AlertTriangle className="w-3.5 h-3.5" />
                     <span>{t.overdueTasks(overdueTasks.length)}</span>
                   </div>
@@ -178,12 +178,12 @@ export function TodoDashboard() {
               {/* Today's Active Tasks */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between pb-1">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-400">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     {t.focusForToday(todayTasks.length)}
                   </h3>
                   <button
                     onClick={() => openCreateModal(todayStr)}
-                    className="flex items-center gap-1 text-xs text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200 font-medium cursor-pointer"
+                    className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{t.addTaskBtn}</span>
@@ -191,17 +191,17 @@ export function TodoDashboard() {
                 </div>
 
                 {todayTasks.length === 0 ? (
-                  <div className="text-center py-12 border border-dashed border-stone-200 dark:border-stone-800 rounded-2xl p-6 space-y-3 bg-white/30 dark:bg-stone-900/20">
-                    <div className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center mx-auto text-stone-500">
-                      <Sparkles className="w-5 h-5 text-amber-500" />
+                  <div className="text-center py-12 border border-dashed border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 space-y-3 bg-white/30 dark:bg-slate-900/20">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto text-indigo-500 dark:text-indigo-400">
+                      <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-stone-800 dark:text-stone-200">
+                      <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {todayCompleted.length > 0
                           ? t.allClearToday
                           : t.nothingScheduledToday}
                       </h4>
-                      <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto mt-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
                         {todayCompleted.length > 0
                           ? t.allClearSubtitle
                           : t.nothingScheduledSubtitle}
@@ -209,7 +209,7 @@ export function TodoDashboard() {
                     </div>
                     <button
                       onClick={() => openCreateModal(todayStr)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 text-xs font-medium cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer shadow-sm shadow-indigo-600/30"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>{t.addFirstTask}</span>
@@ -229,7 +229,7 @@ export function TodoDashboard() {
                 <div className="pt-4 space-y-2">
                   <button
                     onClick={() => setShowCompleted(!showCompleted)}
-                    className="flex items-center gap-1.5 text-xs font-medium text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
                   >
                     {showCompleted ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     <span>{t.completedTodayCount(todayCompleted.length)}</span>
@@ -254,12 +254,12 @@ export function TodoDashboard() {
           {viewMode === 'all' && (
             <div className="max-w-3xl mx-auto space-y-4">
               <div className="flex items-center justify-between pb-1">
-                <p className="text-xs text-stone-500 font-mono">
+                <p className="text-xs text-slate-500 font-mono">
                   Showing {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
                 </p>
                 <button
                   onClick={() => openCreateModal()}
-                  className="flex items-center gap-1 text-xs text-stone-700 hover:text-stone-900 dark:text-stone-300 font-medium cursor-pointer"
+                  className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>New task</span>
@@ -267,7 +267,7 @@ export function TodoDashboard() {
               </div>
 
               {filteredTasks.length === 0 ? (
-                <div className="py-12 text-center text-xs text-stone-400 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl">
+                <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
                   No tasks match your active filters.
                 </div>
               ) : (
@@ -284,13 +284,13 @@ export function TodoDashboard() {
           {viewMode === 'completed' && (
             <div className="max-w-3xl mx-auto space-y-4">
               <div className="pb-1">
-                <p className="text-xs text-stone-500 font-mono">
+                <p className="text-xs text-slate-500 font-mono">
                   Archived accomplishments: {tasks.filter((t) => t.completed).length} total finished
                 </p>
               </div>
 
               {tasks.filter((t) => t.completed).length === 0 ? (
-                <div className="py-12 text-center text-xs text-stone-400 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl">
+                <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
                   No completed tasks yet. Finish a task today to see it celebrated here!
                 </div>
               ) : (
@@ -308,18 +308,18 @@ export function TodoDashboard() {
           {/* VIEW: SATURDAY REVIEW (If directly navigated) */}
           {viewMode === 'review' && (
             <div className="max-w-2xl mx-auto text-center py-8 space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto border border-indigo-500/20">
                 <Award className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-serif font-medium text-stone-900 dark:text-stone-100">
+              <h3 className="text-xl font-serif font-medium text-slate-900 dark:text-slate-100">
                 Saturday Weekly Review & Scoring
               </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                 Click below to launch your weekly evaluation modal, calculate your score out of 100, and audit what was accomplished versus what slipped.
               </p>
               <button
                 onClick={() => setIsSaturdayReviewModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 text-xs font-medium cursor-pointer shadow-sm hover:bg-stone-800"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer shadow-sm shadow-indigo-600/30"
               >
                 <span>Launch Weekly Evaluation</span>
               </button>
@@ -328,8 +328,8 @@ export function TodoDashboard() {
 
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
-            <span className="text-[10px] font-mono text-stone-400 dark:text-stone-600">
-              tedlist v2.3.3
+            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">
+              tedlist v2.4.0
             </span>
           </div>
         </main>
@@ -339,7 +339,7 @@ export function TodoDashboard() {
           <button
             onClick={() => setViewMode('today')}
             className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'today' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
+              viewMode === 'today' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
             }`}
           >
             <Sun className="w-4 h-4" />
@@ -349,7 +349,7 @@ export function TodoDashboard() {
           <button
             onClick={() => setViewMode('upcoming')}
             className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'upcoming' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
+              viewMode === 'upcoming' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
             }`}
           >
             <CalendarDays className="w-4 h-4" />
@@ -359,7 +359,7 @@ export function TodoDashboard() {
           {/* Quick Floating Add */}
           <button
             onClick={() => openCreateModal()}
-            className="w-11 h-11 rounded-2xl bg-black text-white flex items-center justify-center -mt-6 shadow-xl active:scale-90 transition-transform cursor-pointer border-2 border-[var(--color-card)] font-bold text-lg"
+            className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center -mt-6 shadow-xl shadow-indigo-600/30 active:scale-90 transition-transform cursor-pointer border-2 border-[var(--color-card)] font-bold text-lg"
             title={t.newTask}
           >
             <Plus className="w-5 h-5" />
@@ -368,7 +368,7 @@ export function TodoDashboard() {
           <button
             onClick={() => setViewMode('completed')}
             className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'completed' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
+              viewMode === 'completed' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
@@ -378,7 +378,7 @@ export function TodoDashboard() {
           <button
             onClick={() => setViewMode('all')}
             className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'all' ? 'text-stone-900 dark:text-stone-100 font-semibold' : 'text-stone-400'
+              viewMode === 'all' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
             }`}
           >
             <Layers className="w-4 h-4" />

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { Task, Category, Priority, ViewMode, FilterState, WeeklyScore, Language } from '@/types/todo';
 import {
   loadTasksFromStorage,
@@ -37,6 +38,11 @@ interface TodoContextType {
   toggleLanguage: () => void;
   t: TranslationDictionary;
   dir: 'ltr' | 'rtl';
+
+  // Theme
+  theme: 'dark' | 'light';
+  setTheme: (t: 'dark' | 'light') => void;
+  toggleTheme: (event?: React.MouseEvent | { clientX?: number; clientY?: number; currentTarget?: any }) => void;
 
   tasks: Task[];
   viewMode: ViewMode;
@@ -110,6 +116,7 @@ const TodoContext = createContext<TodoContextType | null>(null);
 
 export function TodoProvider({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
+  const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
   const [lang, setLangState] = useState<Language>('fa');
   const [todayStr, setTodayStr] = useState('');
   const [tomorrowStr, setTomorrowStr] = useState('');
@@ -152,6 +159,111 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setLang(lang === 'en' ? 'fa' : 'en');
   }, [lang, setLang]);
 
+  const isTransitioningRef = useRef(false);
+
+  const setTheme = useCallback((newTheme: 'dark' | 'light') => {
+    setThemeState(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tedlist_theme', newTheme);
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#090d16' : '#f8fafc');
+      }
+    }
+  }, []);
+
+  const toggleTheme = useCallback(
+    (event?: React.MouseEvent | { clientX?: number; clientY?: number; currentTarget?: any }) => {
+      if (isTransitioningRef.current) return;
+
+      const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+      let x = typeof window !== 'undefined' ? window.innerWidth / 2 : 0;
+      let y = 0;
+
+      if (event && 'currentTarget' in event && event.currentTarget instanceof HTMLElement) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      } else if (
+        event &&
+        typeof event.clientX === 'number' &&
+        typeof event.clientY === 'number' &&
+        (event.clientX !== 0 || event.clientY !== 0)
+      ) {
+        x = event.clientX;
+        y = event.clientY;
+      }
+
+      const isViewTransitionSupported =
+        typeof document !== 'undefined' &&
+        'startViewTransition' in document &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!isViewTransitionSupported) {
+        setTheme(nextTheme);
+        return;
+      }
+
+      isTransitioningRef.current = true;
+
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      try {
+        const transition = document.startViewTransition(() => {
+          flushSync(() => {
+            setTheme(nextTheme);
+          });
+        });
+
+        transition.ready
+          .then(() => {
+            const clipPath = [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`,
+            ];
+
+            const anim = document.documentElement.animate(
+              {
+                clipPath: clipPath,
+                filter: [
+                  'drop-shadow(0 0 3px rgba(99, 102, 241, 0.9))',
+                  'drop-shadow(0 0 10px rgba(99, 102, 241, 0.6))',
+                ],
+              },
+              {
+                duration: 480,
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                pseudoElement: '::view-transition-new(root)',
+              }
+            );
+
+            return anim.finished;
+          })
+          .catch(() => {
+            // fallback if transition or animation rejects
+          })
+          .finally(() => {
+            isTransitioningRef.current = false;
+          });
+      } catch {
+        setTheme(nextTheme);
+        isTransitioningRef.current = false;
+      }
+    },
+    [theme, setTheme]
+  );
+
   // Initial load on client
   useEffect(() => {
     const today = getTodayString();
@@ -166,6 +278,10 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setPrevWeekRange(prevRange);
     setCurrentWeekRange(curRange);
     setModalDefaultDate(today);
+
+    // Load theme preference (default to dark)
+    const savedTheme = (localStorage.getItem('tedlist_theme') as 'dark' | 'light') || 'dark';
+    setTheme(savedTheme);
 
     // Load language preference
     const savedLang = localStorage.getItem('tedlist_lang') as Language;
@@ -517,6 +633,9 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         lang,
         setLang,
         toggleLanguage,
+        theme,
+        setTheme,
+        toggleTheme,
         t,
         dir,
         tasks,

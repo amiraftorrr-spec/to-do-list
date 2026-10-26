@@ -80,14 +80,14 @@ export function TaskItem({ task }: { task: Task }) {
   const getPriorityStyle = (priority: Priority) => {
     switch (priority) {
       case 'urgent':
-        return 'text-rose-600 dark:text-rose-400 font-medium';
+        return 'text-rose-600 dark:text-rose-400 font-semibold';
       case 'high':
-        return 'text-amber-700 dark:text-amber-400 font-medium';
+        return 'text-amber-600 dark:text-amber-400 font-medium';
       case 'medium':
-        return 'text-stone-500 dark:text-stone-400';
+        return 'text-slate-500 dark:text-slate-400';
       case 'low':
       default:
-        return 'text-stone-400 dark:text-stone-500';
+        return 'text-slate-400 dark:text-slate-500';
     }
   };
 
@@ -95,20 +95,20 @@ export function TaskItem({ task }: { task: Task }) {
     <div
       className={`group relative rounded-xl border transition-all duration-200 ${
         task.completed
-          ? 'bg-stone-50/70 border-stone-200/60 dark:bg-stone-900/30 dark:border-stone-800/50 opacity-75'
+          ? 'bg-slate-100/40 border-slate-200/50 dark:bg-slate-900/20 dark:border-slate-800/40 opacity-70'
           : overdue
-          ? 'bg-rose-50/20 border-rose-200/70 dark:bg-rose-950/10 dark:border-rose-900/40 shadow-xs'
-          : 'bg-[var(--color-card)] border-[var(--color-border)] hover:border-stone-300 dark:hover:border-stone-700 shadow-xs'
+          ? 'bg-rose-50/30 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/40 shadow-xs'
+          : 'bg-[var(--color-card)] border-[var(--color-border)] hover:border-indigo-400/50 dark:hover:border-indigo-500/30 shadow-xs'
       }`}
     >
       <div className="p-3.5 sm:p-4 flex items-start gap-3">
         {/* Tactile Checkbox Button */}
         <button
           onClick={() => toggleTask(task.id)}
-          className={`task-checkbox mt-0.5 shrink-0 w-5 h-5 rounded-md border flex items-center justify-center cursor-pointer transition-colors ${
+          className={`task-checkbox mt-0.5 shrink-0 w-5 h-5 rounded-md border flex items-center justify-center cursor-pointer transition-all ${
             task.completed
-              ? 'bg-stone-800 border-stone-800 text-white dark:bg-stone-200 dark:border-stone-200 dark:text-stone-900'
-              : 'border-stone-300 dark:border-stone-600 hover:border-stone-500 bg-white dark:bg-stone-800/80'
+              ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30'
+              : 'border-slate-300 dark:border-slate-600 hover:border-indigo-500 dark:hover:border-indigo-400 bg-white dark:bg-slate-800/80 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20'
           }`}
           aria-label={task.completed ? 'Mark uncompleted' : 'Mark completed'}
         >
@@ -122,8 +122,8 @@ export function TaskItem({ task }: { task: Task }) {
               onClick={() => setIsExpanded(!isExpanded)}
               className={`text-sm font-medium leading-snug cursor-pointer select-none transition-colors ${
                 task.completed
-                  ? 'line-through text-stone-400 dark:text-stone-500'
-                  : 'text-stone-800 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300'
+                  ? 'line-through text-slate-400 dark:text-slate-500'
+                  : 'text-slate-800 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400'
               }`}
             >
               {task.title}
@@ -133,14 +133,14 @@ export function TaskItem({ task }: { task: Task }) {
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => openEditModal(task)}
-                className="p-1 rounded text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 title="Edit task"
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => deleteTask(task.id)}
-                className="p-1 rounded text-stone-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                 title="Delete task"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -152,20 +152,20 @@ export function TaskItem({ task }: { task: Task }) {
           {task.description && !isExpanded && (
             <p
               onClick={() => setIsExpanded(true)}
-              className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1 cursor-pointer"
+              className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 cursor-pointer"
             >
               {task.description}
             </p>
           )}
 
-          {/* Clean Meta Details: Due date, Priority, Category, Subtasks progress (No badges/pills) */}
+          {/* Clean Meta Details */}
           <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
             {/* Due Date */}
             <span
               className={`inline-flex items-center gap-1 ${
                 overdue
                   ? 'text-rose-600 dark:text-rose-400 font-medium'
-                  : 'text-stone-500 dark:text-stone-400'
+                  : 'text-slate-500 dark:text-slate-400'
               }`}
             >
               <Calendar className="w-3.5 h-3.5 opacity-70" />
@@ -177,27 +177,27 @@ export function TaskItem({ task }: { task: Task }) {
               )}
             </span>
 
-            <span className="text-stone-300 dark:text-stone-700">•</span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
 
             {/* Priority */}
             <span className={`capitalize ${getPriorityStyle(task.priority)}`}>
               {getPriorityLabel(task.priority)}
             </span>
 
-            <span className="text-stone-300 dark:text-stone-700">•</span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
 
             {/* Category */}
-            <span className="text-stone-500 dark:text-stone-400">
+            <span className="text-slate-500 dark:text-slate-400">
               {getCategoryLabel(task.category)}
             </span>
 
             {/* Subtasks Summary */}
             {totalSubtasks > 0 && (
               <>
-                <span className="text-stone-300 dark:text-stone-700">•</span>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="inline-flex items-center gap-1 text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors cursor-pointer"
                 >
                   <span>
                     {t.stepsDone(completedSubtasksCount, totalSubtasks)}
@@ -211,7 +211,7 @@ export function TaskItem({ task }: { task: Task }) {
             <div className="relative inline-block ml-auto">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-1 rounded text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 title={t.reschedule}
               >
                 <MoreVertical className="w-3.5 h-3.5" />
@@ -219,10 +219,10 @@ export function TaskItem({ task }: { task: Task }) {
 
               {showMenu && (
                 <div
-                  className="absolute right-0 rtl:right-auto rtl:left-0 top-6 z-30 w-44 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 shadow-lg py-1 text-xs"
+                  className="absolute right-0 rtl:right-auto rtl:left-0 top-6 z-30 w-44 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-1 text-xs"
                   onMouseLeave={() => setShowMenu(false)}
                 >
-                  <p className="px-3 py-1 text-[10px] uppercase font-semibold text-stone-400 tracking-wider">
+                  <p className="px-3 py-1 text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
                     {t.reschedule}
                   </p>
                   <button
@@ -230,7 +230,7 @@ export function TaskItem({ task }: { task: Task }) {
                       if (todayStr) rescheduleTask(task.id, todayStr);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 flex items-center gap-2 text-stone-700 dark:text-stone-200"
+                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200"
                   >
                     <ArrowRightCircle className="w-3 h-3 text-amber-500 shrink-0" />
                     <span>{t.moveToday}</span>
@@ -240,9 +240,9 @@ export function TaskItem({ task }: { task: Task }) {
                       if (tomorrowStr) rescheduleTask(task.id, tomorrowStr);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 flex items-center gap-2 text-stone-700 dark:text-stone-200"
+                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200"
                   >
-                    <ArrowRightCircle className="w-3 h-3 text-blue-500 shrink-0" />
+                    <ArrowRightCircle className="w-3 h-3 text-indigo-500 shrink-0" />
                     <span>{t.moveTomorrow}</span>
                   </button>
                   <button
@@ -250,20 +250,20 @@ export function TaskItem({ task }: { task: Task }) {
                       if (todayStr) rescheduleTask(task.id, addDays(todayStr, 3));
                       setShowMenu(false);
                     }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 flex items-center gap-2 text-stone-700 dark:text-stone-200"
+                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200"
                   >
                     <ArrowRightCircle className="w-3 h-3 text-purple-500 shrink-0" />
                     <span>{t.move3Days}</span>
                   </button>
 
-                  <div className="border-t border-stone-100 dark:border-stone-700 my-1" />
+                  <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
 
                   <button
                     onClick={() => {
                       openEditModal(task);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200"
+                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
                   >
                     {t.editDetails}
                   </button>
@@ -283,23 +283,23 @@ export function TaskItem({ task }: { task: Task }) {
 
           {/* Expanded Content: Description & Subtasks */}
           {isExpanded && (
-            <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-800/80 space-y-3">
+            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
               {task.description && (
-                <div className="text-xs text-stone-600 dark:text-stone-300 whitespace-pre-wrap leading-relaxed bg-stone-50 dark:bg-stone-800/40 p-2.5 rounded-lg border border-stone-200/60 dark:border-stone-700/60">
+                <div className="text-xs text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                   {task.description}
                 </div>
               )}
 
               {/* Subtasks Checklist */}
               <div className="space-y-1.5">
-                <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+                <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   {t.checklistHeader(completedSubtasksCount, totalSubtasks)}
                 </p>
 
                 {task.subtasks.map((sub) => (
                   <div
                     key={sub.id}
-                    className="flex items-center justify-between gap-2 py-1 px-2 rounded-md hover:bg-stone-50 dark:hover:bg-stone-800/40 group/sub"
+                    className="flex items-center justify-between gap-2 py-1 px-2 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800/40 group/sub"
                   >
                     <button
                       onClick={() => toggleSubtask(task.id, sub.id)}
@@ -308,8 +308,8 @@ export function TaskItem({ task }: { task: Task }) {
                       <span
                         className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
                           sub.completed
-                            ? 'bg-stone-700 border-stone-700 text-white dark:bg-stone-300 dark:text-stone-900'
-                            : 'border-stone-300 dark:border-stone-600'
+                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                            : 'border-slate-300 dark:border-slate-600'
                         }`}
                       >
                         {sub.completed && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -317,8 +317,8 @@ export function TaskItem({ task }: { task: Task }) {
                       <span
                         className={
                           sub.completed
-                            ? 'line-through text-stone-400 dark:text-stone-500'
-                            : 'text-stone-700 dark:text-stone-200'
+                            ? 'line-through text-slate-400 dark:text-slate-500'
+                            : 'text-slate-700 dark:text-slate-200'
                         }
                       >
                         {sub.title}
@@ -326,7 +326,7 @@ export function TaskItem({ task }: { task: Task }) {
                     </button>
                     <button
                       onClick={() => deleteSubtask(task.id, sub.id)}
-                      className="opacity-0 group-hover/sub:opacity-100 p-0.5 text-stone-400 hover:text-rose-600 transition-opacity"
+                      className="opacity-0 group-hover/sub:opacity-100 p-0.5 text-slate-400 hover:text-rose-600 transition-opacity"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -342,18 +342,18 @@ export function TaskItem({ task }: { task: Task }) {
                       value={newSubtaskTitle}
                       onChange={(e) => setNewSubtaskTitle(e.target.value)}
                       placeholder={t.stepPlaceholder}
-                      className="flex-1 text-xs px-2.5 py-1 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-hidden focus:border-stone-400 text-stone-800 dark:text-stone-200"
+                      className="flex-1 text-xs px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-hidden focus:border-indigo-500 text-slate-800 dark:text-slate-200"
                     />
                     <button
                       type="submit"
-                      className="px-2 py-1 text-xs rounded bg-stone-800 text-white hover:bg-stone-700 font-medium cursor-pointer"
+                      className="px-2.5 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-500 font-medium cursor-pointer"
                     >
                       {t.addBtn}
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsAddingSubtask(false)}
-                      className="px-2 py-1 text-xs rounded text-stone-500 hover:text-stone-800 cursor-pointer"
+                      className="px-2 py-1 text-xs rounded text-slate-500 hover:text-slate-800 cursor-pointer"
                     >
                       {t.cancelBtn}
                     </button>
@@ -361,7 +361,7 @@ export function TaskItem({ task }: { task: Task }) {
                 ) : (
                   <button
                     onClick={() => setIsAddingSubtask(true)}
-                    className="flex items-center gap-1.5 text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 pt-1 cursor-pointer"
+                    className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 pt-1 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                     <span>{t.addStep}</span>

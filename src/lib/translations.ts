@@ -33,6 +33,8 @@ export interface TranslationDictionary {
   allFilter: string;
   addTaskBtn: string;
   weeklyReviewBtn: string;
+  themeToggleDark: string;
+  themeToggleLight: string;
   
   // Saturday banner
   saturdayBannerText: string;
@@ -216,6 +218,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     allFilter: 'All',
     addTaskBtn: 'Add Task',
     weeklyReviewBtn: 'Weekly Review',
+    themeToggleDark: 'Dark Mode',
+    themeToggleLight: 'Light Mode',
 
     saturdayBannerText: "It's Saturday morning! Your weekly retrospective is ready to evaluate.",
     startReviewBtn: 'Start Review',
@@ -386,6 +390,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     allFilter: 'همه',
     addTaskBtn: 'افزودن کار',
     weeklyReviewBtn: 'ارزیابی هفتگی',
+    themeToggleDark: 'حالت دارک',
+    themeToggleLight: 'حالت لایت',
 
     saturdayBannerText: 'صبح شنبه بخیر! ارزیابی و نمره هفته گذشته شما آماده است.',
     startReviewBtn: 'شروع ارزیابی',

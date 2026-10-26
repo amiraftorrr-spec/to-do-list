@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Priority } from '@/types/todo';
-import { Search, Plus, Award, Filter, X } from 'lucide-react';
+import { Search, Plus, Award, Filter, X, Sun, Moon } from 'lucide-react';
 import { formatDisplayDate, getTodayString } from '@/lib/date-utils';
 
 export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void }) {
@@ -19,6 +19,8 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
     setIsSaturdayReviewModalOpen,
     lang,
     toggleLanguage,
+    theme,
+    toggleTheme,
     t,
   } = useTodo();
 
@@ -65,34 +67,54 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
   ];
 
   return (
-    <header className="border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-xs sticky top-0 z-20 px-4 md:px-8 py-4 space-y-4">
+    <header className="border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md sticky top-0 z-20 px-4 md:px-8 py-4 space-y-4">
       {/* Top Bar: Title & Primary Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
             <button
               onClick={onOpenMobileMenu}
-              className="md:hidden p-1.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300"
+              className="md:hidden p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
               aria-label="Open menu"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h2 className="text-xl md:text-2xl font-serif tracking-tight font-medium text-stone-900 dark:text-stone-100">
+            <h2 className="text-xl md:text-2xl font-serif tracking-tight font-medium text-slate-900 dark:text-slate-100">
               {getTitle()}
             </h2>
-            <span className="hidden sm:inline text-xs text-stone-400 font-mono">/ {dateHeading}</span>
+            <span className="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 font-mono">/ {dateHeading}</span>
           </div>
-          <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{getSubtitle()}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{getSubtitle()}</p>
         </div>
 
-        {/* Right actions: Language toggle, Review & New task */}
+        {/* Right actions: Theme toggle, Language toggle, Review & New task */}
         <div className="flex items-center gap-2">
+          {/* Theme Switcher Button */}
+          <button
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              toggleTheme({
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+              });
+            }}
+            className="p-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+            title={theme === 'dark' ? t.themeToggleLight : t.themeToggleDark}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400 transition-transform hover:rotate-45" />
+            ) : (
+              <Moon className="w-4 h-4 text-indigo-600 transition-transform hover:-rotate-12" />
+            )}
+          </button>
+
           {/* Language Switcher Button */}
           <button
             onClick={toggleLanguage}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700"
+            className="px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
             title={lang === 'en' ? 'تغییر زبان به فارسی' : 'Switch to English'}
           >
             <span>{lang === 'en' ? 'فارسی' : 'English'}</span>
@@ -101,16 +123,16 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
           {/* Saturday Review Quick Button */}
           <button
             onClick={() => setIsSaturdayReviewModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
           >
-            <Award className="w-3.5 h-3.5 text-stone-600 dark:text-stone-400" />
+            <Award className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
             <span>{t.weeklyReviewBtn}</span>
           </button>
 
           {/* New Task Button */}
           <button
             onClick={() => openCreateModal()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white text-xs font-medium cursor-pointer transition-all shadow-xs active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer transition-all shadow-sm shadow-indigo-600/30 active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t.addTaskBtn}</span>
@@ -123,27 +145,27 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
-          <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 rtl:left-auto rtl:right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 rtl:left-auto rtl:right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="w-full pl-8 rtl:pl-8 rtl:pr-8 pr-8 py-1.5 text-xs rounded-lg bg-stone-100/70 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 focus:bg-white dark:focus:bg-stone-900 focus:outline-hidden focus:border-stone-400 dark:focus:border-stone-500 transition-all text-stone-900 dark:text-stone-100 placeholder:text-stone-400"
+            className="w-full pl-8 rtl:pl-8 rtl:pr-8 pr-8 py-1.5 text-xs rounded-lg bg-slate-100/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 rtl:right-auto rtl:left-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+              className="absolute right-2.5 rtl:right-auto rtl:left-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
               <X className="w-3 h-3" />
             </button>
           )}
         </div>
 
-        {/* Priority Filter Links (No badges/pills) */}
+        {/* Priority Filter Links */}
         <div className="flex items-center gap-3 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs">
-          <span className="text-stone-400 flex items-center gap-1 font-medium">
+          <span className="text-slate-400 dark:text-slate-500 flex items-center gap-1 font-medium">
             <Filter className="w-3 h-3" /> {t.filterLabel}
           </span>
           {priorities.map((prio) => (
@@ -152,8 +174,8 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
               onClick={() => setSelectedPriority(prio.value)}
               className={`cursor-pointer transition-colors ${
                 selectedPriority === prio.value
-                  ? 'text-stone-900 dark:text-stone-100 font-semibold underline underline-offset-4 decoration-stone-400'
-                  : 'text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+                  ? 'text-indigo-600 dark:text-indigo-400 font-semibold underline underline-offset-4 decoration-indigo-500'
+                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               {prio.label}

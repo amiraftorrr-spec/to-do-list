@@ -57,35 +57,35 @@ export function BackupModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-150">
       <div
         className="w-full max-w-md rounded-2xl bg-[var(--color-card)] border border-[var(--color-border)] shadow-xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)] bg-stone-50/70 dark:bg-stone-900/50">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)] bg-slate-50/70 dark:bg-slate-900/60">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+            <ShieldCheck className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               {t.backupTitle}
             </h3>
           </div>
           <button
             onClick={() => setIsBackupModalOpen(false)}
-            className="p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+            className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-5 space-y-4 text-xs text-stone-600 dark:text-stone-300">
+        <div className="p-5 space-y-4 text-xs text-slate-600 dark:text-slate-300">
           <p className="leading-relaxed">
             {t.backupIntro}
           </p>
 
-          <div className="p-3 rounded-xl bg-stone-100/70 dark:bg-stone-800/50 flex items-center justify-between text-xs">
-            <span className="text-stone-500">{t.storedOnDevice(tasks.length)}</span>
+          <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-slate-800/50 flex items-center justify-between text-xs">
+            <span className="text-slate-500">{t.storedOnDevice(tasks.length)}</span>
           </div>
 
           {message && (
@@ -105,9 +105,9 @@ export function BackupModal() {
           <div className="space-y-2 pt-1">
             <button
               onClick={handleExport}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 font-medium transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium transition-colors cursor-pointer"
             >
-              <Download className="w-4 h-4 text-stone-500" />
+              <Download className="w-4 h-4 text-slate-500" />
               <span>{t.exportJson}</span>
             </button>
 
@@ -121,15 +121,15 @@ export function BackupModal() {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 font-medium transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium transition-colors cursor-pointer"
             >
-              <Upload className="w-4 h-4 text-stone-500" />
+              <Upload className="w-4 h-4 text-slate-500" />
               <span>{t.restoreJson}</span>
             </button>
 
             <button
               onClick={handleReset}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-stone-400 hover:text-rose-600 dark:hover:text-rose-400 font-medium transition-colors cursor-pointer text-[11px]"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 font-medium transition-colors cursor-pointer text-[11px]"
             >
               <RotateCcw className="w-3 h-3" />
               <span>{t.resetSample}</span>
@@ -138,10 +138,10 @@ export function BackupModal() {
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-[var(--color-border)] bg-stone-50/70 dark:bg-stone-900/50 flex justify-end">
+        <div className="px-5 py-3 border-t border-[var(--color-border)] bg-slate-50/70 dark:bg-slate-900/60 flex justify-end">
           <button
             onClick={() => setIsBackupModalOpen(false)}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white cursor-pointer"
           >
             {t.closeBtn}
           </button>

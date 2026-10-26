@@ -88,47 +88,47 @@ export function SaturdayReviewModal() {
   const getScoreColor = (score: number) => {
     if (score >= 85) return 'text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5';
     if (score >= 70) return 'text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/5';
-    if (score >= 50) return 'text-blue-600 dark:text-blue-400 border-blue-500/30 bg-blue-500/5';
-    return 'text-stone-600 dark:text-stone-400 border-stone-500/30 bg-stone-500/5';
+    if (score >= 50) return 'text-indigo-600 dark:text-indigo-400 border-indigo-500/30 bg-indigo-500/5';
+    return 'text-slate-600 dark:text-slate-400 border-slate-500/30 bg-slate-500/5';
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div
         className="w-full max-w-2xl rounded-2xl bg-[var(--color-card)] border border-[var(--color-border)] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)] bg-stone-50/70 dark:bg-stone-900/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)] bg-slate-50/70 dark:bg-slate-900/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
               <Award className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {t.satReviewTitle}
                 </h2>
                 {isSaturdayToday && (
-                  <span className="text-xs text-stone-500 font-mono">
+                  <span className="text-xs text-indigo-400 font-mono">
                     {t.satMorningLabel}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {t.retrospectiveFor(weekLabel)}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-1">
-            <div className="flex bg-stone-200/60 dark:bg-stone-800 p-0.5 rounded-lg text-xs mr-2">
+            <div className="flex bg-slate-200/60 dark:bg-slate-800 p-0.5 rounded-lg text-xs mr-2">
               <button
                 onClick={() => setActiveTab('current')}
                 className={`px-2.5 py-1 rounded-md font-medium cursor-pointer transition-colors ${
                   activeTab === 'current'
-                    ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-2xs'
-                    : 'text-stone-600 dark:text-stone-400'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-2xs'
+                    : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
                 {t.weeklyScoreTab}
@@ -137,8 +137,8 @@ export function SaturdayReviewModal() {
                 onClick={() => setActiveTab('history')}
                 className={`px-2.5 py-1 rounded-md font-medium cursor-pointer transition-colors flex items-center gap-1 ${
                   activeTab === 'history'
-                    ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-2xs'
-                    : 'text-stone-600 dark:text-stone-400'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-2xs'
+                    : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <History className="w-3 h-3" />
@@ -151,7 +151,7 @@ export function SaturdayReviewModal() {
                 dismissSaturdayNotice();
                 setIsSaturdayReviewModalOpen(false);
               }}
-              className="p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+              className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -162,8 +162,8 @@ export function SaturdayReviewModal() {
         {activeTab === 'current' ? (
           <div className="p-6 space-y-6 overflow-y-auto">
             {/* Week Range Switcher */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-stone-100/70 dark:bg-stone-800/50 text-xs">
-              <span className="text-stone-500 dark:text-stone-400 text-[11px] font-medium pl-1 rtl:pl-0 rtl:pr-1">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/50 text-xs">
+              <span className="text-slate-500 dark:text-slate-400 text-[11px] font-medium pl-1 rtl:pl-0 rtl:pr-1">
                 {t.evaluatingCycle}
               </span>
               <div className="flex gap-1">
@@ -171,8 +171,8 @@ export function SaturdayReviewModal() {
                   onClick={() => setSelectedRange('prev')}
                   className={`px-3 py-1 rounded-lg font-medium cursor-pointer transition-colors ${
                     selectedRange === 'prev'
-                      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xs'
-                      : 'text-stone-500 hover:text-stone-800'
+                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   {t.concludedWeek(formatWeekLabel(prevWeekRange.start, prevWeekRange.end, lang))}
@@ -181,8 +181,8 @@ export function SaturdayReviewModal() {
                   onClick={() => setSelectedRange('current')}
                   className={`px-3 py-1 rounded-lg font-medium cursor-pointer transition-colors ${
                     selectedRange === 'current'
-                      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xs'
-                      : 'text-stone-500 hover:text-stone-800'
+                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   {t.ongoingWeek}
@@ -197,24 +197,24 @@ export function SaturdayReviewModal() {
               )}`}
             >
               <div className="text-center sm:text-left rtl:sm:text-right space-y-1.5 flex-1">
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                   <span>{reviewScore.ratingLabel}</span>
                 </div>
-                <h3 className="text-base font-serif font-medium text-stone-900 dark:text-stone-100 pt-1">
+                <h3 className="text-base font-serif font-medium text-slate-900 dark:text-slate-100 pt-1">
                   {t.perfAssessment}
                 </h3>
-                <p className="text-xs text-stone-600 dark:text-stone-400 max-w-md leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
                   {reviewScore.feedback}
                 </p>
               </div>
 
               {/* Big Circular/Numeric Score Badge */}
-              <div className="shrink-0 flex flex-col items-center justify-center w-28 h-28 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm p-2">
-                <span className="text-4xl font-serif font-bold tracking-tight text-stone-900 dark:text-stone-100">
+              <div className="shrink-0 flex flex-col items-center justify-center w-28 h-28 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-2">
+                <span className="text-4xl font-serif font-bold tracking-tight text-slate-900 dark:text-slate-100">
                   {reviewScore.score}
                 </span>
-                <span className="text-[11px] font-mono font-medium text-stone-400 uppercase tracking-widest mt-0.5">
+                <span className="text-[11px] font-mono font-medium text-slate-400 uppercase tracking-widest mt-0.5">
                   {t.outOf100}
                 </span>
               </div>
@@ -222,22 +222,22 @@ export function SaturdayReviewModal() {
 
             {/* Metrics Breakdown Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30">
-                <p className="text-[10px] uppercase font-semibold text-stone-400 tracking-wider">
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
                   {t.completionRate}
                 </p>
                 <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-xl font-semibold text-stone-900 dark:text-stone-100">
+                  <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
                     {reviewScore.totalTasks > 0
                       ? Math.round((reviewScore.completedTasks / reviewScore.totalTasks) * 100)
                       : 0}
                     %
                   </span>
-                  <span className="text-xs text-stone-500">
+                  <span className="text-xs text-slate-500">
                     ({reviewScore.completedTasks}/{reviewScore.totalTasks})
                   </span>
                 </div>
-                <div className="w-full bg-stone-200 dark:bg-stone-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
                   <div
                     className="bg-emerald-500 h-full rounded-full transition-all duration-500"
                     style={{
@@ -251,32 +251,32 @@ export function SaturdayReviewModal() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30">
-                <p className="text-[10px] uppercase font-semibold text-stone-400 tracking-wider">
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
                   {t.keyPrioritiesHit}
                 </p>
                 <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-xl font-semibold text-stone-900 dark:text-stone-100">
+                  <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
                     {reviewScore.urgentHighCompleted}/{reviewScore.urgentHighTotal}
                   </span>
-                  <span className="text-xs text-stone-500">Urgent/High</span>
+                  <span className="text-xs text-slate-500">Urgent/High</span>
                 </div>
-                <p className="text-[11px] text-stone-400 mt-1.5">
+                <p className="text-[11px] text-slate-400 mt-1.5">
                   {t.keyPrioritiesWeight}
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30">
-                <p className="text-[10px] uppercase font-semibold text-stone-400 tracking-wider">
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <p className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
                   {t.consistencyScore}
                 </p>
                 <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-xl font-semibold text-stone-900 dark:text-stone-100">
+                  <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
                     {reviewScore.consistencyScore}/15
                   </span>
-                  <span className="text-xs text-stone-500">Pts</span>
+                  <span className="text-xs text-slate-500">Pts</span>
                 </div>
-                <p className="text-[11px] text-stone-400 mt-1.5">
+                <p className="text-[11px] text-slate-400 mt-1.5">
                   {t.consistencyDesc}
                 </p>
               </div>
@@ -287,11 +287,11 @@ export function SaturdayReviewModal() {
               {incompleteTasks.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-semibold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                    <h4 className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
                       <AlertCircle className="w-3.5 h-3.5" />
                       <span>{t.tasksSlippedTitle(incompleteTasks.length)}</span>
                     </h4>
-                    <span className="text-[11px] text-stone-400">
+                    <span className="text-[11px] text-slate-400">
                       {t.tasksSlippedSubtitle}
                     </span>
                   </div>
@@ -302,14 +302,14 @@ export function SaturdayReviewModal() {
                         key={tItem.id}
                         className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-rose-50/40 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40"
                       >
-                        <span className="font-medium text-stone-800 dark:text-stone-200">
+                        <span className="font-medium text-slate-800 dark:text-slate-200">
                           {tItem.title}
                         </span>
                         <button
                           onClick={() => {
                             if (todayStr) rescheduleTask(tItem.id, todayStr);
                           }}
-                          className="flex items-center gap-1 text-[11px] font-medium text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-white px-2 py-0.5 rounded bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-stone-400 cursor-pointer transition-colors"
+                          className="flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-400 cursor-pointer transition-colors"
                         >
                           <RotateCcw className="w-3 h-3 text-amber-500" />
                           <span>{t.moveToday}</span>
@@ -322,7 +322,7 @@ export function SaturdayReviewModal() {
 
               {completedTasks.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                  <h4 className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>{t.completedVictoriesTitle(completedTasks.length)}</span>
                   </h4>
@@ -330,7 +330,7 @@ export function SaturdayReviewModal() {
                     {completedTasks.map((tItem) => (
                       <div
                         key={tItem.id}
-                        className="text-xs p-2 rounded-lg bg-stone-50 dark:bg-stone-800/30 text-stone-600 dark:text-stone-400 flex items-center gap-2"
+                        className="text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-800/30 text-slate-600 dark:text-slate-400 flex items-center gap-2"
                       >
                         <span className="text-emerald-500">✓</span>
                         <span className="line-through">{tItem.title}</span>
@@ -343,7 +343,7 @@ export function SaturdayReviewModal() {
 
             {/* Reflection Note */}
             <div className="space-y-2 pt-2">
-              <label className="block text-xs font-semibold text-stone-800 dark:text-stone-200">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200">
                 {t.satReflectionLabel}
               </label>
               <textarea
@@ -351,18 +351,18 @@ export function SaturdayReviewModal() {
                 value={reflectionText}
                 onChange={(e) => setReflectionText(e.target.value)}
                 placeholder={t.satReflectionPlaceholder}
-                className="w-full text-xs p-3 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 focus:bg-white dark:focus:bg-stone-900 focus:outline-hidden focus:border-stone-400 text-stone-800 dark:text-stone-200 resize-none"
+                className="w-full text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:outline-hidden focus:border-indigo-500 text-slate-800 dark:text-slate-200 resize-none"
               />
             </div>
           </div>
         ) : (
           /* History of past weekly reviews */
           <div className="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-400">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t.pastReportsTitle}
             </h3>
             {weeklyReviews.length === 0 ? (
-              <div className="py-12 text-center text-stone-400 text-xs">
+              <div className="py-12 text-center text-slate-400 text-xs">
                 {t.noPastReports}
               </div>
             ) : (
@@ -370,32 +370,32 @@ export function SaturdayReviewModal() {
                 {weeklyReviews.map((rev) => (
                   <div
                     key={rev.id}
-                    className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 flex items-start justify-between gap-4"
+                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 flex items-start justify-between gap-4"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                           {formatWeekLabel(rev.weekStart, rev.weekEnd, lang)}
                         </span>
-                        <span className="text-xs text-stone-500 font-medium">
+                        <span className="text-xs text-slate-500 font-medium">
                           • {rev.ratingLabel}
                         </span>
                       </div>
-                      <p className="text-xs text-stone-500">
+                      <p className="text-xs text-slate-500">
                         Completed {rev.completedTasks} of {rev.totalTasks} tasks ({rev.urgentHighCompleted} high priority)
                       </p>
                       {rev.reflection && (
-                        <p className="text-xs text-stone-600 dark:text-stone-400 italic bg-white dark:bg-stone-800 p-2 rounded border border-stone-100 dark:border-stone-700 mt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 italic bg-white dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700 mt-2">
                           "{rev.reflection}"
                         </p>
                       )}
                     </div>
 
                     <div className="text-right rtl:text-left shrink-0">
-                      <span className="text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
+                      <span className="text-2xl font-serif font-bold text-slate-900 dark:text-slate-100">
                         {rev.score}
                       </span>
-                      <span className="text-[10px] text-stone-400 block font-mono">/100</span>
+                      <span className="text-[10px] text-slate-400 block font-mono">/100</span>
                     </div>
                   </div>
                 ))}
@@ -405,8 +405,8 @@ export function SaturdayReviewModal() {
         )}
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-[var(--color-border)] bg-stone-50/70 dark:bg-stone-900/50 flex items-center justify-between">
-          <p className="text-[11px] text-stone-400">
+        <div className="p-4 border-t border-[var(--color-border)] bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between">
+          <p className="text-[11px] text-slate-400">
             {t.reviewsSavedLocally}
           </p>
 
@@ -416,7 +416,7 @@ export function SaturdayReviewModal() {
                 dismissSaturdayNotice();
                 setIsSaturdayReviewModalOpen(false);
               }}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer"
             >
               {t.dismissBtn}
             </button>
@@ -425,7 +425,7 @@ export function SaturdayReviewModal() {
               <button
                 onClick={handleSaveReview}
                 disabled={isSaved}
-                className="px-4 py-1.5 rounded-lg text-xs font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white shadow-xs cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
+                className="px-4 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/30 cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
               >
                 <span>{isSaved ? t.savedDone : t.saveReviewBtn}</span>
                 {!isSaved && <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />}
