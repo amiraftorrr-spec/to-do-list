@@ -15,7 +15,7 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
     selectedPriority,
     setSelectedPriority,
     openCreateModal,
-    runNotificationTest30s,
+    runNotificationTest10s,
     lang,
     toggleLanguage,
     theme,
@@ -75,7 +75,7 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
       {/* Top Bar: Title & Primary Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={onOpenMobileMenu}
               className="md:hidden p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
@@ -88,13 +88,24 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
             <h2 className="text-xl md:text-2xl font-serif tracking-tight font-medium text-slate-900 dark:text-slate-100">
               {getTitle()}
             </h2>
-            <span className="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 font-mono">/ {dateHeading}</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">/ {dateHeading}</span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{getSubtitle()}</p>
         </div>
 
         {/* Right actions: Theme toggle, Language toggle, Review & New task */}
         <div className="flex items-center gap-2">
+          {/* Test 10s Notification Button */}
+          <button
+            onClick={runNotificationTest10s}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+            title={lang === 'fa' ? 'تست اعلان (۱۰ ثانیه بعد)' : 'Test 10s Notification'}
+            aria-label="Test Notification"
+          >
+            <Bell className="w-3.5 h-3.5 text-indigo-500" />
+            <span className="text-[11px] font-medium">{lang === 'fa' ? 'تست اعلان ۱۰ ثانیه' : 'Test 10s'}</span>
+          </button>
+
           {/* Theme Switcher Button */}
           <button
             onClick={(e) => {
@@ -122,16 +133,6 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
             title={lang === 'en' ? 'تغییر زبان به فارسی' : 'Switch to English'}
           >
             <span>{lang === 'en' ? 'فارسی' : 'English'}</span>
-          </button>
-
-          {/* Test 30s Notification Button */}
-          <button
-            onClick={runNotificationTest30s}
-            className="p-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
-            title={lang === 'fa' ? 'تست اعلان (۳۰ ثانیه بعد)' : 'Test 30s Notification'}
-            aria-label="Test Notification"
-          >
-            <Bell className="w-4 h-4 text-indigo-500 hover:text-indigo-400" />
           </button>
 
           {/* New Task Button */}

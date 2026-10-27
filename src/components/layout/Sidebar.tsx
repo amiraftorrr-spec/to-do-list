@@ -32,6 +32,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     openCreateModal,
     openTutorial,
     openPwaPrompt,
+    openReleaseNotes,
     t,
   } = useTodo();
 
@@ -279,9 +280,16 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             <p className="leading-tight">
               {t.localPrivacyNote}
             </p>
-            <span className="font-mono font-medium shrink-0 ps-2">
-              v2.5.0
-            </span>
+            <button
+              onClick={() => {
+                openReleaseNotes();
+                onClose?.();
+              }}
+              className="font-mono font-medium shrink-0 ps-2 hover:text-indigo-400 transition-colors cursor-pointer"
+              title="مشاهده تغییرات نسخه جدید"
+            >
+              v2.6.0
+            </button>
           </div>
           <div className="flex justify-end text-[10px] font-mono text-slate-400 dark:text-slate-500">
             <span>

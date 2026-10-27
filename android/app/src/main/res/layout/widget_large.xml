@@ -102,7 +102,7 @@
     </LinearLayout>
 
     <!-- Divider -->
-    <View
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
@@ -130,7 +130,7 @@
             android:paddingBottom="6dp"
             android:layout_marginBottom="4dp">
 
-            <View
+            <ImageView
                 android:id="@+id/widget_task_1_dot"
                 android:layout_width="6dp"
                 android:layout_height="6dp"
@@ -170,7 +170,7 @@
             android:paddingBottom="6dp"
             android:layout_marginBottom="4dp">
 
-            <View
+            <ImageView
                 android:id="@+id/widget_task_2_dot"
                 android:layout_width="6dp"
                 android:layout_height="6dp"
@@ -209,7 +209,7 @@
             android:paddingEnd="10dp"
             android:paddingBottom="6dp">
 
-            <View
+            <ImageView
                 android:id="@+id/widget_task_3_dot"
                 android:layout_width="6dp"
                 android:layout_height="6dp"

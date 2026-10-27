@@ -101,6 +101,12 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
         }
     }
 
+    @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+        updateAllWidgets(context);
+    }
+
     public static void updateAllWidgets(Context context) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName thisWidget = new ComponentName(context, TedlistWidgetLarge.class);

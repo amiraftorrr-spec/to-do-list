@@ -23,7 +23,7 @@ import {
 import { translations, TranslationDictionary } from '@/lib/translations';
 import { isAppInstalledOrNative } from '@/lib/platform';
 import { syncNativeWidget } from '@/lib/widget-bridge';
-import { scheduleNightlyReminder, schedule30sTestNotification } from '@/lib/notifications';
+import { scheduleNightlyReminder, schedule10sTestNotification } from '@/lib/notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import confetti from 'canvas-confetti';
 import { Capacitor } from '@capacitor/core';
@@ -112,9 +112,14 @@ interface TodoContextType {
 
   // Notifications & Widget
   completeAllTodayTasks: () => void;
-  runNotificationTest30s: () => Promise<boolean>;
+  runNotificationTest10s: () => Promise<boolean>;
   testNotificationToast: string | null;
   clearTestNotificationToast: () => void;
+
+  // Release Notes Modal
+  isReleaseNotesOpen: boolean;
+  openReleaseNotes: () => void;
+  closeReleaseNotes: () => void;
 
   // PWA Prompt
   isPwaPromptOpen: boolean;
@@ -154,6 +159,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   // Tutorial & APK states
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isPwaPromptOpen, setIsPwaPromptOpen] = useState(false);
+  const [isReleaseNotesOpen, setIsReleaseNotesOpen] = useState(false);
 
   const t = useMemo(() => translations[lang], [lang]);
   const dir = useMemo(() => (lang === 'fa' ? 'rtl' : 'ltr'), [lang]);
@@ -351,7 +357,27 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
       setIsTutorialOpen(true);
     }
 
+    // Version update popup
+    const seenVersion = localStorage.getItem('tedlist_seen_version');
+    const CURRENT_VERSION = '2.6.0';
+    if (seenVersion !== CURRENT_VERSION) {
+      setTimeout(() => {
+        setIsReleaseNotesOpen(true);
+      }, 700);
+    }
+
     setIsMounted(true);
+  }, []);
+
+  const openReleaseNotes = useCallback(() => {
+    setIsReleaseNotesOpen(true);
+  }, []);
+
+  const closeReleaseNotes = useCallback(() => {
+    setIsReleaseNotesOpen(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tedlist_seen_version', '2.6.0');
+    }
   }, []);
 
   const openTutorial = useCallback(() => {
@@ -723,18 +749,18 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setTestNotificationToast(null);
   }, []);
 
-  const runNotificationTest30s = useCallback(async (): Promise<boolean> => {
+  const runNotificationTest10s = useCallback(async (): Promise<boolean> => {
     const curToday = todayStr || getTodayString();
     const todayPending = tasks.filter((t) => t.dueDate === curToday && !t.completed);
-    const success = await schedule30sTestNotification(todayPending);
+    const success = await schedule10sTestNotification(todayPending);
     if (success) {
       triggerHaptic('success');
       setTestNotificationToast(
         lang === 'fa'
-          ? 'اعلان برای ۳۰ ثانیه دیگر زمان‌بندی شد! می‌توانید برنامه را ببندید تا دریافت آن را تست کنید.'
-          : 'Notification scheduled for 30s! Close the app to test.'
+          ? 'اعلان برای ۱۰ ثانیه دیگر زمان‌بندی شد! می‌توانید برنامه را ببندید تا دریافت آن را تست کنید.'
+          : 'Notification scheduled for 10s! Close the app to test.'
       );
-      setTimeout(() => setTestNotificationToast(null), 7000);
+      setTimeout(() => setTestNotificationToast(null), 8000);
     }
     return success;
   }, [tasks, todayStr, lang]);
@@ -838,9 +864,12 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         openTutorial,
         completeTutorial,
         completeAllTodayTasks,
-        runNotificationTest30s,
+        runNotificationTest10s,
         testNotificationToast,
         clearTestNotificationToast,
+        isReleaseNotesOpen,
+        openReleaseNotes,
+        closeReleaseNotes,
         isPwaPromptOpen,
         isPwaInstallable: true,
         openPwaPrompt,

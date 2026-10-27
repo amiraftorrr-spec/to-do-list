@@ -4,6 +4,7 @@ import { Task } from '@/types/todo';
 export const NIGHTLY_NOTIFICATION_ID = 2300;
 export const TEST_NOTIFICATION_ID = 9999;
 export const ACTION_TYPE_ID = 'TASK_REMINDER_ACTIONS';
+export const REMINDERS_CHANNEL_ID = 'tedlist_reminders';
 
 /**
  * Calculates the exact next 23:00 (11:00 PM) in Tehran timezone (Asia/Tehran).
@@ -29,12 +30,26 @@ export function getNextTehran11PM(): Date {
 }
 
 /**
- * Initializes notification action types (buttons on pull-down).
+ * Initializes notification action types and Android high-importance notification channel.
  */
 export async function initNotificationActions(): Promise<void> {
   if (typeof window === 'undefined') return;
 
   try {
+    // 1. Create Android Notification Channel for Heads-up Alert with sound & vibration
+    await LocalNotifications.createChannel({
+      id: REMINDERS_CHANNEL_ID,
+      name: 'یادآور کارهای روزانه',
+      description: 'اعلان‌های شبانه و یادآور کارهای باقیمانده tedlist',
+      importance: 5, // High importance (Heads-up banner)
+      visibility: 1, // Public on lockscreen
+      sound: 'default',
+      vibration: true,
+      lights: true,
+      lightColor: '#6366f1',
+    });
+
+    // 2. Register Action Types (Pull-down buttons)
     await LocalNotifications.registerActionTypes({
       types: [
         {
@@ -121,6 +136,7 @@ export async function scheduleNightlyReminder(pendingTodayTasks: Task[]): Promis
             at: targetDate,
             allowWhileIdle: true,
           },
+          channelId: REMINDERS_CHANNEL_ID,
           actionTypeId: ACTION_TYPE_ID,
           sound: 'default',
           extra: {
@@ -136,9 +152,9 @@ export async function scheduleNightlyReminder(pendingTodayTasks: Task[]): Promis
 }
 
 /**
- * Schedules a test notification to trigger exactly 30 seconds from now.
+ * Schedules a test notification to trigger exactly 10 seconds from now.
  */
-export async function schedule30sTestNotification(pendingTodayTasks: Task[]): Promise<boolean> {
+export async function schedule10sTestNotification(pendingTodayTasks: Task[]): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
   try {
@@ -147,10 +163,10 @@ export async function schedule30sTestNotification(pendingTodayTasks: Task[]): Pr
 
     await initNotificationActions();
 
-    const targetDate = new Date(Date.now() + 30 * 1000);
+    const targetDate = new Date(Date.now() + 10 * 1000);
     const count = pendingTodayTasks.length;
 
-    let title = 'این‌ها یادت نره! 🌙 (تست ۳۰ ثانیه)';
+    let title = 'این‌ها یادت نره! 🌙 (تست ۱۰ ثانیه‌ای)';
     let body = '';
 
     if (count === 0) {
@@ -171,10 +187,11 @@ export async function schedule30sTestNotification(pendingTodayTasks: Task[]): Pr
             at: targetDate,
             allowWhileIdle: true,
           },
+          channelId: REMINDERS_CHANNEL_ID,
           actionTypeId: ACTION_TYPE_ID,
           sound: 'default',
           extra: {
-            type: 'test_30s',
+            type: 'test_10s',
             taskCount: count,
           },
         },

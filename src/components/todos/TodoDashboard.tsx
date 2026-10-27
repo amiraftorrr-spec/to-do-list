@@ -11,6 +11,7 @@ import { SaturdayReviewModal } from '@/components/review/SaturdayReviewModal';
 import { BackupModal } from '@/components/backup/BackupModal';
 import { OnboardingTutorialModal } from '@/components/tutorial/OnboardingTutorialModal';
 import { PwaInstallPromptModal } from '@/components/pwa/PwaInstallPromptModal';
+import { ReleaseNotesModal } from '@/components/release/ReleaseNotesModal';
 import { QuickAddBar } from '@/components/todos/QuickAddBar';
 import { AppLoadingScreen } from '@/components/ui/AppLoadingScreen';
 import { getTodayString, isOverdue } from '@/lib/date-utils';
@@ -42,6 +43,8 @@ export function TodoDashboard() {
     setIsSaturdayReviewModalOpen,
     testNotificationToast,
     clearTestNotificationToast,
+    isReleaseNotesOpen,
+    closeReleaseNotes,
     t,
     lang,
   } = useTodo();
@@ -101,7 +104,7 @@ export function TodoDashboard() {
   const progressPercent = totalTodayGoal > 0 ? Math.round((todayCompleted.length / totalTodayGoal) * 100) : 0;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-background)]">
+    <div className="flex h-screen h-[100dvh] overflow-hidden bg-[var(--color-background)]">
       {/* Premium App Initial Loading Screen */}
       <AppLoadingScreen isMounted={isMounted} lang={lang} />
 
@@ -148,7 +151,7 @@ export function TodoDashboard() {
         <main
           className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6"
           style={{
-            paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 3rem)',
+            paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 20px) + 5.5rem)',
           }}
         >
           {/* Notification Toast Alert */}
@@ -344,13 +347,18 @@ export function TodoDashboard() {
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">
-              tedlist v2.5.0
+              tedlist v2.6.0
             </span>
           </div>
         </main>
 
         {/* Mobile Bottom Navigation Bar */}
-        <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur-md flex items-center justify-around py-2.5 px-3 shrink-0 shadow-lg z-20">
+        <div
+          className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur-md flex items-center justify-around pt-2 px-3 shrink-0 shadow-lg z-20"
+          style={{
+            paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 18px)',
+          }}
+        >
           <button
             onClick={() => setViewMode('today')}
             className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
@@ -408,6 +416,7 @@ export function TodoDashboard() {
       <BackupModal />
       <OnboardingTutorialModal />
       <PwaInstallPromptModal />
+      <ReleaseNotesModal isOpen={isReleaseNotesOpen} onClose={closeReleaseNotes} version="2.6.0" />
     </div>
   );
 }
