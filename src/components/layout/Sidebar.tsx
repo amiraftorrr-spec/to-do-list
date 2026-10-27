@@ -271,10 +271,17 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         )}
 
         {/* When on the web, show APK download prompt */}
-        {!isNative && !isInstalledOrNative && (
+        {!isNative && (
           <button
             onClick={() => {
-              openPwaPrompt();
+              if (typeof window !== 'undefined') {
+                const a = document.createElement('a');
+                a.href = '/tedlist.apk';
+                a.download = 'tedlist.apk';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              }
               onClose?.();
             }}
             className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer font-medium"
@@ -283,8 +290,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>{t.apkTitle}</span>
             </div>
-            <span className="text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 px-1.5 py-0.5 rounded">
-              APK
+            <span className="text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 px-1.5 py-0.5 rounded font-mono">
+              v{CURRENT_APP_VERSION}
             </span>
           </button>
         )}

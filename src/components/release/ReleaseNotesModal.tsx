@@ -30,7 +30,15 @@ export function ReleaseNotesModal({
   const handleDownloadUpdate = () => {
     triggerHaptic('success');
     if (typeof window !== 'undefined') {
-      const siteUrl = 'https://tedlist.vercel.app';
+      const siteUrl = 'https://tedlist.vercel.app?update=apk';
+      const a = document.createElement('a');
+      a.href = siteUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
       try {
         window.open(siteUrl, '_system');
       } catch {

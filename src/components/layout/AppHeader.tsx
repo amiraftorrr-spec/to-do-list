@@ -3,8 +3,9 @@
 import React from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Priority } from '@/types/todo';
-import { Search, Plus, Filter, X, Sun, Moon } from 'lucide-react';
+import { Search, Plus, Filter, X, Sun, Moon, Download } from 'lucide-react';
 import { formatDisplayDate } from '@/lib/date-utils';
+import { CURRENT_APP_VERSION } from '@/constants/version';
 
 export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void }) {
   const {
@@ -19,6 +20,7 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
     toggleLanguage,
     theme,
     toggleTheme,
+    isNative,
     t,
   } = useTodo();
 
@@ -122,6 +124,32 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
           >
             <span>{lang === 'en' ? 'فارسی' : 'English'}</span>
           </button>
+
+          {/* Web-Only APK Download Button */}
+          {!isNative && (
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  const a = document.createElement('a');
+                  a.href = '/tedlist.apk';
+                  a.download = 'tedlist.apk';
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                }
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-medium cursor-pointer transition-all shadow-xs active:scale-95"
+              title={lang === 'fa' ? 'دانلود مستقیم فایل نصبی اندروید (APK)' : 'Download Android APK'}
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span className="hidden sm:inline">
+                {lang === 'fa' ? `دانلود APK (v${CURRENT_APP_VERSION})` : `Download APK (v${CURRENT_APP_VERSION})`}
+              </span>
+              <span className="sm:hidden font-mono text-[11px]">
+                APK
+              </span>
+            </button>
+          )}
 
           {/* New Task Button */}
           <button

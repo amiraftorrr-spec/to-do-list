@@ -67,6 +67,24 @@ export function TodoDashboard() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [openCreateModal]);
 
+  // Auto-trigger APK download if visiting from in-app update redirect (?update=apk)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('update') === 'apk') {
+        const timer = setTimeout(() => {
+          const a = document.createElement('a');
+          a.href = '/tedlist.apk';
+          a.download = 'tedlist.apk';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
+
   // Filter tasks based on search, space/category, priority
   const filterTask = (t: (typeof tasks)[0]) => {
     if (selectedCategory !== 'All' && t.category !== selectedCategory) return false;
