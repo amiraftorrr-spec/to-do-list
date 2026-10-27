@@ -27,6 +27,7 @@ import {
   ChevronDown,
   ChevronUp,
   X,
+  Download,
 } from 'lucide-react';
 
 export function TodoDashboard() {
@@ -45,6 +46,7 @@ export function TodoDashboard() {
     isReleaseNotesOpen,
     closeReleaseNotes,
     availableUpdateVersion,
+    isNative,
     t,
     lang,
   } = useTodo();
@@ -172,6 +174,45 @@ export function TodoDashboard() {
             paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 20px) + 5.5rem)',
           }}
         >
+          {/* Web-Only APK Update & Install Banner */}
+          {!isNative && (
+            <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-slate-900/40 to-indigo-500/10 border border-emerald-500/30 text-xs shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                  <Download className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-200">
+                    {lang === 'fa'
+                      ? `نسخه جدید تدلیست (v${CURRENT_APP_VERSION}) برای اندروید آماده است!`
+                      : `New tedlist Android release (v${CURRENT_APP_VERSION}) is available!`}
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {lang === 'fa'
+                      ? 'برای نصب مستقیم یا آپدیت اپلیکیشن، فایل APK را دانلود کنید.'
+                      : 'Download the APK package to install or update on your phone.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    const a = document.createElement('a');
+                    a.href = '/tedlist.apk';
+                    a.download = 'tedlist.apk';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                  }
+                }}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium cursor-pointer transition-all shadow-sm shadow-emerald-600/30 active:scale-95 shrink-0"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>{lang === 'fa' ? 'دانلود و نصب فایل APK' : 'Download APK'}</span>
+              </button>
+            </div>
+          )}
+
           {/* VIEW: TODAY */}
           {viewMode === 'today' && (
             <div className="max-w-3xl mx-auto space-y-6">

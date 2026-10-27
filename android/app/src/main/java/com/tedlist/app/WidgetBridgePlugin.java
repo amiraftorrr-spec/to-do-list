@@ -1,7 +1,9 @@
 package com.tedlist.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -12,6 +14,24 @@ import org.json.JSONException;
 
 @CapacitorPlugin(name = "WidgetBridge")
 public class WidgetBridgePlugin extends Plugin {
+
+    @PluginMethod
+    public void openUrl(PluginCall call) {
+        String url = call.getString("url");
+        if (url != null && !url.isEmpty()) {
+            try {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(browserIntent);
+                call.resolve();
+                return;
+            } catch (Exception e) {
+                call.reject("Could not open URL: " + e.getMessage());
+                return;
+            }
+        }
+        call.reject("URL is required");
+    }
 
     @PluginMethod
     public void updateWidget(PluginCall call) {

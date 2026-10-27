@@ -9,9 +9,29 @@ interface WidgetBridgePluginType {
     progressPercent: number;
     topTasks: string[];
   }): Promise<void>;
+  openUrl(options: { url: string }): Promise<void>;
 }
 
 const WidgetBridge = registerPlugin<WidgetBridgePluginType>('WidgetBridge');
+
+/**
+ * Opens an external web URL using native Android Intent to ensure the phone's browser is launched.
+ */
+export async function openExternalUrl(url: string): Promise<void> {
+  if (typeof window === 'undefined') return;
+
+  try {
+    await WidgetBridge.openUrl({ url });
+  } catch {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+}
 
 /**
  * Synchronizes task counts and top unfinished tasks with the native Android widgets.

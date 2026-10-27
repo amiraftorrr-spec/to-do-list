@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { triggerHaptic } from '@/lib/haptics';
+import { openExternalUrl } from '@/lib/widget-bridge';
 
 export function ReleaseNotesModal({
   isOpen,
@@ -27,24 +28,9 @@ export function ReleaseNotesModal({
 
   if (!isOpen) return null;
 
-  const handleDownloadUpdate = () => {
+  const handleDownloadUpdate = async () => {
     triggerHaptic('success');
-    if (typeof window !== 'undefined') {
-      const siteUrl = 'https://tedlist.vercel.app?update=apk';
-      const a = document.createElement('a');
-      a.href = siteUrl;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      try {
-        window.open(siteUrl, '_system');
-      } catch {
-        window.location.href = siteUrl;
-      }
-    }
+    await openExternalUrl('https://tedlist.vercel.app?update=apk');
     onClose();
   };
 
