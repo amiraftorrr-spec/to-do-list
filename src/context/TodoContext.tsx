@@ -365,13 +365,26 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     const native = isNativeApk();
     setIsNative(native);
 
-    // Check for updates & show What's New / Update popup for users coming from older versions
+    // Check for updates & show What's New / Update popup for users coming from older versions (including legacy 2.3.3+)
     const checkVersionAndUpdates = async () => {
-      // Check if user came from an older version in this browser / app (e.g. 2.6.0, 2.7.0)
+      // 1. Identify previous version from localStorage
       const lastSeenVersion = localStorage.getItem('tedlist_seen_version');
-      const isFirstLaunchAfterUpdate = lastSeenVersion && lastSeenVersion !== CURRENT_APP_VERSION;
+      const dismissedUpdate = localStorage.getItem('tedlist_dismissed_update_version');
 
-      // Primary check: tedlist.vercel.app/version.json, fallback: GitHub package.json
+      // Indicators of an existing user from older releases (like 2.3.3, 2.4.0, 2.5.0) where seen_version was not saved
+      const hasLegacyData = !!(
+        localStorage.getItem('tedlist_tasks_v1') ||
+        localStorage.getItem('tedlist_tutorial_seen_v1') ||
+        localStorage.getItem('tedlist_pwa_prompted') ||
+        localStorage.getItem('tedlist_weekly_reviews_v1')
+      );
+
+      // User came from an older version (e.g. '2.3.3', '2.6.0', etc.) OR had legacy data without seen_version:
+      const isLegacyOrPreviousUser =
+        (lastSeenVersion && lastSeenVersion !== CURRENT_APP_VERSION) ||
+        (!lastSeenVersion && hasLegacyData);
+
+      // 2. Primary check: tedlist.vercel.app/version.json, fallback: GitHub package.json
       let remoteVersion: string | null = null;
       try {
         const res = await fetch('https://tedlist.vercel.app/version.json?t=' + Date.now()).catch(() => null);
@@ -397,23 +410,23 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      if (remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION)) {
+      const hasRemoteUpdate = remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION);
+      if (hasRemoteUpdate) {
         setAvailableUpdateVersion(remoteVersion);
+      }
 
-        const dismissedVersion = localStorage.getItem('tedlist_dismissed_update_version');
-        if (dismissedVersion !== remoteVersion) {
-          setTimeout(() => {
-            setIsReleaseNotesOpen(true);
-          }, 900);
-        }
-      } else if (isFirstLaunchAfterUpdate) {
-        // User had an older version installed previously (e.g. 2.6.0, 2.7.0, 2.7.4)
-        const dismissedVersion = localStorage.getItem('tedlist_dismissed_update_version');
-        if (dismissedVersion !== CURRENT_APP_VERSION) {
-          setTimeout(() => {
-            setIsReleaseNotesOpen(true);
-          }, 900);
-        }
+      // Show update popup:
+      // Case A: A newer version is available remotely and user hasn't dismissed it
+      if (hasRemoteUpdate && dismissedUpdate !== remoteVersion) {
+        setTimeout(() => {
+          setIsReleaseNotesOpen(true);
+        }, 700);
+      }
+      // Case B: User upgraded from an older version (like 2.3.3, 2.5.0, 2.7.0) and hasn't seen the current release notes
+      else if (isLegacyOrPreviousUser && dismissedUpdate !== CURRENT_APP_VERSION) {
+        setTimeout(() => {
+          setIsReleaseNotesOpen(true);
+        }, 700);
       }
     };
 

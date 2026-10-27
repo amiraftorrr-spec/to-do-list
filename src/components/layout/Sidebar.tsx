@@ -251,8 +251,8 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1rem)',
         }}
       >
-        {/* When running in APK and an update is available */}
-        {isNative && availableUpdateVersion && (
+        {/* When an update is available */}
+        {availableUpdateVersion && (
           <button
             onClick={() => {
               openReleaseNotes();
