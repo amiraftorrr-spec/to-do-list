@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -20,6 +21,7 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
         int totalCount = prefs.getInt("total_count", 0);
         int completedCount = prefs.getInt("completed_count", 0);
         int progressPercent = prefs.getInt("progress_percent", 100);
+        String dateLabel = prefs.getString("date_label", "");
 
         String task1 = prefs.getString("task_1_title", "");
         String task2 = prefs.getString("task_2_title", "");
@@ -37,7 +39,7 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
         );
         views.setOnClickPendingIntent(R.id.widget_large_root, pendingIntent);
 
-        // Intent for add task button
+        // Intent for add task action
         Intent addIntent = new Intent(context, MainActivity.class);
         addIntent.putExtra("action", "create");
         PendingIntent addPendingIntent = PendingIntent.getActivity(
@@ -47,6 +49,14 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
         views.setOnClickPendingIntent(R.id.widget_large_add_btn, addPendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_task_add_next, addPendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_large_empty_container, addPendingIntent);
+
+        // Header Title in Shabnam-Bold
+        views.setImageViewBitmap(
+                R.id.widget_large_headline_img,
+                FontBitmapHelper.renderText(context, "تدلیست • کارهای امروز", 11.5f, Color.parseColor("#F4EFE6"), 700, 320, false)
+        );
 
         int[] segIds = {
             R.id.widget_seg_1, R.id.widget_seg_2, R.id.widget_seg_3, R.id.widget_seg_4, R.id.widget_seg_5,
@@ -54,32 +64,81 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
         };
 
         if (totalCount == 0) {
-            views.setTextViewText(R.id.widget_large_headline, "کاری اضافه نکردی");
-            views.setTextViewText(R.id.widget_large_sub, "امروز برنامه‌ای ثبت نشده");
+            // Case 1: No tasks registered for today
+            views.setImageViewBitmap(
+                    R.id.widget_large_sub_img,
+                    FontBitmapHelper.renderText(context, "امروز برنامه‌ای ثبت نشده", 9.5f, Color.parseColor("#C0B8AA"), 500, 300, false)
+            );
 
-            // All segments inactive
+            views.setImageViewBitmap(
+                    R.id.widget_large_percent_img,
+                    FontBitmapHelper.renderText(context, "۰٪", 10.5f, Color.parseColor("#D5B783"), 700, 150, true)
+            );
+
             for (int segId : segIds) {
                 views.setImageViewResource(segId, R.drawable.widget_segment_inactive);
             }
 
             views.setViewVisibility(R.id.widget_large_tasks_container, View.GONE);
-            views.setViewVisibility(R.id.widget_large_empty, View.VISIBLE);
-            views.setTextViewText(R.id.widget_large_empty, "امروز کاری اضافه نکردی! با دکمه + شروع کن ✨");
-        } else if (pendingCount == 0) {
-            views.setTextViewText(R.id.widget_large_headline, "همه کارها تموم شد!");
-            views.setTextViewText(R.id.widget_large_sub, "همه تیک خوردن ✨");
+            views.setViewVisibility(R.id.widget_large_empty_container, View.VISIBLE);
+            views.setImageViewResource(R.id.widget_large_empty_icon, R.drawable.ic_widget_sparkle);
 
-            // All segments active
+            views.setImageViewBitmap(
+                    R.id.widget_large_empty_title_img,
+                    FontBitmapHelper.renderText(context, "امروز کاری اضافه نکردی", 12f, Color.parseColor("#F4EFE6"), 700, 350, true)
+            );
+            views.setImageViewBitmap(
+                    R.id.widget_large_empty_sub_img,
+                    FontBitmapHelper.renderText(context, "برای برنامه‌ریزی امروز دکمه + رو لمس کن ✨", 10f, Color.parseColor("#C0B8AA"), 500, 350, true)
+            );
+
+        } else if (pendingCount == 0) {
+            // Case 2: All tasks completed
+            views.setImageViewBitmap(
+                    R.id.widget_large_sub_img,
+                    FontBitmapHelper.renderText(context, "همه کارهای امروز انجام شد ✨", 9.5f, Color.parseColor("#C0B8AA"), 500, 300, false)
+            );
+
+            views.setImageViewBitmap(
+                    R.id.widget_large_percent_img,
+                    FontBitmapHelper.renderText(context, "۱۰۰٪", 10.5f, Color.parseColor("#D5B783"), 700, 150, true)
+            );
+
             for (int segId : segIds) {
                 views.setImageViewResource(segId, R.drawable.widget_segment_active);
             }
 
             views.setViewVisibility(R.id.widget_large_tasks_container, View.GONE);
-            views.setViewVisibility(R.id.widget_large_empty, View.VISIBLE);
-            views.setTextViewText(R.id.widget_large_empty, "همه کارهای امروز تمام شد! خسته نباشی ✨");
+            views.setViewVisibility(R.id.widget_large_empty_container, View.VISIBLE);
+            views.setImageViewResource(R.id.widget_large_empty_icon, R.drawable.ic_widget_check_circle);
+
+            views.setImageViewBitmap(
+                    R.id.widget_large_empty_title_img,
+                    FontBitmapHelper.renderText(context, "همه کارهای امروز تمام شد! 🎉", 12f, Color.parseColor("#F4EFE6"), 700, 350, true)
+            );
+            views.setImageViewBitmap(
+                    R.id.widget_large_empty_sub_img,
+                    FontBitmapHelper.renderText(context, "آفرین! همه اهداف امروز تیک خوردن ✨", 10f, Color.parseColor("#C0B8AA"), 500, 350, true)
+            );
+
         } else {
-            views.setTextViewText(R.id.widget_large_headline, "روزت رو مرتب کن");
-            views.setTextViewText(R.id.widget_large_sub, pendingCount + " کار باقی‌مانده");
+            // Case 3: Tasks pending
+            String subText;
+            if (!dateLabel.isEmpty()) {
+                subText = completedCount + " از " + totalCount + " انجام شده • " + pendingCount + " مانده";
+            } else {
+                subText = completedCount + " از " + totalCount + " انجام شده (" + pendingCount + " باقی‌مانده)";
+            }
+
+            views.setImageViewBitmap(
+                    R.id.widget_large_sub_img,
+                    FontBitmapHelper.renderText(context, subText, 9.5f, Color.parseColor("#C0B8AA"), 500, 320, false)
+            );
+
+            views.setImageViewBitmap(
+                    R.id.widget_large_percent_img,
+                    FontBitmapHelper.renderText(context, progressPercent + "٪", 10.5f, Color.parseColor("#D5B783"), 700, 150, true)
+            );
 
             // Segments active based on progress (fills RTL from right to left)
             int activeSegments = Math.round((progressPercent / 100f) * 10f);
@@ -91,31 +150,56 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
                 );
             }
 
-            views.setViewVisibility(R.id.widget_large_empty, View.GONE);
+            views.setViewVisibility(R.id.widget_large_empty_container, View.GONE);
             views.setViewVisibility(R.id.widget_large_tasks_container, View.VISIBLE);
+
+            int visibleTaskCount = 0;
 
             // Task 1
             if (!task1.isEmpty()) {
+                visibleTaskCount++;
                 views.setViewVisibility(R.id.widget_task_1, View.VISIBLE);
-                views.setTextViewText(R.id.widget_task_1_title, task1);
+                views.setImageViewBitmap(
+                        R.id.widget_task_1_title_img,
+                        FontBitmapHelper.renderText(context, task1, 11.5f, Color.parseColor("#F4EFE6"), 500, 400, false)
+                );
             } else {
                 views.setViewVisibility(R.id.widget_task_1, View.GONE);
             }
 
             // Task 2
             if (!task2.isEmpty()) {
+                visibleTaskCount++;
                 views.setViewVisibility(R.id.widget_task_2, View.VISIBLE);
-                views.setTextViewText(R.id.widget_task_2_title, task2);
+                views.setImageViewBitmap(
+                        R.id.widget_task_2_title_img,
+                        FontBitmapHelper.renderText(context, task2, 11.5f, Color.parseColor("#F4EFE6"), 500, 400, false)
+                );
             } else {
                 views.setViewVisibility(R.id.widget_task_2, View.GONE);
             }
 
             // Task 3
             if (!task3.isEmpty()) {
+                visibleTaskCount++;
                 views.setViewVisibility(R.id.widget_task_3, View.VISIBLE);
-                views.setTextViewText(R.id.widget_task_3_title, task3);
+                views.setImageViewBitmap(
+                        R.id.widget_task_3_title_img,
+                        FontBitmapHelper.renderText(context, task3, 11.5f, Color.parseColor("#F4EFE6"), 500, 400, false)
+                );
             } else {
                 views.setViewVisibility(R.id.widget_task_3, View.GONE);
+            }
+
+            // If fewer than 3 tasks exist, show the interactive "Add next task..." slot
+            if (visibleTaskCount < 3) {
+                views.setViewVisibility(R.id.widget_task_add_next, View.VISIBLE);
+                views.setImageViewBitmap(
+                        R.id.widget_task_add_next_title_img,
+                        FontBitmapHelper.renderText(context, "افزودن کار بعدی...", 10.5f, Color.parseColor("#8E877B"), 500, 250, false)
+                );
+            } else {
+                views.setViewVisibility(R.id.widget_task_add_next, View.GONE);
             }
         }
 

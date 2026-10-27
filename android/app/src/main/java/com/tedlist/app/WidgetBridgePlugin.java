@@ -50,6 +50,11 @@ public class WidgetBridgePlugin extends Plugin {
         editor.putInt("completed_count", completedCount);
         editor.putInt("progress_percent", progressPercent);
 
+        String dateLabel = data.optString("dateLabel", "");
+        if (!dateLabel.isEmpty()) {
+            editor.putString("date_label", dateLabel);
+        }
+
         JSONArray tasks = data.optJSONArray("topTasks");
         if (tasks != null) {
             try {

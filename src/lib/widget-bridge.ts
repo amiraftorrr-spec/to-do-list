@@ -8,6 +8,7 @@ interface WidgetBridgePluginType {
     completedCount: number;
     progressPercent: number;
     topTasks: string[];
+    dateLabel?: string;
   }): Promise<void>;
   openUrl(options: { url: string }): Promise<void>;
 }
@@ -47,6 +48,16 @@ export async function syncNativeWidget(
   const progressPercent = total > 0 ? Math.round((todayCompletedCount / total) * 100) : 100;
   const topTasks = pending.slice(0, 3).map((t) => t.title);
 
+  let dateLabel = '';
+  try {
+    const today = new Date();
+    const weekday = today.toLocaleDateString('fa-IR-u-ca-persian', { weekday: 'long' });
+    const dayAndMonth = today.toLocaleDateString('fa-IR-u-ca-persian', { day: 'numeric', month: 'long' });
+    dateLabel = `${weekday}، ${dayAndMonth}`;
+  } catch {
+    // fallback
+  }
+
   try {
     await WidgetBridge.updateWidget({
       pendingCount: pending.length,
@@ -54,6 +65,7 @@ export async function syncNativeWidget(
       completedCount: todayCompletedCount,
       progressPercent,
       topTasks,
+      dateLabel,
     });
   } catch {
     // Non-native web environment gracefully ignores

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.widget.RemoteViews;
 
 public class TedlistWidgetSmall extends AppWidgetProvider {
@@ -17,6 +18,7 @@ public class TedlistWidgetSmall extends AppWidgetProvider {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         int pendingCount = prefs.getInt("pending_count", 0);
         int totalCount = prefs.getInt("total_count", 0);
+        int completedCount = prefs.getInt("completed_count", 0);
         int progressPercent = prefs.getInt("progress_percent", 100);
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_small);
@@ -31,23 +33,50 @@ public class TedlistWidgetSmall extends AppWidgetProvider {
         );
         views.setOnClickPendingIntent(R.id.widget_small_root, pendingIntent);
 
-        // Dynamic status & sleek craft typography
+        // Brand title in Shabnam-Bold
+        views.setImageViewBitmap(
+                R.id.widget_small_title_img,
+                FontBitmapHelper.renderText(context, "تدلیست", 11.5f, Color.parseColor("#F4EFE6"), 700, 200, false)
+        );
+
+        String headline;
+        String sub;
+        String percentStr;
+        int progressVal;
+
         if (totalCount == 0) {
-            views.setTextViewText(R.id.widget_small_headline, "کاری اضافه نکردی");
-            views.setTextViewText(R.id.widget_small_sub, "امروز برنامه‌ای ثبت نشده");
-            views.setProgressBar(R.id.widget_small_progress, 100, 0, false);
-            views.setTextViewText(R.id.widget_small_percent, "۰٪");
+            headline = "امروز کاری نداری";
+            sub = "برای شروع لمس کن ✍️";
+            progressVal = 0;
+            percentStr = "۰٪";
         } else if (pendingCount == 0) {
-            views.setTextViewText(R.id.widget_small_headline, "همه کارها تموم شد!");
-            views.setTextViewText(R.id.widget_small_sub, "همه تیک خوردن ✨");
-            views.setProgressBar(R.id.widget_small_progress, 100, 100, false);
-            views.setTextViewText(R.id.widget_small_percent, "۱۰۰٪");
+            headline = "همه کارها انجام شد! ✨";
+            sub = "خسته نباشی، عالی بود";
+            progressVal = 100;
+            percentStr = "۱۰۰٪";
         } else {
-            views.setTextViewText(R.id.widget_small_headline, "روزت رو مرتب کن");
-            views.setTextViewText(R.id.widget_small_sub, pendingCount + " کار باقی‌مانده");
-            views.setProgressBar(R.id.widget_small_progress, 100, progressPercent, false);
-            views.setTextViewText(R.id.widget_small_percent, progressPercent + "%");
+            headline = pendingCount + " کار باقی‌مانده";
+            sub = "از " + totalCount + " کار امروز (" + completedCount + " انجام شده)";
+            progressVal = progressPercent;
+            percentStr = progressPercent + "٪";
         }
+
+        views.setImageViewBitmap(
+                R.id.widget_small_headline_img,
+                FontBitmapHelper.renderText(context, headline, 12f, Color.parseColor("#F4EFE6"), 700, 500, false)
+        );
+
+        views.setImageViewBitmap(
+                R.id.widget_small_sub_img,
+                FontBitmapHelper.renderText(context, sub, 9.5f, Color.parseColor("#C0B8AA"), 500, 500, false)
+        );
+
+        views.setImageViewBitmap(
+                R.id.widget_small_percent_img,
+                FontBitmapHelper.renderText(context, percentStr, 10.5f, Color.parseColor("#D5B783"), 700, 150, true)
+        );
+
+        views.setProgressBar(R.id.widget_small_progress, 100, progressVal, false);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

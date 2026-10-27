@@ -84,8 +84,13 @@ export function TodoDashboard() {
         }, 500);
         return () => clearTimeout(timer);
       }
+      if (params.get('action') === 'create') {
+        setTimeout(() => {
+          openCreateModal();
+        }, 300);
+      }
     }
-  }, []);
+  }, [openCreateModal]);
 
   // Filter tasks based on search, space/category, priority
   const filterTask = (t: (typeof tasks)[0]) => {

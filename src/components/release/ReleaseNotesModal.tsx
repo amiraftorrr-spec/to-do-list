@@ -30,7 +30,7 @@ export function ReleaseNotesModal({
 
   const handleDownloadUpdate = async () => {
     triggerHaptic('success');
-    await openExternalUrl('https://tedlist.vercel.app?update=apk');
+    await openExternalUrl('https://tedlist.vercel.app/');
     onClose();
   };
 
@@ -40,26 +40,26 @@ export function ReleaseNotesModal({
     {
       icon: Smartphone,
       color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-      title: isRtl ? 'ویجت‌های مهندسی‌شده و مدرن (ابسیدین و متریال)' : 'Crafted Home Screen Widgets',
+      title: isRtl ? 'ویجت‌های زیباتر با فونت شبنم و طراحی غنی' : 'Redesigned Widgets with Shabnam Font',
       desc: isRtl
-        ? 'طراحی مات و شیک با کادر ظریف ۱ پیکسلی، هایلایت لبه درونی و حذف گرادینت‌های شلوغ قبلی.'
-        : 'Obsidian & tactile dark design, 1px subtle borders, inner rim highlight, and sleek progress indicator.',
+        ? 'تایپوگرافی اختصاصی شبنم، کارت‌های تسک با چک‌باکس، دکمه افزودن کار بعدی و وضعیت جشن اتمام کارها.'
+        : 'Dedicated Shabnam Persian typography, interactive task cards, add next task slot, and celebratory completion state.',
     },
     {
       icon: Zap,
       color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-      title: isRtl ? 'صفحه لودینگ فوق‌مینیمال و سریع' : 'Ultra-Minimal Loading Screen',
+      title: isRtl ? 'به‌روزرسانی مستقیم از سایت تدلیست' : 'Direct Updates via tedlist.vercel.app',
       desc: isRtl
-        ? 'لودینگ تمیز و بی‌صدا بدون انیمیشن‌های اضافه و لود آنی برنامه در کمتر از نیم ثانیه.'
-        : 'Pure minimal brand splash without synthetic delays or distracting laser animations.',
+        ? 'دریافت نسخه جدید مستقیماً از طریق وب‌سایت تدلیست (tedlist.vercel.app) بدون رفتن به گیت‌هاب.'
+        : 'Update notifications now take you directly to tedlist.vercel.app without any third-party redirects.',
     },
     {
       icon: Layers,
       color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      title: isRtl ? 'مدیریت هوشمند به‌روزرسانی از سایدبار' : 'Smart In-App Update Management',
+      title: isRtl ? 'مدیریت هوشمند کارها و تقویم امروز' : 'Today Planner & Quick Actions',
       desc: isRtl
-        ? 'اطلاع‌رسانی یک‌باره بدون مزاحمت، با قابلیت نصب در هر زمان از منوی کناری برنامه.'
-        : 'One-time gentle notification with instant or deferred installation directly from the sidebar.',
+        ? 'افزودن سریع کارها از داخل ویجت بزرگ و کوچک و همگام‌سازی بلادرنگ وضعیت کارها.'
+        : 'Instant task addition from home screen widgets and real-time state synchronization.',
     },
   ];
 

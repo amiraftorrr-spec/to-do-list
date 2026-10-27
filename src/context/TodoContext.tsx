@@ -368,30 +368,51 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     // ONLY check and prompt for APK updates when running inside the native APK!
     // On the website, the browser/PWA updates automatically without unneeded popups.
     if (native) {
-      try {
-        fetch('https://raw.githubusercontent.com/amiraftorrr-spec/to-do-list/main/package.json?t=' + Date.now())
-          .then((res) => (res.ok ? res.json() : null))
-          .then((remotePkg) => {
-            const remoteVersion = remotePkg?.version;
-            if (remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION)) {
-              setAvailableUpdateVersion(remoteVersion);
-
-              // Check if user already saw / dismissed this specific update version
-              const dismissedVersion = localStorage.getItem('tedlist_dismissed_update_version');
-              if (dismissedVersion !== remoteVersion) {
-                // Show popup ONCE for this update
-                setTimeout(() => {
-                  setIsReleaseNotesOpen(true);
-                }, 1000);
-              }
+      const checkUpdate = async () => {
+        try {
+          let remoteVersion: string | null = null;
+          // Primary: Check tedlist.vercel.app
+          try {
+            const res = await fetch('https://tedlist.vercel.app/version.json?t=' + Date.now());
+            if (res.ok) {
+              const data = await res.json();
+              remoteVersion = data?.version;
             }
-          })
-          .catch(() => {
-            // ignore network errors silently
-          });
-      } catch {
-        // ignore
-      }
+          } catch {
+            // fallback below
+          }
+
+          // Fallback: GitHub raw package.json
+          if (!remoteVersion) {
+            try {
+              const ghRes = await fetch('https://raw.githubusercontent.com/amiraftorrr-spec/to-do-list/main/package.json?t=' + Date.now());
+              if (ghRes.ok) {
+                const ghData = await ghRes.json();
+                remoteVersion = ghData?.version;
+              }
+            } catch {
+              // ignore
+            }
+          }
+
+          if (remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION)) {
+            setAvailableUpdateVersion(remoteVersion);
+
+            // Check if user already saw / dismissed this specific update version
+            const dismissedVersion = localStorage.getItem('tedlist_dismissed_update_version');
+            if (dismissedVersion !== remoteVersion) {
+              // Show popup ONCE for this update
+              setTimeout(() => {
+                setIsReleaseNotesOpen(true);
+              }, 1000);
+            }
+          }
+        } catch {
+          // ignore network errors silently
+        }
+      };
+
+      checkUpdate();
     }
 
     setIsMounted(true);
