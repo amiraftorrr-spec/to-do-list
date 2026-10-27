@@ -1,28 +1,40 @@
 import { Capacitor } from '@capacitor/core';
 
 /**
- * Accurately determines if the app is currently running inside the installed native APK
- * or as an installed standalone PWA.
+ * Accurately determines if the app is running as a compiled native Android / iOS app.
+ * Returns false on web browsers (desktop Chrome, mobile Safari, etc.).
  */
-export function isAppInstalledOrNative(): boolean {
-  if (typeof window === 'undefined') return true; // Default to true on SSR to avoid flash
+export function isNativeApk(): boolean {
+  if (typeof window === 'undefined') return false;
 
   try {
-    // 1. Capacitor native check
     if (Capacitor.isNativePlatform()) return true;
-    if (Capacitor.getPlatform() !== 'web') return true;
+    const platform = Capacitor.getPlatform();
+    if (platform === 'android' || platform === 'ios') return true;
 
-    // 2. Window protocol/host checks in Android WebView
     if (window.location.protocol === 'capacitor:' || window.location.protocol === 'ionic:') {
       return true;
     }
 
-    // 3. User agent check for Capacitor Android
     if (typeof navigator !== 'undefined' && /capacitor/i.test(navigator.userAgent)) {
       return true;
     }
+  } catch {
+    return false;
+  }
 
-    // 4. Standalone display mode (installed PWA)
+  return false;
+}
+
+/**
+ * Determines if the app is installed either as a native APK or as an installed standalone PWA.
+ */
+export function isAppInstalledOrNative(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  if (isNativeApk()) return true;
+
+  try {
     if (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches) {
       return true;
     }
@@ -30,13 +42,8 @@ export function isAppInstalledOrNative(): boolean {
     if (typeof navigator !== 'undefined' && (navigator as any).standalone === true) {
       return true;
     }
-
-    // 5. Dismissed / installed flag
-    if (localStorage.getItem('tedlist_apk_installed') === 'true') {
-      return true;
-    }
   } catch {
-    // fallback
+    return false;
   }
 
   return false;

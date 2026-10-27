@@ -53,14 +53,12 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
 
         if (totalCount == 0 || pendingCount == 0) {
             views.setTextViewText(R.id.widget_large_headline, "همه کارها تموم شد!");
-            views.setTextViewText(R.id.widget_large_emoji, "🎉");
-            views.setTextViewText(R.id.widget_large_sub, "ایول! کارهای امروزت انجام شد ✨");
+            views.setTextViewText(R.id.widget_large_sub, "همه تیک خوردن ✨");
 
             views.setViewVisibility(R.id.widget_large_tasks_container, View.GONE);
             views.setViewVisibility(R.id.widget_large_empty, View.VISIBLE);
         } else {
-            views.setTextViewText(R.id.widget_large_headline, "اینا چی شدن پس؟");
-            views.setTextViewText(R.id.widget_large_emoji, "👀");
+            views.setTextViewText(R.id.widget_large_headline, "امروز رو جمع‌وجور کنیم");
             views.setTextViewText(R.id.widget_large_sub, pendingCount + " کار باقی‌مانده برای امروز");
 
             views.setViewVisibility(R.id.widget_large_empty, View.GONE);

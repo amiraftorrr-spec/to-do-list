@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common theme colors -->
+    <color name="colorPrimary">#6366f1</color>
+    <color name="colorPrimaryDark">#4f46e5</color>
+    <color name="colorAccent">#818cf8</color>
+
+    <!-- Concept A: Linear / Obsidian Craft -->
+    <color name="ted_a_bg">#0C0E14</color>
+    <color name="ted_a_surface">#161A23</color>
+    <color name="ted_a_task">#191D27</color>
+    <color name="ted_a_border">#1FFFFFFF</color>
+    <color name="ted_a_rim">#12FFFFFF</color>
+    <color name="ted_a_text">#F2F4F8</color>
+    <color name="ted_a_secondary">#9AA3B2</color>
+    <color name="ted_a_muted">#697386</color>
+    <color name="ted_a_accent">#55C79A</color>
+    <color name="ted_a_track">#2B313D</color>
+    <color name="ted_a_rose">#E68A97</color>
+    <color name="ted_a_amber">#E6B86A</color>
+    <color name="ted_a_slate">#758196</color>
+    <color name="ted_a_button_text">#08140F</color>
+
+    <!-- Concept B: Material 3 Expressive / Things 3 Warmth -->
+    <color name="ted_b_bg">#211F1B</color>
+    <color name="ted_b_surface">#302D28</color>
+    <color name="ted_b_task">#39352F</color>
+    <color name="ted_b_border">#26F6EDE1</color>
+    <color name="ted_b_rim">#14FFFFFF</color>
+    <color name="ted_b_text">#F4EFE6</color>
+    <color name="ted_b_secondary">#C0B8AA</color>
+    <color name="ted_b_muted">#8E877B</color>
+    <color name="ted_b_accent">#D5B783</color>
+    <color name="ted_b_track">#514B42</color>
+    <color name="ted_b_rose">#E3A0A0</color>
+    <color name="ted_b_amber">#E5BC78</color>
+    <color name="ted_b_slate">#A6AAA4</color>
+    <color name="ted_b_button_text">#292117</color>
+</resources>

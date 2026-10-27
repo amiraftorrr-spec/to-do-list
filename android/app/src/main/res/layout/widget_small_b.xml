@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="9dp"
+    android:paddingEnd="9dp"
+    android:background="@drawable/widget_bg_b">
+
+    <ImageView
+        android:id="@+id/widget_icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:contentDescription="Tedlist"
+        android:src="@drawable/ic_tedlist_mark"
+        android:background="@drawable/widget_task_bg_b"
+        android:padding="4dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingStart="7dp">
+
+        <TextView
+            android:id="@+id/widget_headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="ادامه بده"
+            android:textColor="@color/ted_b_text"
+            android:textSize="11sp"
+            android:fontFamily="sans"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/widget_task_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="۲ کار باقی‌مانده"
+            android:textColor="@color/ted_b_secondary"
+            android:textSize="9sp"
+            android:fontFamily="sans" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="28dp"
+        android:gravity="center"
+        android:text="60%"
+        android:textColor="@color/ted_b_accent"
+        android:textSize="10sp"
+        android:fontFamily="monospace"
+        android:textStyle="bold" />
+</LinearLayout>

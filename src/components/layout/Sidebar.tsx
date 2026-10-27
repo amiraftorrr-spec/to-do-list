@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { ViewMode, Category } from '@/types/todo';
 import { isAppInstalledOrNative } from '@/lib/platform';
+import { CURRENT_APP_VERSION } from '@/constants/version';
 import {
   Sun,
   CalendarDays,
@@ -13,6 +14,7 @@ import {
   Plus,
   HelpCircle,
   Smartphone,
+  Sparkles,
 } from 'lucide-react';
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -33,7 +35,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
     openTutorial,
     openPwaPrompt,
     openReleaseNotes,
+    availableUpdateVersion,
+    isNative,
     t,
+    lang,
   } = useTodo();
 
   // Counts
@@ -246,7 +251,27 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1rem)',
         }}
       >
-        {!isInstalledOrNative && (
+        {/* When running in APK and an update is available */}
+        {isNative && availableUpdateVersion && (
+          <button
+            onClick={() => {
+              openReleaseNotes();
+              onClose?.();
+            }}
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0 animate-pulse" />
+              <span>{lang === 'fa' ? 'نصب نسخه جدید' : 'Install Update'}</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+              v{availableUpdateVersion}
+            </span>
+          </button>
+        )}
+
+        {/* When on the web, show APK download prompt */}
+        {!isNative && !isInstalledOrNative && (
           <button
             onClick={() => {
               openPwaPrompt();
@@ -285,10 +310,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 openReleaseNotes();
                 onClose?.();
               }}
-              className="font-mono font-medium shrink-0 ps-2 hover:text-indigo-400 transition-colors cursor-pointer"
-              title="مشاهده تغییرات نسخه جدید"
+              className="font-mono font-medium shrink-0 ps-2 hover:text-indigo-400 transition-colors cursor-pointer flex items-center gap-1"
+              title="مشاهده نسخه و تغییرات"
             >
-              v2.7.3
+              <span>v{CURRENT_APP_VERSION}</span>
+              {availableUpdateVersion && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              )}
             </button>
           </div>
           <div className="flex justify-end text-[10px] font-mono text-slate-400 dark:text-slate-500">

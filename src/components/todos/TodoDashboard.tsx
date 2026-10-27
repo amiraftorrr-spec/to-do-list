@@ -15,6 +15,7 @@ import { ReleaseNotesModal } from '@/components/release/ReleaseNotesModal';
 import { QuickAddBar } from '@/components/todos/QuickAddBar';
 import { AppLoadingScreen } from '@/components/ui/AppLoadingScreen';
 import { getTodayString, isOverdue } from '@/lib/date-utils';
+import { CURRENT_APP_VERSION } from '@/constants/version';
 import {
   Sun,
   CalendarDays,
@@ -43,6 +44,7 @@ export function TodoDashboard() {
     setIsSaturdayReviewModalOpen,
     isReleaseNotesOpen,
     closeReleaseNotes,
+    availableUpdateVersion,
     t,
     lang,
   } = useTodo();
@@ -329,7 +331,7 @@ export function TodoDashboard() {
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">
-              tedlist v2.7.3
+              tedlist v{CURRENT_APP_VERSION}
             </span>
           </div>
         </main>
@@ -402,7 +404,11 @@ export function TodoDashboard() {
       <BackupModal />
       <OnboardingTutorialModal />
       <PwaInstallPromptModal />
-      <ReleaseNotesModal isOpen={isReleaseNotesOpen} onClose={closeReleaseNotes} version="2.7.3" />
+      <ReleaseNotesModal
+        isOpen={isReleaseNotesOpen}
+        onClose={closeReleaseNotes}
+        version={availableUpdateVersion || CURRENT_APP_VERSION}
+      />
     </div>
   );
 }

@@ -31,17 +31,15 @@ public class TedlistWidgetSmall extends AppWidgetProvider {
         );
         views.setOnClickPendingIntent(R.id.widget_small_root, pendingIntent);
 
-        // Duolingo-style text & dynamic status
+        // Dynamic status & sleek craft typography
         if (totalCount == 0 || pendingCount == 0) {
-            views.setTextViewText(R.id.widget_small_emoji, "🎉");
-            views.setTextViewText(R.id.widget_small_headline, "فعلاً کاری نداری!");
-            views.setTextViewText(R.id.widget_small_sub, "همه تیک خوردن ✨");
+            views.setTextViewText(R.id.widget_small_headline, "همه تیک خوردن ✨");
+            views.setTextViewText(R.id.widget_small_sub, "فعلاً کاری نداری");
             views.setProgressBar(R.id.widget_small_progress, 100, 100, false);
             views.setTextViewText(R.id.widget_small_percent, "100%");
         } else {
-            views.setTextViewText(R.id.widget_small_emoji, "👀");
-            views.setTextViewText(R.id.widget_small_headline, "اینا چی شدن پس؟");
-            views.setTextViewText(R.id.widget_small_sub, pendingCount + " کار منتظرته!");
+            views.setTextViewText(R.id.widget_small_headline, "ادامه بده");
+            views.setTextViewText(R.id.widget_small_sub, pendingCount + " کار باقی‌مانده");
             views.setProgressBar(R.id.widget_small_progress, 100, progressPercent, false);
             views.setTextViewText(R.id.widget_small_percent, progressPercent + "%");
         }

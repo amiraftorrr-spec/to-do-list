@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Download, X, CheckCircle2, Smartphone, ShieldCheck, Sparkles } from 'lucide-react';
 import { isAppInstalledOrNative } from '@/lib/platform';
+import { CURRENT_APP_VERSION } from '@/constants/version';
 
 export function PwaInstallPromptModal() {
   const {
@@ -51,7 +52,7 @@ export function PwaInstallPromptModal() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                tedlist Android v2.7.3 • {t.apkOfflineBadge}
+                tedlist Android v{CURRENT_APP_VERSION} • {t.apkOfflineBadge}
               </p>
             </div>
           </div>

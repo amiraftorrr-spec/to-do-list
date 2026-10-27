@@ -21,13 +21,13 @@ import {
   isTodaySaturday,
 } from '@/lib/date-utils';
 import { translations, TranslationDictionary } from '@/lib/translations';
-import { isAppInstalledOrNative } from '@/lib/platform';
+import { isAppInstalledOrNative, isNativeApk } from '@/lib/platform';
 import { syncNativeWidget } from '@/lib/widget-bridge';
 import {
   scheduleNightlyReminder,
   scheduleTomorrowPreviewReminder,
 } from '@/lib/notifications';
-import { CURRENT_APP_VERSION } from '@/constants/version';
+import { CURRENT_APP_VERSION, isNewerVersion } from '@/constants/version';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import confetti from 'canvas-confetti';
 import { Capacitor } from '@capacitor/core';
@@ -117,10 +117,12 @@ interface TodoContextType {
   // Notifications & Widget
   completeAllTodayTasks: () => void;
 
-  // Release Notes Modal
+  // Release Notes Modal & APK Updates
   isReleaseNotesOpen: boolean;
   openReleaseNotes: () => void;
   closeReleaseNotes: () => void;
+  availableUpdateVersion: string | null;
+  isNative: boolean;
 
   // PWA Prompt
   isPwaPromptOpen: boolean;
@@ -161,6 +163,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isPwaPromptOpen, setIsPwaPromptOpen] = useState(false);
   const [isReleaseNotesOpen, setIsReleaseNotesOpen] = useState(false);
+  const [availableUpdateVersion, setAvailableUpdateVersion] = useState<string | null>(null);
+  const [isNative, setIsNative] = useState(false);
 
   const t = useMemo(() => translations[lang], [lang]);
   const dir = useMemo(() => (lang === 'fa' ? 'rtl' : 'ltr'), [lang]);
@@ -358,27 +362,35 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
       setIsTutorialOpen(true);
     }
 
-    // Version update popup ONLY for installed mobile APK / PWA, NEVER for web browser
-    if (isAppInstalledOrNative()) {
-      const seenVersion = localStorage.getItem('tedlist_seen_version');
-      if (seenVersion !== CURRENT_APP_VERSION) {
-        setTimeout(() => {
-          setIsReleaseNotesOpen(true);
-        }, 800);
-      }
+    const native = isNativeApk();
+    setIsNative(native);
 
-      // Check remote GitHub repository package.json to notify installed APK users
+    // ONLY check and prompt for APK updates when running inside the native APK!
+    // On the website, the browser/PWA updates automatically without unneeded popups.
+    if (native) {
       try {
         fetch('https://raw.githubusercontent.com/amiraftorrr-spec/to-do-list/main/package.json?t=' + Date.now())
           .then((res) => (res.ok ? res.json() : null))
           .then((remotePkg) => {
-            if (remotePkg?.version && remotePkg.version !== CURRENT_APP_VERSION) {
-              setIsReleaseNotesOpen(true);
+            const remoteVersion = remotePkg?.version;
+            if (remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION)) {
+              setAvailableUpdateVersion(remoteVersion);
+
+              // Check if user already saw / dismissed this specific update version
+              const dismissedVersion = localStorage.getItem('tedlist_dismissed_update_version');
+              if (dismissedVersion !== remoteVersion) {
+                // Show popup ONCE for this update
+                setTimeout(() => {
+                  setIsReleaseNotesOpen(true);
+                }, 1000);
+              }
             }
           })
-          .catch(() => {});
+          .catch(() => {
+            // ignore network errors silently
+          });
       } catch {
-        // ignore network error
+        // ignore
       }
     }
 
@@ -392,9 +404,11 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const closeReleaseNotes = useCallback(() => {
     setIsReleaseNotesOpen(false);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_seen_version', CURRENT_APP_VERSION);
+      if (availableUpdateVersion) {
+        localStorage.setItem('tedlist_dismissed_update_version', availableUpdateVersion);
+      }
     }
-  }, []);
+  }, [availableUpdateVersion]);
 
   const openTutorial = useCallback(() => {
     setIsTutorialOpen(true);
@@ -424,7 +438,6 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setIsPwaPromptOpen(false);
     if (typeof window !== 'undefined') {
       localStorage.setItem('tedlist_pwa_prompted', 'true');
-      localStorage.setItem('tedlist_apk_installed', 'true');
     }
   }, []);
 
@@ -866,6 +879,8 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         isReleaseNotesOpen,
         openReleaseNotes,
         closeReleaseNotes,
+        availableUpdateVersion,
+        isNative,
         isPwaPromptOpen,
         isPwaInstallable: true,
         openPwaPrompt,

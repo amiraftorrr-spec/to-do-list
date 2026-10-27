@@ -2,23 +2,22 @@
 
 import React from 'react';
 import { useTodo } from '@/context/TodoContext';
+import { CURRENT_APP_VERSION } from '@/constants/version';
 import {
   Sparkles,
   Download,
   X,
   Smartphone,
-  Bell,
-  Calendar,
-  Flame,
-  CheckCircle2,
+  Layers,
   Zap,
+  CheckCircle2,
 } from 'lucide-react';
 import { triggerHaptic } from '@/lib/haptics';
 
 export function ReleaseNotesModal({
   isOpen,
   onClose,
-  version = '2.7.3',
+  version = CURRENT_APP_VERSION,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -31,12 +30,20 @@ export function ReleaseNotesModal({
   const handleDownloadUpdate = () => {
     triggerHaptic('success');
     if (typeof window !== 'undefined') {
+      const downloadUrl = 'https://github.com/amiraftorrr-spec/to-do-list/raw/main/tedlist.apk';
       const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute('href', '/tedlist.apk');
+      downloadAnchor.setAttribute('href', downloadUrl);
+      downloadAnchor.setAttribute('target', '_blank');
       downloadAnchor.setAttribute('download', 'tedlist.apk');
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+
+      try {
+        window.open(downloadUrl, '_system');
+      } catch {
+        // ignore
+      }
     }
     onClose();
   };
@@ -45,44 +52,28 @@ export function ReleaseNotesModal({
 
   const features = [
     {
-      icon: Bell,
-      color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      title: isRtl ? 'لوگوی شیک در نوار اعلان و رفع علامت خطر' : 'Crisp Status Bar Notification Icon',
-      desc: isRtl
-        ? 'آیکون مینیمال چک‌لیست سفید در نوار اعلان گوشی بدون ارور یا علامت خطر اندروید.'
-        : 'Pure monochrome vector checkmark in the Android status bar instead of default alert triangle.',
-    },
-    {
       icon: Smartphone,
-      color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-      title: isRtl ? 'استایل شیک‌تر ویجت‌ها (سایز ۲ و ۸ اپ)' : 'Upgraded Android Widgets',
+      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+      title: isRtl ? 'ویجت‌های مهندسی‌شده و مدرن (ابسیدین و متریال)' : 'Crafted Home Screen Widgets',
       desc: isRtl
-        ? 'طراحی زیباتر با بک‌گراند عمیق نئونی، نوار پیشرفت، دکمه سریع + و تیترهای بامزه دولینگو.'
-        : 'Enhanced 2-app and 8-app home screen widgets with neon gradients and real-time sync.',
-    },
-    {
-      icon: Calendar,
-      color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-      title: isRtl ? 'یادآوری کارهای آینده (روز قبل ساعت ۸ شب)' : 'Advance Task Reminder (8 PM)',
-      desc: isRtl
-        ? 'اگر برای روزهای آینده برنامه‌ریزی کنید، شب قبل ساعت ۲۰ اعلان مرور برنامه فردا برایتان ارسال می‌شود.'
-        : 'Automatic heads-up reminder at 8:00 PM the evening before scheduled future tasks.',
+        ? 'طراحی مات و شیک با کادر ظریف ۱ پیکسلی، هایلایت لبه درونی و حذف گرادینت‌های شلوغ قبلی.'
+        : 'Obsidian & tactile dark design, 1px subtle borders, inner rim highlight, and sleek progress indicator.',
     },
     {
       icon: Zap,
-      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-      title: isRtl ? 'تست اعلان ۱۰ ثانیه‌ای و تاریخ در هدر' : '10s Notification Test & Mobile Date',
+      color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+      title: isRtl ? 'صفحه لودینگ فوق‌مینیمال و سریع' : 'Ultra-Minimal Loading Screen',
       desc: isRtl
-        ? 'دکمه تست سریع اعلان برای ۱۰ ثانیه بعد و نمایش شفاف تاریخ روز در هدر گوشی موبایل.'
-        : 'Instant 10-second notification test and persistent date display in the mobile header.',
+        ? 'لودینگ تمیز و بی‌صدا بدون انیمیشن‌های اضافه و لود آنی برنامه در کمتر از نیم ثانیه.'
+        : 'Pure minimal brand splash without synthetic delays or distracting laser animations.',
     },
     {
-      icon: CheckCircle2,
-      color: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
-      title: isRtl ? 'رفع کامل تداخل دکمه‌های هوم گوشی' : 'Fixed Android Nav Bar Overlap',
+      icon: Layers,
+      color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      title: isRtl ? 'مدیریت هوشمند به‌روزرسانی از سایدبار' : 'Smart In-App Update Management',
       desc: isRtl
-        ? 'پدینگ هوشمند و سازگاری کامل با دکمه‌های ناوبری ۳تایی پایین صفحه گوشی.'
-        : 'Optimized viewport insets and bottom bar padding for Android hardware/soft buttons.',
+        ? 'اطلاع‌رسانی یک‌باره بدون مزاحمت، با قابلیت نصب در هر زمان از منوی کناری برنامه.'
+        : 'One-time gentle notification with instant or deferred installation directly from the sidebar.',
     },
   ];
 
@@ -101,7 +92,7 @@ export function ReleaseNotesModal({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  {isRtl ? 'نسخه جدید از راه رسید! 🚀' : "What's New in tedlist! 🚀"}
+                  {isRtl ? 'نسخه جدید در دسترس است! 🚀' : 'New Update Available! 🚀'}
                 </h3>
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
                   v{version}
@@ -109,8 +100,8 @@ export function ReleaseNotesModal({
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {isRtl
-                  ? 'امکانات جدید، ویجت‌های کاربردی و ارتقای چشمگیر اپلیکیشن'
-                  : 'Exciting new features and user experience improvements'}
+                  ? 'ویجت‌های مهندسی‌شده، لودینگ مینیمال و ارتقای عملکرد برنامه'
+                  : 'Crafted home widgets, minimal splash, and overall performance upgrades'}
               </p>
             </div>
           </div>
@@ -154,7 +145,7 @@ export function ReleaseNotesModal({
             onClick={onClose}
             className="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-center"
           >
-            {isRtl ? 'عالیه، متوجه شدم!' : 'Got it, thanks!'}
+            {isRtl ? 'باشه برای بعداً' : 'Maybe Later'}
           </button>
 
           <button
@@ -162,7 +153,7 @@ export function ReleaseNotesModal({
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer shadow-sm shadow-indigo-600/30 active:scale-95 transition-all"
           >
             <Download className="w-4 h-4" />
-            <span>{isRtl ? 'دانلود مستقیم فایل نصبی (APK)' : 'Download APK Update'}</span>
+            <span>{isRtl ? 'دانلود و نصب نسخه جدید (APK)' : 'Download & Install APK'}</span>
           </button>
         </div>
       </div>
