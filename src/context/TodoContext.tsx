@@ -23,7 +23,12 @@ import {
 import { translations, TranslationDictionary } from '@/lib/translations';
 import { isAppInstalledOrNative } from '@/lib/platform';
 import { syncNativeWidget } from '@/lib/widget-bridge';
-import { scheduleNightlyReminder, schedule10sTestNotification } from '@/lib/notifications';
+import {
+  scheduleNightlyReminder,
+  scheduleTomorrowPreviewReminder,
+  schedule10sTestNotification,
+} from '@/lib/notifications';
+import { CURRENT_APP_VERSION } from '@/constants/version';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import confetti from 'canvas-confetti';
 import { Capacitor } from '@capacitor/core';
@@ -357,13 +362,28 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
       setIsTutorialOpen(true);
     }
 
-    // Version update popup
-    const seenVersion = localStorage.getItem('tedlist_seen_version');
-    const CURRENT_VERSION = '2.6.0';
-    if (seenVersion !== CURRENT_VERSION) {
-      setTimeout(() => {
-        setIsReleaseNotesOpen(true);
-      }, 700);
+    // Version update popup ONLY for installed mobile APK / PWA, NEVER for web browser
+    if (isAppInstalledOrNative()) {
+      const seenVersion = localStorage.getItem('tedlist_seen_version');
+      if (seenVersion !== CURRENT_APP_VERSION) {
+        setTimeout(() => {
+          setIsReleaseNotesOpen(true);
+        }, 800);
+      }
+
+      // Check remote GitHub repository package.json to notify installed APK users
+      try {
+        fetch('https://raw.githubusercontent.com/amiraftorrr-spec/to-do-list/main/package.json?t=' + Date.now())
+          .then((res) => (res.ok ? res.json() : null))
+          .then((remotePkg) => {
+            if (remotePkg?.version && remotePkg.version !== CURRENT_APP_VERSION) {
+              setIsReleaseNotesOpen(true);
+            }
+          })
+          .catch(() => {});
+      } catch {
+        // ignore network error
+      }
     }
 
     setIsMounted(true);
@@ -376,7 +396,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const closeReleaseNotes = useCallback(() => {
     setIsReleaseNotesOpen(false);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_seen_version', '2.6.0');
+      localStorage.setItem('tedlist_seen_version', CURRENT_APP_VERSION);
     }
   }, []);
 
@@ -779,7 +799,12 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
 
     // 2. Schedule 23:00 Tehran nightly reminder
     scheduleNightlyReminder(todayPending);
-  }, [tasks, todayStr, isMounted]);
+
+    // 3. Schedule 20:00 (8 PM Tehran) advance reminder for tomorrow's scheduled tasks
+    const curTomorrow = tomorrowStr || getTomorrowString();
+    const tomorrowTasks = tasks.filter((t) => t.dueDate === curTomorrow && !t.completed);
+    scheduleTomorrowPreviewReminder(tomorrowTasks);
+  }, [tasks, todayStr, tomorrowStr, isMounted]);
 
   // Listen for Notification Action Buttons (e.g. Complete All)
   useEffect(() => {

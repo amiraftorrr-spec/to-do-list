@@ -323,7 +323,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     recWeekly: 'Weekly',
     streakBadge: (count) => `${count}d streak`,
 
-    quickAddPlaceholder: 'Quick add (e.g. Buy groceries tomorrow 6pm #personal !high)...',
+    quickAddPlaceholder: 'Quick Add...',
     quickAddButton: 'Add Task',
     calendarTab: 'Monthly Calendar',
     plannerTab: 'Next 7 Days',
@@ -522,7 +522,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     recWeekly: 'هفتگی',
     streakBadge: (count) => `${count} روز پیوسته`,
 
-    quickAddPlaceholder: 'افزودن سریع (مثلاً: خرید شیر فردا ساعت ۱۸ #شخصی !مهم)...',
+    quickAddPlaceholder: 'افزودن سریع...',
     quickAddButton: 'ثبت کار',
     calendarTab: 'تقویم ماهانه',
     plannerTab: '۷ روز آینده',

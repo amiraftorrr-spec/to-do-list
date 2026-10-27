@@ -2,9 +2,33 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { Task } from '@/types/todo';
 
 export const NIGHTLY_NOTIFICATION_ID = 2300;
+export const TOMORROW_PREVIEW_NOTIFICATION_ID = 2000;
 export const TEST_NOTIFICATION_ID = 9999;
 export const ACTION_TYPE_ID = 'TASK_REMINDER_ACTIONS';
 export const REMINDERS_CHANNEL_ID = 'tedlist_reminders';
+
+/**
+ * Calculates the exact next 20:00 (8:00 PM) in Tehran timezone (Asia/Tehran).
+ */
+export function getNextTehran8PM(): Date {
+  const now = new Date();
+  const tehranTimeStr = now.toLocaleTimeString('en-US', {
+    timeZone: 'Asia/Tehran',
+    hour12: false,
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+  const [tHour, tMin] = tehranTimeStr.split(':').map(Number);
+
+  let hoursDiff = 20 - tHour;
+  let minDiff = 0 - tMin;
+  let totalMinutesUntil = hoursDiff * 60 + minDiff;
+  if (totalMinutesUntil <= 0) {
+    totalMinutesUntil += 24 * 60; // Next day
+  }
+
+  return new Date(now.getTime() + totalMinutesUntil * 60 * 1000);
+}
 
 /**
  * Calculates the exact next 23:00 (11:00 PM) in Tehran timezone (Asia/Tehran).
@@ -137,10 +161,67 @@ export async function scheduleNightlyReminder(pendingTodayTasks: Task[]): Promis
             allowWhileIdle: true,
           },
           channelId: REMINDERS_CHANNEL_ID,
+          smallIcon: 'ic_stat_tedlist',
+          iconColor: '#6366f1',
           actionTypeId: ACTION_TYPE_ID,
           sound: 'default',
           extra: {
             type: 'nightly_reminder',
+            taskCount: count,
+          },
+        },
+      ],
+    });
+  } catch {
+    // Graceful fallback
+  }
+}
+
+/**
+ * Schedules a reminder at 20:00 (8:00 PM Tehran time) for upcoming tomorrow's tasks.
+ */
+export async function scheduleTomorrowPreviewReminder(tomorrowTasks: Task[]): Promise<void> {
+  if (typeof window === 'undefined') return;
+
+  try {
+    if (tomorrowTasks.length === 0) {
+      await LocalNotifications.cancel({
+        notifications: [{ id: TOMORROW_PREVIEW_NOTIFICATION_ID }],
+      });
+      return;
+    }
+
+    const hasPermission = await checkAndRequestNotificationPermission();
+    if (!hasPermission) return;
+
+    await initNotificationActions();
+
+    const targetDate = getNextTehran8PM();
+    const count = tomorrowTasks.length;
+    const taskTitles = tomorrowTasks.map((t) => t.title);
+
+    let title = 'برنامه فردات آماده‌ست! 📅';
+    let body =
+      count === 1
+        ? `فردا ۱ کار برنامه‌ریزی‌شده داری: "${taskTitles[0]}"`
+        : `فردا ${count} کار در برنامه داری (${taskTitles.slice(0, 2).join('، ')}...). شب آرامی داشته باشی! ✨`;
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: TOMORROW_PREVIEW_NOTIFICATION_ID,
+          title,
+          body,
+          schedule: {
+            at: targetDate,
+            allowWhileIdle: true,
+          },
+          channelId: REMINDERS_CHANNEL_ID,
+          smallIcon: 'ic_stat_tedlist',
+          iconColor: '#6366f1',
+          sound: 'default',
+          extra: {
+            type: 'tomorrow_preview',
             taskCount: count,
           },
         },
@@ -188,6 +269,8 @@ export async function schedule10sTestNotification(pendingTodayTasks: Task[]): Pr
             allowWhileIdle: true,
           },
           channelId: REMINDERS_CHANNEL_ID,
+          smallIcon: 'ic_stat_tedlist',
+          iconColor: '#6366f1',
           actionTypeId: ACTION_TYPE_ID,
           sound: 'default',
           extra: {

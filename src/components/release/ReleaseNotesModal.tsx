@@ -18,7 +18,7 @@ import { triggerHaptic } from '@/lib/haptics';
 export function ReleaseNotesModal({
   isOpen,
   onClose,
-  version = '2.6.0',
+  version = '2.7.0',
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -45,52 +45,44 @@ export function ReleaseNotesModal({
 
   const features = [
     {
-      icon: Smartphone,
-      color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-      title: isRtl ? 'ویجت‌های تعاملی صفحه اصلی (سایز ۲ و ۸ اپ)' : 'Duolingo-Style Android Widgets',
-      desc: isRtl
-        ? 'ویجت کوچک (۲ اپ) و بزرگ (۸ اپ) با کاراکتر بامزه، پیشرفت لحظه‌ای، چک‌باکس و افزودن سریع.'
-        : 'Small (2x1) & Large (4x2) home screen widgets with real-time sync, progress, and quick-add.',
-    },
-    {
       icon: Bell,
       color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      title: isRtl ? 'اعلان یادآوری ساعت ۱۱ شب تهران' : '11:00 PM Tehran Nightly Reminder',
+      title: isRtl ? 'لوگوی شیک در نوار اعلان و رفع علامت خطر' : 'Crisp Status Bar Notification Icon',
       desc: isRtl
-        ? 'یادآوری خودکار کارهای انجام‌نشده همراه با دکمه تیک زدن مستقیم از داخل پنل اعلان‌ها.'
-        : 'Automatic nightly reminder for unfinished tasks with inline action button to mark all done.',
+        ? 'آیکون مینیمال چک‌لیست سفید در نوار اعلان گوشی بدون ارور یا علامت خطر اندروید.'
+        : 'Pure monochrome vector checkmark in the Android status bar instead of default alert triangle.',
     },
     {
-      icon: Zap,
-      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-      title: isRtl ? 'دکمه تست اعلان ۱۰ ثانیه‌ای' : '10-Second Notification Test',
+      icon: Smartphone,
+      color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+      title: isRtl ? 'استایل شیک‌تر ویجت‌ها (سایز ۲ و ۸ اپ)' : 'Upgraded Android Widgets',
       desc: isRtl
-        ? 'با زدن آیکون زنگوله در هدر، دقیقاً پس از ۱۰ ثانیه یک اعلان غنی برای تست ارسال می‌شود.'
-        : 'Instant test button in the top bar to verify background notifications in 10 seconds.',
+        ? 'طراحی زیباتر با بک‌گراند عمیق نئونی، نوار پیشرفت، دکمه سریع + و تیترهای بامزه دولینگو.'
+        : 'Enhanced 2-app and 8-app home screen widgets with neon gradients and real-time sync.',
     },
     {
       icon: Calendar,
       color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-      title: isRtl ? 'تقویم ماهانه کامل و خلوت شدن آینده' : 'Full Shamsi Monthly Calendar',
+      title: isRtl ? 'یادآوری کارهای آینده (روز قبل ساعت ۸ شب)' : 'Advance Task Reminder (8 PM)',
       desc: isRtl
-        ? 'حذف لیست شلوغ قبلی و جایگزینی با تقویم هوشمند ماهانه برای روزهای نامحدود در آینده.'
-        : 'Plan ahead for any day in the future with the clean, interactive monthly calendar.',
+        ? 'اگر برای روزهای آینده برنامه‌ریزی کنید، شب قبل ساعت ۲۰ اعلان مرور برنامه فردا برایتان ارسال می‌شود.'
+        : 'Automatic heads-up reminder at 8:00 PM the evening before scheduled future tasks.',
     },
     {
-      icon: Flame,
-      color: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
-      title: isRtl ? 'تکرار خودکار و زنجیره استمرار (Streaks)' : 'Habits & Streak Counters',
+      icon: Zap,
+      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+      title: isRtl ? 'تست اعلان ۱۰ ثانیه‌ای و تاریخ در هدر' : '10s Notification Test & Mobile Date',
       desc: isRtl
-        ? 'امکان تکرار روزانه، هفتگی و روزهای کاری تسک‌ها با نشانگر آتش و روزهای متوالی.'
-        : 'Daily and weekly repeating habits with visual streak counters and automatic rollover.',
+        ? 'دکمه تست سریع اعلان برای ۱۰ ثانیه بعد و نمایش شفاف تاریخ روز در هدر گوشی موبایل.'
+        : 'Instant 10-second notification test and persistent date display in the mobile header.',
     },
     {
       icon: CheckCircle2,
       color: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
-      title: isRtl ? 'رفع کامل تداخل دکمه‌های ناوبری گوشی' : 'Android Safe Areas & Insets',
+      title: isRtl ? 'رفع کامل تداخل دکمه‌های هوم گوشی' : 'Fixed Android Nav Bar Overlap',
       desc: isRtl
-        ? 'بهبود کامل فاصله از لبه‌های پایینی گوشی تا دکمه‌های بازگشت و هوم با برنامه تداخل نکنند.'
-        : 'Optimized bottom padding and viewport insets to prevent Android 3-button bar overlaps.',
+        ? 'پدینگ هوشمند و سازگاری کامل با دکمه‌های ناوبری ۳تایی پایین صفحه گوشی.'
+        : 'Optimized viewport insets and bottom bar padding for Android hardware/soft buttons.',
     },
   ];
 

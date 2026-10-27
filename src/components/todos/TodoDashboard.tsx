@@ -347,7 +347,7 @@ export function TodoDashboard() {
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">
-              tedlist v2.6.0
+              tedlist v2.7.0
             </span>
           </div>
         </main>
@@ -416,7 +416,7 @@ export function TodoDashboard() {
       <BackupModal />
       <OnboardingTutorialModal />
       <PwaInstallPromptModal />
-      <ReleaseNotesModal isOpen={isReleaseNotesOpen} onClose={closeReleaseNotes} version="2.6.0" />
+      <ReleaseNotesModal isOpen={isReleaseNotesOpen} onClose={closeReleaseNotes} version="2.7.0" />
     </div>
   );
 }

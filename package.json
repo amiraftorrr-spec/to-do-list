@@ -1,6 +1,6 @@
 {
   "name": "todo",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "scripts": {
     "build:apk": "export JAVA_HOME=\"${JAVA_HOME:-$HOME/.jdk/21}\" && export ANDROID_HOME=\"${ANDROID_HOME:-$HOME/Android/Sdk}\" && export PATH=\"$JAVA_HOME/bin:$PATH\" && next build && rm -f out/*.apk && cap sync android && cd android && ./gradlew assembleDebug && cp app/build/outputs/apk/debug/app-debug.apk ../tedlist.apk && cp app/build/outputs/apk/debug/app-debug.apk ../public/tedlist.apk",
