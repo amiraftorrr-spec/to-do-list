@@ -26,7 +26,6 @@ import { syncNativeWidget } from '@/lib/widget-bridge';
 import {
   scheduleNightlyReminder,
   scheduleTomorrowPreviewReminder,
-  schedule10sTestNotification,
 } from '@/lib/notifications';
 import { CURRENT_APP_VERSION } from '@/constants/version';
 import { LocalNotifications } from '@capacitor/local-notifications';
@@ -117,9 +116,6 @@ interface TodoContextType {
 
   // Notifications & Widget
   completeAllTodayTasks: () => void;
-  runNotificationTest10s: () => Promise<boolean>;
-  testNotificationToast: string | null;
-  clearTestNotificationToast: () => void;
 
   // Release Notes Modal
   isReleaseNotesOpen: boolean;
@@ -763,28 +759,6 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     );
   }, [updateTasks, todayStr]);
 
-  const [testNotificationToast, setTestNotificationToast] = useState<string | null>(null);
-
-  const clearTestNotificationToast = useCallback(() => {
-    setTestNotificationToast(null);
-  }, []);
-
-  const runNotificationTest10s = useCallback(async (): Promise<boolean> => {
-    const curToday = todayStr || getTodayString();
-    const todayPending = tasks.filter((t) => t.dueDate === curToday && !t.completed);
-    const success = await schedule10sTestNotification(todayPending);
-    if (success) {
-      triggerHaptic('success');
-      setTestNotificationToast(
-        lang === 'fa'
-          ? 'اعلان برای ۱۰ ثانیه دیگر زمان‌بندی شد! می‌توانید برنامه را ببندید تا دریافت آن را تست کنید.'
-          : 'Notification scheduled for 10s! Close the app to test.'
-      );
-      setTimeout(() => setTestNotificationToast(null), 8000);
-    }
-    return success;
-  }, [tasks, todayStr, lang]);
-
   // Sync Native Android Widget & Schedule Nightly 23:00 Tehran Reminder
   useEffect(() => {
     if (!isMounted || typeof window === 'undefined') return;
@@ -889,9 +863,6 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         openTutorial,
         completeTutorial,
         completeAllTodayTasks,
-        runNotificationTest10s,
-        testNotificationToast,
-        clearTestNotificationToast,
         isReleaseNotesOpen,
         openReleaseNotes,
         closeReleaseNotes,

@@ -288,7 +288,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               className="font-mono font-medium shrink-0 ps-2 hover:text-indigo-400 transition-colors cursor-pointer"
               title="مشاهده تغییرات نسخه جدید"
             >
-              v2.7.0
+              v2.7.3
             </button>
           </div>
           <div className="flex justify-end text-[10px] font-mono text-slate-400 dark:text-slate-500">

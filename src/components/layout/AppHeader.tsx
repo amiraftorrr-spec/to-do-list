@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Priority } from '@/types/todo';
-import { Search, Plus, Filter, X, Sun, Moon, Bell } from 'lucide-react';
+import { Search, Plus, Filter, X, Sun, Moon } from 'lucide-react';
 import { formatDisplayDate } from '@/lib/date-utils';
 
 export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void }) {
@@ -15,7 +15,6 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
     selectedPriority,
     setSelectedPriority,
     openCreateModal,
-    runNotificationTest10s,
     lang,
     toggleLanguage,
     theme,
@@ -95,17 +94,6 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
 
         {/* Right actions: Theme toggle, Language toggle, Review & New task */}
         <div className="flex items-center gap-2">
-          {/* Test 10s Notification Button */}
-          <button
-            onClick={runNotificationTest10s}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
-            title={lang === 'fa' ? 'تست اعلان (۱۰ ثانیه بعد)' : 'Test 10s Notification'}
-            aria-label="Test Notification"
-          >
-            <Bell className="w-3.5 h-3.5 text-indigo-500" />
-            <span className="text-[11px] font-medium">{lang === 'fa' ? 'تست اعلان ۱۰ ثانیه' : 'Test 10s'}</span>
-          </button>
-
           {/* Theme Switcher Button */}
           <button
             onClick={(e) => {

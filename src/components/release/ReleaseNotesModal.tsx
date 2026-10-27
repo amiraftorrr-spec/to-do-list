@@ -18,7 +18,7 @@ import { triggerHaptic } from '@/lib/haptics';
 export function ReleaseNotesModal({
   isOpen,
   onClose,
-  version = '2.7.0',
+  version = '2.7.3',
 }: {
   isOpen: boolean;
   onClose: () => void;

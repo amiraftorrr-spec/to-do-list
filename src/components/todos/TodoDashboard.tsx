@@ -41,8 +41,6 @@ export function TodoDashboard() {
     openCreateModal,
     isSaturdayToday,
     setIsSaturdayReviewModalOpen,
-    testNotificationToast,
-    clearTestNotificationToast,
     isReleaseNotesOpen,
     closeReleaseNotes,
     t,
@@ -154,22 +152,6 @@ export function TodoDashboard() {
             paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 20px) + 5.5rem)',
           }}
         >
-          {/* Notification Toast Alert */}
-          {testNotificationToast && (
-            <div className="max-w-md mx-auto p-3 rounded-xl bg-indigo-600/90 text-white text-xs flex items-center justify-between gap-3 shadow-lg shadow-indigo-600/20 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="flex items-center gap-2">
-                <span className="text-base">🔔</span>
-                <span className="font-medium">{testNotificationToast}</span>
-              </div>
-              <button
-                onClick={clearTestNotificationToast}
-                className="p-1 rounded-md hover:bg-white/20 text-white/80 hover:text-white cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-
           {/* VIEW: TODAY */}
           {viewMode === 'today' && (
             <div className="max-w-3xl mx-auto space-y-6">
@@ -347,67 +329,71 @@ export function TodoDashboard() {
           {/* Version tag */}
           <div className="pt-10 pb-4 text-center">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">
-              tedlist v2.7.0
+              tedlist v2.7.3
             </span>
           </div>
         </main>
 
         {/* Mobile Bottom Navigation Bar */}
-        <div
-          className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur-md flex items-center justify-around pt-2 px-3 shrink-0 shadow-lg z-20"
+        <nav
+          className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur-md shrink-0 shadow-lg z-20 w-full"
           style={{
             paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 18px)',
           }}
         >
-          <button
-            onClick={() => setViewMode('today')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'today' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
-            }`}
-          >
-            <Sun className="w-4 h-4" />
-            <span>{t.today}</span>
-          </button>
+          <div className="grid grid-cols-5 items-center justify-items-center w-full max-w-md mx-auto pt-2 px-1">
+            <button
+              onClick={() => setViewMode('today')}
+              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'today' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              }`}
+            >
+              <Sun className="w-4 h-4" />
+              <span className="truncate max-w-[58px]">{t.today}</span>
+            </button>
 
-          <button
-            onClick={() => setViewMode('upcoming')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'upcoming' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
-            }`}
-          >
-            <CalendarDays className="w-4 h-4" />
-            <span>{t.planner}</span>
-          </button>
+            <button
+              onClick={() => setViewMode('upcoming')}
+              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'upcoming' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              }`}
+            >
+              <CalendarDays className="w-4 h-4" />
+              <span className="truncate max-w-[58px]">{t.planner}</span>
+            </button>
 
-          {/* Quick Floating Add */}
-          <button
-            onClick={() => openCreateModal()}
-            className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center -mt-6 shadow-xl shadow-indigo-600/30 active:scale-90 transition-transform cursor-pointer border-2 border-[var(--color-card)] font-bold text-lg"
-            title={t.newTask}
-          >
-            <Plus className="w-5 h-5" />
-          </button>
+            {/* Quick Floating Add - Dead Center */}
+            <div className="flex items-center justify-center -mt-6">
+              <button
+                onClick={() => openCreateModal()}
+                className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center shadow-xl shadow-indigo-600/35 active:scale-90 transition-transform cursor-pointer border-2 border-[var(--color-card)] font-bold text-lg"
+                title={t.newTask}
+              >
+                <Plus className="w-5 h-5 stroke-[2.5]" />
+              </button>
+            </div>
 
-          <button
-            onClick={() => setViewMode('completed')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'completed' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
-            }`}
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{t.completedLog}</span>
-          </button>
+            <button
+              onClick={() => setViewMode('completed')}
+              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'completed' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span className="truncate max-w-[58px]">{t.completedLog}</span>
+            </button>
 
-          <button
-            onClick={() => setViewMode('all')}
-            className={`flex flex-col items-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-              viewMode === 'all' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span>{t.allTasks}</span>
-          </button>
-        </div>
+            <button
+              onClick={() => setViewMode('all')}
+              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'all' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span className="truncate max-w-[58px]">{t.allTasks}</span>
+            </button>
+          </div>
+        </nav>
       </div>
 
       {/* Global Modals */}
@@ -416,7 +402,7 @@ export function TodoDashboard() {
       <BackupModal />
       <OnboardingTutorialModal />
       <PwaInstallPromptModal />
-      <ReleaseNotesModal isOpen={isReleaseNotesOpen} onClose={closeReleaseNotes} version="2.7.0" />
+      <ReleaseNotesModal isOpen={isReleaseNotesOpen} onClose={closeReleaseNotes} version="2.7.3" />
     </div>
   );
 }
