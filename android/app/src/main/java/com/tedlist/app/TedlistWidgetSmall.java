@@ -32,13 +32,18 @@ public class TedlistWidgetSmall extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_small_root, pendingIntent);
 
         // Dynamic status & sleek craft typography
-        if (totalCount == 0 || pendingCount == 0) {
-            views.setTextViewText(R.id.widget_small_headline, "همه تیک خوردن ✨");
-            views.setTextViewText(R.id.widget_small_sub, "فعلاً کاری نداری");
+        if (totalCount == 0) {
+            views.setTextViewText(R.id.widget_small_headline, "کاری اضافه نکردی");
+            views.setTextViewText(R.id.widget_small_sub, "امروز برنامه‌ای ثبت نشده");
+            views.setProgressBar(R.id.widget_small_progress, 100, 0, false);
+            views.setTextViewText(R.id.widget_small_percent, "۰٪");
+        } else if (pendingCount == 0) {
+            views.setTextViewText(R.id.widget_small_headline, "همه کارها تموم شد!");
+            views.setTextViewText(R.id.widget_small_sub, "همه تیک خوردن ✨");
             views.setProgressBar(R.id.widget_small_progress, 100, 100, false);
-            views.setTextViewText(R.id.widget_small_percent, "100%");
+            views.setTextViewText(R.id.widget_small_percent, "۱۰۰٪");
         } else {
-            views.setTextViewText(R.id.widget_small_headline, "ادامه بده");
+            views.setTextViewText(R.id.widget_small_headline, "روزت رو مرتب کن");
             views.setTextViewText(R.id.widget_small_sub, pendingCount + " کار باقی‌مانده");
             views.setProgressBar(R.id.widget_small_progress, 100, progressPercent, false);
             views.setTextViewText(R.id.widget_small_percent, progressPercent + "%");

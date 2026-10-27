@@ -3,93 +3,167 @@
     android:id="@+id/widget_large_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_bg_a"
+    android:background="@drawable/widget_bg_b"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="14dp">
 
-    <!-- Top Bar: Brand, Status, and Action -->
+    <!-- Top Bar: Quick Add (Left), Headline & Brand (Right) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:contentDescription="Tedlist"
-            android:src="@drawable/ic_tedlist_mark"
-            android:background="@drawable/widget_task_bg_a"
-            android:padding="4dp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/widget_large_headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="امروز رو جمع‌وجور کنیم"
-                android:textColor="@color/ted_a_text"
-                android:textSize="11.5sp" />
-
-            <TextView
-                android:id="@+id/widget_large_sub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:text="۲ کار باقی‌مانده برای امروز"
-                android:textColor="@color/ted_a_secondary"
-                android:textSize="9.5sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/widget_large_percent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="30dp"
-            android:gravity="center"
-            android:fontFamily="monospace"
-            android:text="60%"
-            android:textColor="@color/ted_a_accent"
-            android:textSize="10.5sp"
-            android:textStyle="bold" />
-
+        <!-- Quick Add Action Button (Left) -->
         <ImageButton
             android:id="@+id/widget_large_add_btn"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/widget_btn_bg_a"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/widget_btn_bg_b"
             android:contentDescription="افزودن کار"
             android:src="@drawable/ic_widget_plus"
-            android:tint="@color/ted_a_button_text"
-            android:padding="6dp" />
+            android:tint="@color/ted_b_button_text"
+            android:padding="7dp" />
+
+        <!-- Spacer -->
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Headline & Subtitle & Brand Icon (Right) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/widget_large_headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="روزت رو مرتب کن"
+                    android:textColor="@color/ted_b_text"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/widget_large_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="۲ کار باقی‌مانده"
+                    android:textColor="@color/ted_b_secondary"
+                    android:textSize="9.5sp" />
+            </LinearLayout>
+
+            <!-- Brand Icon Card -->
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/widget_task_bg_b"
+                android:contentDescription="Tedlist"
+                android:src="@drawable/ic_widget_check_brand"
+                android:padding="3dp" />
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Progress Track & Percentage -->
-    <ProgressBar
-        android:id="@+id/widget_large_progress"
-        style="?android:attr/progressBarStyleHorizontal"
+    <!-- 10-Segment Progress Track -->
+    <LinearLayout
+        android:id="@+id/widget_large_segmented_progress"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_marginTop="8dp"
-        android:max="100"
-        android:progress="60"
-        android:progressDrawable="@drawable/widget_progress_bar_a" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="6dp"
-        android:background="@color/ted_a_border" />
+        <ImageView
+            android:id="@+id/widget_seg_1"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_inactive" />
+
+        <ImageView
+            android:id="@+id/widget_seg_2"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_inactive" />
+
+        <ImageView
+            android:id="@+id/widget_seg_3"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_inactive" />
+
+        <ImageView
+            android:id="@+id/widget_seg_4"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_inactive" />
+
+        <ImageView
+            android:id="@+id/widget_seg_5"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_inactive" />
+
+        <ImageView
+            android:id="@+id/widget_seg_6"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_active" />
+
+        <ImageView
+            android:id="@+id/widget_seg_7"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_active" />
+
+        <ImageView
+            android:id="@+id/widget_seg_8"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_active" />
+
+        <ImageView
+            android:id="@+id/widget_seg_9"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/widget_segment_active" />
+
+        <ImageView
+            android:id="@+id/widget_seg_10"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:layout_weight="1"
+            android:src="@drawable/widget_segment_active" />
+    </LinearLayout>
 
     <!-- Tasks List Container -->
     <LinearLayout
@@ -103,37 +177,42 @@
             android:id="@+id/widget_task_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_task_bg_a"
+            android:background="@drawable/widget_task_bg_b"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="5dp"
+            android:paddingStart="12dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="7dp"
             android:layout_marginBottom="4dp">
 
-            <View
-                android:layout_width="5dp"
-                android:layout_height="5dp"
-                android:background="#E68A97" />
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/widget_task_radio_b" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/widget_task_1_title"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="کار اول"
-                android:textColor="@color/ted_a_text"
-                android:textSize="10.5sp" />
+                android:textColor="@color/ted_b_text"
+                android:textSize="11.5sp"
+                android:fontFamily="sans-serif-medium" />
 
-            <View
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:background="@drawable/widget_check_a" />
+            <ImageView
+                android:id="@+id/widget_task_1_dot"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:layout_marginStart="6dp"
+                android:src="@drawable/widget_dot_amber" />
         </LinearLayout>
 
         <!-- Task 2 -->
@@ -141,37 +220,42 @@
             android:id="@+id/widget_task_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_task_bg_a"
+            android:background="@drawable/widget_task_bg_b"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="5dp"
+            android:paddingStart="12dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="7dp"
             android:layout_marginBottom="4dp">
 
-            <View
-                android:layout_width="5dp"
-                android:layout_height="5dp"
-                android:background="#E5BC78" />
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/widget_task_radio_b" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/widget_task_2_title"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="کار دوم"
-                android:textColor="@color/ted_a_text"
-                android:textSize="10.5sp" />
+                android:textColor="@color/ted_b_text"
+                android:textSize="11.5sp"
+                android:fontFamily="sans-serif-medium" />
 
-            <View
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:background="@drawable/widget_check_a" />
+            <ImageView
+                android:id="@+id/widget_task_2_dot"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:layout_marginStart="6dp"
+                android:src="@drawable/widget_dot_amber" />
         </LinearLayout>
 
         <!-- Task 3 -->
@@ -179,36 +263,41 @@
             android:id="@+id/widget_task_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_task_bg_a"
+            android:background="@drawable/widget_task_bg_b"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="5dp">
+            android:paddingStart="12dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="7dp">
 
-            <View
-                android:layout_width="5dp"
-                android:layout_height="5dp"
-                android:background="#758196" />
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/widget_task_radio_b" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/widget_task_3_title"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="کار سوم"
-                android:textColor="@color/ted_a_text"
-                android:textSize="10.5sp" />
+                android:textColor="@color/ted_b_text"
+                android:textSize="11.5sp"
+                android:fontFamily="sans-serif-medium" />
 
-            <View
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:background="@drawable/widget_check_a" />
+            <ImageView
+                android:id="@+id/widget_task_3_dot"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:layout_marginStart="6dp"
+                android:src="@drawable/widget_dot_amber" />
         </LinearLayout>
     </LinearLayout>
 
@@ -216,13 +305,13 @@
     <TextView
         android:id="@+id/widget_large_empty"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:text="همه کارهای امروز تمام شد! ✨"
-        android:textColor="@color/ted_a_secondary"
-        android:textSize="11sp"
+        android:textColor="@color/ted_b_secondary"
+        android:textSize="11.5sp"
         android:fontFamily="sans-serif-medium"
         android:visibility="gone" />
 </LinearLayout>

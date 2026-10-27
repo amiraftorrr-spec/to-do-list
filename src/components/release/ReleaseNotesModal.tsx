@@ -30,19 +30,11 @@ export function ReleaseNotesModal({
   const handleDownloadUpdate = () => {
     triggerHaptic('success');
     if (typeof window !== 'undefined') {
-      const downloadUrl = 'https://github.com/amiraftorrr-spec/to-do-list/raw/main/tedlist.apk';
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute('href', downloadUrl);
-      downloadAnchor.setAttribute('target', '_blank');
-      downloadAnchor.setAttribute('download', 'tedlist.apk');
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-
+      const siteUrl = 'https://tedlist.vercel.app';
       try {
-        window.open(downloadUrl, '_system');
+        window.open(siteUrl, '_system');
       } catch {
-        // ignore
+        window.location.href = siteUrl;
       }
     }
     onClose();
@@ -100,8 +92,8 @@ export function ReleaseNotesModal({
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {isRtl
-                  ? 'ویجت‌های مهندسی‌شده، لودینگ مینیمال و ارتقای عملکرد برنامه'
-                  : 'Crafted home widgets, minimal splash, and overall performance upgrades'}
+                  ? 'نسخه جدید در سایت tedlist.vercel.app در دسترس است'
+                  : 'New update available on tedlist.vercel.app'}
               </p>
             </div>
           </div>
@@ -153,7 +145,7 @@ export function ReleaseNotesModal({
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer shadow-sm shadow-indigo-600/30 active:scale-95 transition-all"
           >
             <Download className="w-4 h-4" />
-            <span>{isRtl ? 'دانلود و نصب نسخه جدید (APK)' : 'Download & Install APK'}</span>
+            <span>{isRtl ? 'ورود به سایت و نصب نسخه جدید' : 'Open Website & Update'}</span>
           </button>
         </div>
       </div>

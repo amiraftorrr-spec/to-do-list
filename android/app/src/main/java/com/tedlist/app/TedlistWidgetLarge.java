@@ -48,18 +48,48 @@ public class TedlistWidgetLarge extends AppWidgetProvider {
         );
         views.setOnClickPendingIntent(R.id.widget_large_add_btn, addPendingIntent);
 
-        views.setProgressBar(R.id.widget_large_progress, 100, progressPercent, false);
-        views.setTextViewText(R.id.widget_large_percent, progressPercent + "%");
+        int[] segIds = {
+            R.id.widget_seg_1, R.id.widget_seg_2, R.id.widget_seg_3, R.id.widget_seg_4, R.id.widget_seg_5,
+            R.id.widget_seg_6, R.id.widget_seg_7, R.id.widget_seg_8, R.id.widget_seg_9, R.id.widget_seg_10
+        };
 
-        if (totalCount == 0 || pendingCount == 0) {
-            views.setTextViewText(R.id.widget_large_headline, "همه کارها تموم شد!");
-            views.setTextViewText(R.id.widget_large_sub, "همه تیک خوردن ✨");
+        if (totalCount == 0) {
+            views.setTextViewText(R.id.widget_large_headline, "کاری اضافه نکردی");
+            views.setTextViewText(R.id.widget_large_sub, "امروز برنامه‌ای ثبت نشده");
+
+            // All segments inactive
+            for (int segId : segIds) {
+                views.setImageViewResource(segId, R.drawable.widget_segment_inactive);
+            }
 
             views.setViewVisibility(R.id.widget_large_tasks_container, View.GONE);
             views.setViewVisibility(R.id.widget_large_empty, View.VISIBLE);
+            views.setTextViewText(R.id.widget_large_empty, "امروز کاری اضافه نکردی! با دکمه + شروع کن ✨");
+        } else if (pendingCount == 0) {
+            views.setTextViewText(R.id.widget_large_headline, "همه کارها تموم شد!");
+            views.setTextViewText(R.id.widget_large_sub, "همه تیک خوردن ✨");
+
+            // All segments active
+            for (int segId : segIds) {
+                views.setImageViewResource(segId, R.drawable.widget_segment_active);
+            }
+
+            views.setViewVisibility(R.id.widget_large_tasks_container, View.GONE);
+            views.setViewVisibility(R.id.widget_large_empty, View.VISIBLE);
+            views.setTextViewText(R.id.widget_large_empty, "همه کارهای امروز تمام شد! خسته نباشی ✨");
         } else {
-            views.setTextViewText(R.id.widget_large_headline, "امروز رو جمع‌وجور کنیم");
-            views.setTextViewText(R.id.widget_large_sub, pendingCount + " کار باقی‌مانده برای امروز");
+            views.setTextViewText(R.id.widget_large_headline, "روزت رو مرتب کن");
+            views.setTextViewText(R.id.widget_large_sub, pendingCount + " کار باقی‌مانده");
+
+            // Segments active based on progress (fills RTL from right to left)
+            int activeSegments = Math.round((progressPercent / 100f) * 10f);
+            for (int i = 0; i < 10; i++) {
+                boolean isFilled = (9 - i) < activeSegments;
+                views.setImageViewResource(
+                    segIds[i],
+                    isFilled ? R.drawable.widget_segment_active : R.drawable.widget_segment_inactive
+                );
+            }
 
             views.setViewVisibility(R.id.widget_large_empty, View.GONE);
             views.setViewVisibility(R.id.widget_large_tasks_container, View.VISIBLE);
