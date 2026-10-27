@@ -45,6 +45,5 @@ android/app/build/
 android/.gradle/
 android/build/
 android/local.properties
-/tedlist.apk
 android/app/src/main/assets/public/*.apk
 

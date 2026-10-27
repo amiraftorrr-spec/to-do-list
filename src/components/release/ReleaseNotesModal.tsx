@@ -24,13 +24,24 @@ export function ReleaseNotesModal({
   onClose: () => void;
   version?: string;
 }) {
-  const { lang } = useTodo();
+  const { lang, isNative } = useTodo();
 
   if (!isOpen) return null;
 
   const handleDownloadUpdate = async () => {
     triggerHaptic('success');
-    await openExternalUrl('https://tedlist.vercel.app/');
+    if (isNative) {
+      await openExternalUrl('https://tedlist.vercel.app/');
+    } else {
+      if (typeof window !== 'undefined') {
+        const a = document.createElement('a');
+        a.href = '/tedlist.apk';
+        a.download = 'tedlist.apk';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+    }
     onClose();
   };
 
@@ -86,7 +97,9 @@ export function ReleaseNotesModal({
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {isRtl
-                  ? 'نسخه جدید در سایت tedlist.vercel.app در دسترس است'
+                  ? isNative
+                    ? 'نسخه جدید در سایت tedlist.vercel.app در دسترس است'
+                    : 'فایل نصبی مستقیم نسخه جدید را دریافت کنید'
                   : 'New update available on tedlist.vercel.app'}
               </p>
             </div>
@@ -139,7 +152,15 @@ export function ReleaseNotesModal({
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer shadow-sm shadow-indigo-600/30 active:scale-95 transition-all"
           >
             <Download className="w-4 h-4" />
-            <span>{isRtl ? 'ورود به سایت و نصب نسخه جدید' : 'Open Website & Update'}</span>
+            <span>
+              {isRtl
+                ? isNative
+                  ? 'ورود به سایت و دانلود نسخه جدید'
+                  : 'دانلود مستقیم فایل نصبی (APK)'
+                : isNative
+                  ? 'Open Website & Update'
+                  : 'Download Latest APK'}
+            </span>
           </button>
         </div>
       </div>
