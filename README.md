@@ -1,9 +1,9 @@
-# تدلیست | Tedlist (v2.8.0) 🚀
+# تدلیست | Tedlist (v2.8.1) 🚀
 
 > برنامه مدیریت هوشمند کارهای روزمره، ویجت‌های حرفه‌ای اندروید با فونت شبنم و عملکرد کاملاً آفلاین و محلی.
 
 ### 🌐 [ورود به سایت تدلیست: https://tedlist.vercel.app/](https://tedlist.vercel.app/)
-### 📲 [دانلود مستقیم آخرین نسخه اندروید (v2.8.0 - APK)](https://github.com/amiraftorrr-spec/to-do-list/raw/main/tedlist.apk)
+### 📲 [دانلود مستقیم آخرین نسخه اندروید (v2.8.1 - APK)](https://github.com/amiraftorrr-spec/to-do-list/raw/main/tedlist.apk)
 
 ---
 

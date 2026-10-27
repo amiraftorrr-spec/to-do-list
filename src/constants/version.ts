@@ -1,5 +1,5 @@
-export const CURRENT_APP_VERSION = '2.8.0';
-export const CURRENT_APP_VERSION_CODE = 13;
+export const CURRENT_APP_VERSION = '2.8.1';
+export const CURRENT_APP_VERSION_CODE = 14;
 
 /**
  * Checks if remote semantic version is strictly greater than current version.
