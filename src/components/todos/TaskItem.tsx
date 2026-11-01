@@ -1,22 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Task, Priority } from '@/types/todo';
 import { useTodo } from '@/context/TodoContext';
-import { formatDisplayDate, isOverdue, getTodayString, getTomorrowString, addDays } from '@/lib/date-utils';
+import {
+  formatDisplayDate,
+  isOverdue,
+  addDays,
+  getNextSaturday,
+  parseDate,
+  getLocalDateString,
+  formatFullDate,
+} from '@/lib/date-utils';
+import { getCalendarMonthData, shiftMonth } from '@/lib/calendar-utils';
+import { triggerHaptic } from '@/lib/haptics';
 import {
   Check,
   Clock,
   Calendar,
+  CalendarDays,
+  Sun,
   MoreVertical,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
+  ChevronLeft,
   Plus,
   Trash2,
   Pencil,
   ArrowRightCircle,
   Repeat,
   Flame,
+  RotateCcw,
+  X,
 } from 'lucide-react';
 
 export function TaskItem({ task }: { task: Task }) {
@@ -36,23 +52,92 @@ export function TaskItem({ task }: { task: Task }) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
+  const [isChoosingDate, setIsChoosingDate] = useState(false);
+  const [calendarRefDate, setCalendarRefDate] = useState<Date>(() =>
+    task.dueDate ? parseDate(task.dueDate) : new Date()
+  );
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
+
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuDropdownRef = useRef<HTMLDivElement>(null);
+
+  const isTaskToday = todayStr ? task.dueDate === todayStr : false;
+  const isTaskTomorrow = tomorrowStr ? task.dueDate === tomorrowStr : false;
+
+  const in2DaysStr = todayStr ? addDays(todayStr, 2) : '';
+  const nextSatStr = todayStr ? getLocalDateString(getNextSaturday(parseDate(todayStr))) : '';
+  const nextWeekStr = todayStr ? addDays(todayStr, 7) : '';
+
+  const isRtl = lang === 'fa';
+  const SWIPE_THRESHOLD = 70;
+
+  const miniMonthData = useMemo(() => {
+    return getCalendarMonthData(calendarRefDate, lang);
+  }, [calendarRefDate, lang]);
+
+  const handleMiniPrevMonth = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCalendarRefDate((prev) => shiftMonth(prev, -1, lang));
+  };
+
+  const handleMiniNextMonth = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCalendarRefDate((prev) => shiftMonth(prev, 1, lang));
+  };
 
   // Mobile swipe gestures
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
+  const hasTriggeredHapticRef = useRef(false);
 
-  const isRtl = lang === 'fa';
-  const SWIPE_THRESHOLD = 70;
+  // Close menu on click / tap outside
+  useEffect(() => {
+    if (!showMenu) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (
+        menuDropdownRef.current &&
+        !menuDropdownRef.current.contains(target) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(target)
+      ) {
+        setShowMenu(false);
+        setIsChoosingDate(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => {
+      document.removeEventListener('pointerdown', handleClickOutside);
+    };
+  }, [showMenu]);
+
+  const handleToggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!showMenu && menuButtonRef.current) {
+      const rect = menuButtonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      // If there is less than 280px below and enough space above, open upward
+      setOpenUpward(spaceBelow < 280 && rect.top > 260);
+      setIsChoosingDate(false);
+      setCalendarRefDate(task.dueDate ? parseDate(task.dueDate) : new Date());
+    } else {
+      setIsChoosingDate(false);
+    }
+    setShowMenu((prev) => !prev);
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (showMenu || isAddingSubtask) return;
     setTouchStartX(e.touches[0].clientX);
     setTouchStartY(e.touches[0].clientY);
     setIsSwiping(false);
+    hasTriggeredHapticRef.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -67,8 +152,15 @@ export function TaskItem({ task }: { task: Task }) {
 
     if (Math.abs(diffX) > 10) {
       setIsSwiping(true);
-      const clamped = Math.max(-110, Math.min(110, diffX * 0.75));
+      const clamped = Math.max(-120, Math.min(120, diffX * 0.75));
       setSwipeOffset(clamped);
+
+      if (Math.abs(clamped) >= SWIPE_THRESHOLD && !hasTriggeredHapticRef.current) {
+        hasTriggeredHapticRef.current = true;
+        triggerHaptic('medium');
+      } else if (Math.abs(clamped) < SWIPE_THRESHOLD && hasTriggeredHapticRef.current) {
+        hasTriggeredHapticRef.current = false;
+      }
     }
   };
 
@@ -87,6 +179,7 @@ export function TaskItem({ task }: { task: Task }) {
     setTouchStartY(null);
     setSwipeOffset(0);
     setIsSwiping(false);
+    hasTriggeredHapticRef.current = false;
   };
 
   const overdue = todayStr ? isOverdue(task.dueDate, task.completed) : false;
@@ -143,34 +236,113 @@ export function TaskItem({ task }: { task: Task }) {
     }
   };
 
-  return (
-    <div className="relative overflow-hidden rounded-xl">
-      {/* Mobile Swipe Action Reveal Backgrounds */}
-      {isSwiping && (
-        <div className="absolute inset-0 rounded-xl flex items-center justify-between px-4 text-xs font-semibold select-none pointer-events-none">
-          {/* Postpone Indicator */}
-          <div
-            className={`flex items-center gap-1.5 transition-opacity ${
-              (isRtl ? swipeOffset > 20 : swipeOffset < -20)
-                ? 'opacity-100 text-indigo-500'
-                : 'opacity-0'
-            }`}
-          >
-            <ArrowRightCircle className="w-4 h-4" />
-            <span>{t.moveTomorrow}</span>
-          </div>
+  const isThresholdMet = Math.abs(swipeOffset) >= SWIPE_THRESHOLD;
+  const isSwipingRight = swipeOffset > 0;
+  const isSwipingLeft = swipeOffset < 0;
 
-          {/* Complete Indicator */}
-          <div
-            className={`flex items-center gap-1.5 transition-opacity ${
-              (isRtl ? swipeOffset < -20 : swipeOffset > 20)
-                ? 'opacity-100 text-emerald-500'
-                : 'opacity-0'
-            }`}
-          >
-            <Check className="w-4 h-4 stroke-[2.5]" />
-            <span>{task.completed ? t.markIncomplete : t.markComplete}</span>
-          </div>
+  // In RTL: swipeOffset < 0 (left) = Complete, swipeOffset > 0 (right) = Postpone
+  // In LTR: swipeOffset > 0 (right) = Complete, swipeOffset < 0 (left) = Postpone
+  const isCompleteSwipe = isRtl ? isSwipingLeft : isSwipingRight;
+  const isPostponeSwipe = isRtl ? isSwipingRight : isSwipingLeft;
+
+  const badgeIconColor = isCompleteSwipe
+    ? task.completed
+      ? 'text-amber-600'
+      : 'text-emerald-600'
+    : 'text-indigo-600';
+
+  return (
+    <div
+      className={`relative rounded-xl transition-all ${
+        showMenu ? 'z-40 overflow-visible' : isSwiping ? 'overflow-hidden' : 'overflow-hidden'
+      }`}
+    >
+      {/* Mobile Swipe Action Reveal Background */}
+      {isSwiping && (
+        <div
+          className={`absolute inset-0 rounded-xl select-none pointer-events-none transition-colors duration-150 overflow-hidden ${
+            isCompleteSwipe
+              ? task.completed
+                ? isThresholdMet
+                  ? 'bg-amber-600'
+                  : 'bg-amber-600/80'
+                : isThresholdMet
+                ? 'bg-emerald-600'
+                : 'bg-emerald-600/85'
+              : isPostponeSwipe
+              ? isThresholdMet
+                ? 'bg-indigo-600'
+                : 'bg-indigo-600/85'
+              : 'bg-slate-200 dark:bg-slate-800'
+          }`}
+        >
+          {/* Swiping Left reveals Right edge */}
+          {isSwipingLeft && (
+            <div
+              className={`absolute right-3.5 inset-y-0 flex items-center gap-2 text-white transition-all duration-150 ${
+                isThresholdMet ? 'scale-105 font-bold' : 'scale-95 font-medium opacity-90'
+              }`}
+            >
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-sm ${
+                  isThresholdMet
+                    ? `bg-white ${badgeIconColor}`
+                    : 'bg-white/20 text-white'
+                }`}
+              >
+                {isCompleteSwipe ? (
+                  task.completed ? (
+                    <RotateCcw className="w-4 h-4 stroke-[2.5]" />
+                  ) : (
+                    <Check className="w-4 h-4 stroke-[3]" />
+                  )
+                ) : (
+                  <ArrowRightCircle className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+                )}
+              </div>
+              <span className="text-xs">
+                {isCompleteSwipe
+                  ? task.completed
+                    ? t.markIncomplete
+                    : t.markComplete
+                  : t.moveTomorrow}
+              </span>
+            </div>
+          )}
+
+          {/* Swiping Right reveals Left edge */}
+          {isSwipingRight && (
+            <div
+              className={`absolute left-3.5 inset-y-0 flex items-center gap-2 text-white transition-all duration-150 ${
+                isThresholdMet ? 'scale-105 font-bold' : 'scale-95 font-medium opacity-90'
+              }`}
+            >
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-sm ${
+                  isThresholdMet
+                    ? `bg-white ${badgeIconColor}`
+                    : 'bg-white/20 text-white'
+                }`}
+              >
+                {isCompleteSwipe ? (
+                  task.completed ? (
+                    <RotateCcw className="w-4 h-4 stroke-[2.5]" />
+                  ) : (
+                    <Check className="w-4 h-4 stroke-[3]" />
+                  )
+                ) : (
+                  <ArrowRightCircle className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+                )}
+              </div>
+              <span className="text-xs">
+                {isCompleteSwipe
+                  ? task.completed
+                    ? t.markIncomplete
+                    : t.markComplete
+                  : t.moveTomorrow}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -180,7 +352,7 @@ export function TaskItem({ task }: { task: Task }) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          transform: `translateX(${swipeOffset}px)`,
+          transform: isSwiping && swipeOffset !== 0 ? `translateX(${swipeOffset}px)` : undefined,
           transition: isSwiping ? 'none' : 'transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)',
         }}
         className={`group relative rounded-xl border transition-colors duration-200 ${
@@ -320,75 +492,262 @@ export function TaskItem({ task }: { task: Task }) {
               </>
             )}
 
-            {/* Quick Reschedule dropdown trigger */}
+            {/* Quick Reschedule & Actions dropdown trigger */}
             <div className="relative inline-block ml-auto">
               <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                title={t.reschedule}
+                ref={menuButtonRef}
+                onClick={handleToggleMenu}
+                className={`p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+                  showMenu ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' : ''
+                }`}
+                title={t.moreOptions}
+                aria-label={t.moreOptions}
+                aria-expanded={showMenu}
               >
                 <MoreVertical className="w-3.5 h-3.5" />
               </button>
 
               {showMenu && (
                 <div
-                  className="absolute right-0 rtl:right-auto rtl:left-0 top-6 z-30 w-44 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-1 text-xs"
-                  onMouseLeave={() => setShowMenu(false)}
+                  ref={menuDropdownRef}
+                  className={`absolute ${isRtl ? 'left-0' : 'right-0'} ${
+                    openUpward ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+                  } z-50 ${isChoosingDate ? 'w-56' : 'w-48'} rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-1.5 text-xs animate-in fade-in zoom-in-95 duration-100 select-none`}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <p className="px-3 py-1 text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                    {t.reschedule}
-                  </p>
-                  <button
-                    onClick={() => {
-                      if (todayStr) rescheduleTask(task.id, todayStr);
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200"
-                  >
-                    <ArrowRightCircle className="w-3 h-3 text-amber-500 shrink-0" />
-                    <span>{t.moveToday}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (tomorrowStr) rescheduleTask(task.id, tomorrowStr);
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200"
-                  >
-                    <ArrowRightCircle className="w-3 h-3 text-indigo-500 shrink-0" />
-                    <span>{t.moveTomorrow}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (todayStr) rescheduleTask(task.id, addDays(todayStr, 3));
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200"
-                  >
-                    <ArrowRightCircle className="w-3 h-3 text-purple-500 shrink-0" />
-                    <span>{t.move3Days}</span>
-                  </button>
+                  {isChoosingDate ? (
+                    <div className="space-y-2 p-1" onClick={(e) => e.stopPropagation()}>
+                      {/* Header with Title & Close */}
+                      <div className="flex items-center justify-between px-2 pb-1.5 border-b border-slate-100 dark:border-slate-700/80">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <CalendarDays className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                          <span className="font-semibold text-slate-800 dark:text-slate-100 text-xs truncate">
+                            {t.chooseDateTitle}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsChoosingDate(false)}
+                          className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
 
-                  <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
+                      {/* Current Date Display */}
+                      <div className="px-2">
+                        <span className="inline-block text-[10px] font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-200/50 dark:border-indigo-800/40">
+                          {formatFullDate(task.dueDate, lang)}
+                        </span>
+                      </div>
 
-                  <button
-                    onClick={() => {
-                      openEditModal(task);
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
-                  >
-                    {t.editDetails}
-                  </button>
-                  <button
-                    onClick={() => {
-                      deleteTask(task.id);
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-600 dark:text-rose-400"
-                  >
-                    {t.deleteTask}
-                  </button>
+                      {/* Quick Shortcut Buttons */}
+                      <div className="flex flex-wrap gap-1 px-2">
+                        {tomorrowStr && tomorrowStr !== task.dueDate && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              rescheduleTask(task.id, tomorrowStr);
+                              setShowMenu(false);
+                              setIsChoosingDate(false);
+                            }}
+                            className="px-2 py-0.5 text-[10px] rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                          >
+                            {t.moveTomorrow}
+                          </button>
+                        )}
+                        {in2DaysStr && in2DaysStr !== task.dueDate && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              rescheduleTask(task.id, in2DaysStr);
+                              setShowMenu(false);
+                              setIsChoosingDate(false);
+                            }}
+                            className="px-2 py-0.5 text-[10px] rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                          >
+                            {t.in2Days}
+                          </button>
+                        )}
+                        {nextSatStr && nextSatStr !== task.dueDate && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              rescheduleTask(task.id, nextSatStr);
+                              setShowMenu(false);
+                              setIsChoosingDate(false);
+                            }}
+                            className="px-2 py-0.5 text-[10px] rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                          >
+                            {t.saturday}
+                          </button>
+                        )}
+                        {nextWeekStr && nextWeekStr !== task.dueDate && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              rescheduleTask(task.id, nextWeekStr);
+                              setShowMenu(false);
+                              setIsChoosingDate(false);
+                            }}
+                            className="px-2 py-0.5 text-[10px] rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                          >
+                            {t.nextWeek}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Interactive Mini Calendar: Persian (Solar Hijri) in FA, Gregorian in EN */}
+                      <div className="px-2 pt-1 border-t border-slate-100 dark:border-slate-700/80">
+                        {/* Month navigation */}
+                        <div className="flex items-center justify-between pb-1.5">
+                          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                            {miniMonthData.title}
+                          </span>
+                          <div className="flex items-center gap-0.5">
+                            <button
+                              type="button"
+                              onClick={isRtl ? handleMiniNextMonth : handleMiniPrevMonth}
+                              className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                              aria-label="Previous month"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={isRtl ? handleMiniPrevMonth : handleMiniNextMonth}
+                              className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                              aria-label="Next month"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Weekday headers */}
+                        <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-medium text-slate-400 dark:text-slate-500 pb-1">
+                          {miniMonthData.weekdays.map((w, idx) => (
+                            <div key={idx}>{w}</div>
+                          ))}
+                        </div>
+
+                        {/* Calendar days grid */}
+                        <div className="grid grid-cols-7 gap-1">
+                          {Array.from({ length: miniMonthData.startOffset }).map((_, idx) => (
+                            <div key={`empty-${idx}`} className="h-6 w-6" />
+                          ))}
+
+                          {miniMonthData.days.map((day) => {
+                            const isSelected = day.dateStr === task.dueDate;
+                            const isToday = day.dateStr === todayStr;
+
+                            return (
+                              <button
+                                key={day.dateStr}
+                                type="button"
+                                onClick={() => {
+                                  rescheduleTask(task.id, day.dateStr);
+                                  setShowMenu(false);
+                                  setIsChoosingDate(false);
+                                }}
+                                className={`h-6 w-6 mx-auto rounded-md flex items-center justify-center text-[11px] transition-colors cursor-pointer font-medium ${
+                                  isSelected
+                                    ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                                    : isToday
+                                    ? 'border border-indigo-500/50 text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/50 dark:bg-indigo-950/20'
+                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60'
+                                }`}
+                              >
+                                {day.dayNumber}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="px-3 py-1 text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider flex items-center gap-1.5">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        <span>{t.reschedule}</span>
+                      </p>
+                      {/* Move to Today (only shown if not already for today) */}
+                      {!isTaskToday && (
+                        <button
+                          onClick={() => {
+                            if (todayStr) rescheduleTask(task.id, todayStr);
+                            setShowMenu(false);
+                          }}
+                          className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                        >
+                          <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <span>{t.moveToday}</span>
+                        </button>
+                      )}
+
+                      {/* Move to Tomorrow (only shown if not already for tomorrow) */}
+                      {!isTaskTomorrow && (
+                        <button
+                          onClick={() => {
+                            if (tomorrowStr) rescheduleTask(task.id, tomorrowStr);
+                            setShowMenu(false);
+                          }}
+                          className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                        >
+                          <Calendar className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                          <span>{t.moveTomorrow}</span>
+                        </button>
+                      )}
+
+                      {/* Choose Custom Day / Date */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCalendarRefDate(task.dueDate ? parseDate(task.dueDate) : new Date());
+                          setIsChoosingDate(true);
+                        }}
+                        className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                      >
+                        <CalendarDays className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                        <span>{t.chooseDate}</span>
+                      </button>
+
+                      <div className="border-t border-slate-100 dark:border-slate-700/80 my-1" />
+
+                      <button
+                        onClick={() => {
+                          toggleTask(task.id);
+                          setShowMenu(false);
+                        }}
+                        className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                      >
+                        <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 stroke-[2.5]" />
+                        <span>{task.completed ? t.markIncomplete : t.markComplete}</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          openEditModal(task);
+                          setShowMenu(false);
+                        }}
+                        className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 flex items-center gap-2.5 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                      >
+                        <Pencil className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span>{t.editDetails}</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          deleteTask(task.id);
+                          setShowMenu(false);
+                        }}
+                        className="w-full text-left rtl:text-right px-3 py-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2.5 text-rose-600 dark:text-rose-400 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                        <span>{t.deleteTask}</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>

@@ -75,6 +75,26 @@ export function formatDisplayDate(dateStr: string, lang: Language = 'en'): strin
   return `${monthName} ${day}, ${date.getFullYear()}`;
 }
 
+export function formatFullDate(dateStr: string, lang: Language = 'fa'): string {
+  if (!dateStr) return '';
+  const date = parseDate(dateStr);
+  if (lang === 'fa') {
+    const weekday = date.toLocaleDateString('fa-IR-u-ca-persian', { weekday: 'long' });
+    const dayMonthYear = date.toLocaleDateString('fa-IR-u-ca-persian', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    return `${weekday}، ${dayMonthYear}`;
+  }
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export function isOverdue(dateStr: string, completed: boolean): boolean {
   if (completed || !dateStr) return false;
   return dateStr < getTodayString();

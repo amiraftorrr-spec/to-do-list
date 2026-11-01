@@ -410,22 +410,24 @@ export function TodoDashboard() {
           <div className="grid grid-cols-5 items-center justify-items-center w-full max-w-md mx-auto pt-2 px-1">
             <button
               onClick={() => setViewMode('today')}
-              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-                viewMode === 'today' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              className={`w-full flex flex-col items-center justify-center gap-1 py-1 text-[10px] sm:text-[11px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'today' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
               }`}
+              title={t.navToday}
             >
-              <Sun className="w-4 h-4" />
-              <span className="truncate max-w-[58px]">{t.today}</span>
+              <Sun className="w-4 h-4 shrink-0" />
+              <span className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-0.5 leading-tight">{t.navToday}</span>
             </button>
 
             <button
               onClick={() => setViewMode('upcoming')}
-              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-                viewMode === 'upcoming' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              className={`w-full flex flex-col items-center justify-center gap-1 py-1 text-[10px] sm:text-[11px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'upcoming' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
               }`}
+              title={t.navPlanner}
             >
-              <CalendarDays className="w-4 h-4" />
-              <span className="truncate max-w-[58px]">{t.planner}</span>
+              <CalendarDays className="w-4 h-4 shrink-0" />
+              <span className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-0.5 leading-tight">{t.navPlanner}</span>
             </button>
 
             {/* Quick Floating Add - Dead Center */}
@@ -434,6 +436,7 @@ export function TodoDashboard() {
                 onClick={() => openCreateModal()}
                 className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center shadow-xl shadow-indigo-600/35 active:scale-90 transition-transform cursor-pointer border-2 border-[var(--color-card)] font-bold text-lg"
                 title={t.newTask}
+                aria-label={t.newTask}
               >
                 <Plus className="w-5 h-5 stroke-[2.5]" />
               </button>
@@ -441,22 +444,24 @@ export function TodoDashboard() {
 
             <button
               onClick={() => setViewMode('completed')}
-              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-                viewMode === 'completed' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              className={`w-full flex flex-col items-center justify-center gap-1 py-1 text-[10px] sm:text-[11px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'completed' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
               }`}
+              title={t.navCompleted}
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span className="truncate max-w-[58px]">{t.completedLog}</span>
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-0.5 leading-tight">{t.navCompleted}</span>
             </button>
 
             <button
               onClick={() => setViewMode('all')}
-              className={`w-full flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors cursor-pointer ${
-                viewMode === 'all' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400'
+              className={`w-full flex flex-col items-center justify-center gap-1 py-1 text-[10px] sm:text-[11px] font-medium transition-colors cursor-pointer ${
+                viewMode === 'all' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
               }`}
+              title={t.navAll}
             >
-              <Layers className="w-4 h-4" />
-              <span className="truncate max-w-[58px]">{t.allTasks}</span>
+              <Layers className="w-4 h-4 shrink-0" />
+              <span className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-0.5 leading-tight">{t.navAll}</span>
             </button>
           </div>
         </nav>

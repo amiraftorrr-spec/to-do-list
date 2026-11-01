@@ -1,5 +1,5 @@
 // Service Worker for tedlist
-const CACHE_NAME = 'tedlist-v2.8.1';
+const CACHE_NAME = 'tedlist-v2.8.2';
 const STATIC_ASSETS = [
   '/',
   '/?source=pwa',
@@ -50,7 +50,12 @@ self.addEventListener('fetch', (event) => {
           .catch(() => {});
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => caches.match('/'));
+      return fetch(event.request).catch((err) => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
+        throw err;
+      });
     })
   );
 });

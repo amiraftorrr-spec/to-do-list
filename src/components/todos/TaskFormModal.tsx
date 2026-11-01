@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTodo } from '@/context/TodoContext';
 import { Priority, Category, Recurrence } from '@/types/todo';
-import { getTodayString, getTomorrowString, addDays, getNextSaturday, parseDate, getLocalDateString } from '@/lib/date-utils';
+import { getTodayString, getTomorrowString, addDays, getNextSaturday, parseDate, getLocalDateString, formatFullDate } from '@/lib/date-utils';
 import { X, Calendar, Clock, Plus, Trash2, Repeat } from 'lucide-react';
 
 export function TaskFormModal() {
@@ -262,6 +262,13 @@ export function TaskFormModal() {
                 />
               </div>
             </div>
+
+            {dueDate && (
+              <p className="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 mt-2 flex items-center gap-1.5">
+                <Calendar className="w-3 h-3 shrink-0 opacity-70" />
+                <span>{formatFullDate(dueDate, lang)}</span>
+              </p>
+            )}
           </div>
 
           {/* Priority */}

@@ -12,6 +12,11 @@ export interface TranslationDictionary {
   saturdayReviewDue: string;
   allTasks: string;
   completedLog: string;
+  navToday: string;
+  navPlanner: string;
+  navCompleted: string;
+  navAll: string;
+  moreOptions: string;
   spaces: string;
   allSpaces: string;
   localBackup: string;
@@ -86,6 +91,11 @@ export interface TranslationDictionary {
   moveToday: string;
   moveTomorrow: string;
   move3Days: string;
+  chooseDate: string;
+  chooseDateTitle: string;
+  confirmDate: string;
+  customDateLabel: string;
+  nextWeek: string;
   editDetails: string;
   deleteTask: string;
   checklistHeader: (done: number, total: number) => string;
@@ -227,6 +237,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     saturdayReviewDue: 'Due',
     allTasks: 'All Tasks',
     completedLog: 'Completed Log',
+    navToday: 'Today',
+    navPlanner: 'Planner',
+    navCompleted: 'Completed',
+    navAll: 'All Tasks',
+    moreOptions: 'More options',
     spaces: 'Spaces',
     allSpaces: 'All Spaces',
     localBackup: 'Local Data & Backup',
@@ -296,6 +311,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     moveToday: 'Move to Today',
     moveTomorrow: 'Move to Tomorrow',
     move3Days: 'In 3 Days',
+    chooseDate: 'Choose date...',
+    chooseDateTitle: 'Reschedule Task',
+    confirmDate: 'Confirm Date',
+    customDateLabel: 'Or select a specific date:',
+    nextWeek: 'Next Week',
     editDetails: 'Edit details...',
     deleteTask: 'Delete task',
     checklistHeader: (done, total) => `Checklist (${done}/${total})`,
@@ -426,6 +446,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     saturdayReviewDue: 'موعد بررسی',
     allTasks: 'همه کارها',
     completedLog: 'کارهای انجام‌شده',
+    navToday: 'امروز',
+    navPlanner: 'برنامه‌ریزی',
+    navCompleted: 'انجام‌شده',
+    navAll: 'همه کارها',
+    moreOptions: 'گزینه‌های بیشتر',
     spaces: 'دسته‌بندی‌ها',
     allSpaces: 'همه دسته‌ها',
     localBackup: 'پشتیبان‌گیری محلی',
@@ -495,6 +520,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     moveToday: 'انتقال به امروز',
     moveTomorrow: 'انتقال به فردا',
     move3Days: '۳ روز دیگر',
+    chooseDate: 'تعیین تاریخ...',
+    chooseDateTitle: 'تعیین موعد کار',
+    confirmDate: 'تأیید و انتقال',
+    customDateLabel: 'یا انتخاب تاریخ دلخواه:',
+    nextWeek: 'هفته بعد',
     editDetails: 'ویرایش جزئیات...',
     deleteTask: 'حذف کار',
     checklistHeader: (done, total) => `چک‌لیست مراحل (${done}/${total})`,

@@ -31,7 +31,7 @@ export function ReleaseNotesModal({
   const handleDownloadUpdate = async () => {
     triggerHaptic('success');
     if (isNative) {
-      await openExternalUrl('https://tedlist.vercel.app/');
+      await openExternalUrl('https://tedlist.vercel.app/?update=apk');
     } else {
       if (typeof window !== 'undefined') {
         const a = document.createElement('a');
@@ -51,26 +51,26 @@ export function ReleaseNotesModal({
     {
       icon: Smartphone,
       color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-      title: isRtl ? 'ویجت‌های زیباتر با فونت شبنم و طراحی غنی' : 'Redesigned Widgets with Shabnam Font',
+      title: isRtl ? 'تقویم هوشمند شمسی و میلادی' : 'Smart Solar Hijri & Gregorian Calendar',
       desc: isRtl
-        ? 'تایپوگرافی اختصاصی شبنم، کارت‌های تسک با چک‌باکس، دکمه افزودن کار بعدی و وضعیت جشن اتمام کارها.'
-        : 'Dedicated Shabnam Persian typography, interactive task cards, add next task slot, and celebratory completion state.',
+        ? 'پشتیبانی کامل از تاریخ ایرانی در زبان فارسی و تاریخ میلادی در زبان انگلیسی، همراه با مینی تقویم انتخاب تاریخ.'
+        : 'Full support for Iranian calendar in Persian and Gregorian calendar in English with interactive date picker.',
     },
     {
       icon: Zap,
       color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-      title: isRtl ? 'به‌روزرسانی مستقیم از سایت تدلیست' : 'Direct Updates via tedlist.vercel.app',
+      title: isRtl ? 'بهبود عملکرد سوایپ و منوی کارها' : 'Improved Swiping & Task Action Menu',
       desc: isRtl
-        ? 'دریافت نسخه جدید مستقیماً از طریق وب‌سایت تدلیست (tedlist.vercel.app) بدون رفتن به گیت‌هاب.'
-        : 'Update notifications now take you directly to tedlist.vercel.app without any third-party redirects.',
+        ? 'نمایش پس‌زمینه رنگی، آیکون‌های شفاف و فیدبک لمسی هنگام کشیدن به چپ و راست، و اصلاح منوی کارها.'
+        : 'Vibrant action reveal backgrounds, clear icons and haptic feedback on swipe, and refined task options menu.',
     },
     {
       icon: Layers,
       color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      title: isRtl ? 'مدیریت هوشمند کارها و تقویم امروز' : 'Today Planner & Quick Actions',
+      title: isRtl ? 'ریسپانسیو کامل نوار ناوبری پایین' : 'Full Navigation Bar Responsiveness',
       desc: isRtl
-        ? 'افزودن سریع کارها از داخل ویجت بزرگ و کوچک و همگام‌سازی بلادرنگ وضعیت کارها.'
-        : 'Instant task addition from home screen widgets and real-time state synchronization.',
+        ? 'نمایش کامل عنوان تمام تب‌ها بدون بریدگی در انواع ابعاد گوشی‌های موبایل.'
+        : 'Clean and complete tab titles without any truncation across all mobile screen sizes.',
     },
   ];
 
