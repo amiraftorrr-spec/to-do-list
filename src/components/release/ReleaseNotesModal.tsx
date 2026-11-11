@@ -49,20 +49,20 @@ export function ReleaseNotesModal({
 
   const features = [
     {
+      icon: Zap,
+      color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+      title: isRtl ? 'رفع مشکل اجرای اولیه و لودینگ برنامه' : 'Instant Startup & Workspace Loading Fix',
+      desc: isRtl
+        ? 'بهینه‌سازی لود اولیه، حذف لودینگ‌های زائد، عملکرد ۱۰۰٪ آفلاین و سازگاری کامل با انواع گوشی‌های شیائومی، سامسونگ و اندروید ۱۲ تا ۱۴.'
+        : 'Optimized initial launch, removed redundant loading states, 100% offline reliability, and full compatibility across Android 12 to 14.',
+    },
+    {
       icon: Smartphone,
       color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
       title: isRtl ? 'تقویم هوشمند شمسی و میلادی' : 'Smart Solar Hijri & Gregorian Calendar',
       desc: isRtl
         ? 'پشتیبانی کامل از تاریخ ایرانی در زبان فارسی و تاریخ میلادی در زبان انگلیسی، همراه با مینی تقویم انتخاب تاریخ.'
         : 'Full support for Iranian calendar in Persian and Gregorian calendar in English with interactive date picker.',
-    },
-    {
-      icon: Zap,
-      color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-      title: isRtl ? 'بهبود عملکرد سوایپ و منوی کارها' : 'Improved Swiping & Task Action Menu',
-      desc: isRtl
-        ? 'نمایش پس‌زمینه رنگی، آیکون‌های شفاف و فیدبک لمسی هنگام کشیدن به چپ و راست، و اصلاح منوی کارها.'
-        : 'Vibrant action reveal backgrounds, clear icons and haptic feedback on swipe, and refined task options menu.',
     },
     {
       icon: Layers,

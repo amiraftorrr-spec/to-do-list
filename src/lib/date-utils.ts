@@ -25,8 +25,16 @@ export function addDays(dateStr: string, days: number): string {
 }
 
 export function parseDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  return new Date(year, month - 1, day);
+  if (!dateStr || typeof dateStr !== 'string') return new Date();
+  try {
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length < 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) {
+      return new Date();
+    }
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+  } catch {
+    return new Date();
+  }
 }
 
 import { Language } from '@/types/todo';
@@ -38,61 +46,69 @@ export function formatDisplayDate(dateStr: string, lang: Language = 'en'): strin
   const yesterday = addDays(today, -1);
   const date = parseDate(dateStr);
 
-  if (lang === 'fa') {
-    const weekday = date.toLocaleDateString('fa-IR-u-ca-persian', { weekday: 'long' });
-    const dayAndMonth = date.toLocaleDateString('fa-IR-u-ca-persian', { day: 'numeric', month: 'long' });
+  try {
+    if (lang === 'fa') {
+      const weekday = date.toLocaleDateString('fa-IR-u-ca-persian', { weekday: 'long' });
+      const dayAndMonth = date.toLocaleDateString('fa-IR-u-ca-persian', { day: 'numeric', month: 'long' });
+
+      if (dateStr === today) {
+        return `امروز (${weekday}، ${dayAndMonth})`;
+      }
+      if (dateStr === tomorrow) {
+        return `فردا (${weekday}، ${dayAndMonth})`;
+      }
+      if (dateStr === yesterday) {
+        return `دیروز (${weekday})`;
+      }
+      return `${weekday}، ${dayAndMonth}`;
+    }
+
+    const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+    const day = date.getDate();
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
 
     if (dateStr === today) {
-      return `امروز (${weekday}، ${dayAndMonth})`;
+      return `Today (${weekday}, ${monthName} ${day})`;
     }
     if (dateStr === tomorrow) {
-      return `فردا (${weekday}، ${dayAndMonth})`;
+      return `Tomorrow (${weekday}, ${monthName} ${day})`;
     }
     if (dateStr === yesterday) {
-      return `دیروز (${weekday})`;
+      return `Yesterday (${weekday})`;
     }
-    return `${weekday}، ${dayAndMonth}`;
-  }
 
-  const monthName = date.toLocaleDateString('en-US', { month: 'short' });
-  const day = date.getDate();
-  const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
-
-  if (dateStr === today) {
-    return `Today (${weekday}, ${monthName} ${day})`;
+    const thisYear = new Date().getFullYear();
+    if (date.getFullYear() === thisYear) {
+      return `${weekday}, ${monthName} ${day}`;
+    }
+    return `${monthName} ${day}, ${date.getFullYear()}`;
+  } catch {
+    return dateStr;
   }
-  if (dateStr === tomorrow) {
-    return `Tomorrow (${weekday}, ${monthName} ${day})`;
-  }
-  if (dateStr === yesterday) {
-    return `Yesterday (${weekday})`;
-  }
-
-  const thisYear = new Date().getFullYear();
-  if (date.getFullYear() === thisYear) {
-    return `${weekday}, ${monthName} ${day}`;
-  }
-  return `${monthName} ${day}, ${date.getFullYear()}`;
 }
 
 export function formatFullDate(dateStr: string, lang: Language = 'fa'): string {
   if (!dateStr) return '';
-  const date = parseDate(dateStr);
-  if (lang === 'fa') {
-    const weekday = date.toLocaleDateString('fa-IR-u-ca-persian', { weekday: 'long' });
-    const dayMonthYear = date.toLocaleDateString('fa-IR-u-ca-persian', {
+  try {
+    const date = parseDate(dateStr);
+    if (lang === 'fa') {
+      const weekday = date.toLocaleDateString('fa-IR-u-ca-persian', { weekday: 'long' });
+      const dayMonthYear = date.toLocaleDateString('fa-IR-u-ca-persian', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      return `${weekday}، ${dayMonthYear}`;
+    }
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
       day: 'numeric',
-      month: 'long',
       year: 'numeric',
     });
-    return `${weekday}، ${dayMonthYear}`;
+  } catch {
+    return dateStr;
   }
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
 }
 
 export function isOverdue(dateStr: string, completed: boolean): boolean {

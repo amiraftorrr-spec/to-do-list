@@ -107,17 +107,6 @@ export function TodoDashboard() {
 
   const filteredTasks = tasks.filter(filterTask);
 
-  if (!isMounted) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[var(--color-background)]">
-        <div className="flex items-center gap-3 text-slate-400 text-xs">
-          <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <span>Opening your workspace...</span>
-        </div>
-      </div>
-    );
-  }
-
   // Grouped tasks for "Today" view
   const overdueTasks = filteredTasks.filter((t) => isOverdue(t.dueDate, t.completed));
   const todayTasks = filteredTasks.filter((t) => t.dueDate === todayStr && !t.completed);

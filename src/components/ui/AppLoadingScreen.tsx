@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 export function AppLoadingScreen({
   isMounted,
+  lang = 'fa',
 }: {
   isMounted: boolean;
   lang?: 'en' | 'fa';
@@ -15,11 +16,11 @@ export function AppLoadingScreen({
     if (isMounted) {
       const fadeTimer = setTimeout(() => {
         setFadingOut(true);
-      }, 150);
+      }, 80);
 
       const removeTimer = setTimeout(() => {
         setShouldRender(false);
-      }, 450);
+      }, 350);
 
       return () => {
         clearTimeout(fadeTimer);
@@ -27,6 +28,18 @@ export function AppLoadingScreen({
       };
     }
   }, [isMounted]);
+
+  // Safety fallback: Ensure loading screen NEVER gets stuck indefinitely
+  useEffect(() => {
+    const safetyTimer = setTimeout(() => {
+      setFadingOut(true);
+      setTimeout(() => {
+        setShouldRender(false);
+      }, 300);
+    }, 1000);
+
+    return () => clearTimeout(safetyTimer);
+  }, []);
 
   if (!shouldRender) return null;
 
@@ -47,12 +60,17 @@ export function AppLoadingScreen({
         </div>
 
         {/* Minimal Brand Name */}
-        <h1 className="text-lg font-semibold tracking-tight text-white/90 font-mono">
-          tedlist
-        </h1>
+        <div className="flex flex-col items-center">
+          <h1 className="text-lg font-semibold tracking-tight text-white/90 font-mono">
+            tedlist
+          </h1>
+          <p className="text-[11px] text-slate-400 font-sans mt-0.5">
+            {lang === 'fa' ? 'تدلیست — مدیریت کارها' : 'Minimal Todo Planner'}
+          </p>
+        </div>
 
         {/* Sleek Minimal Loading Line */}
-        <div className="w-20 h-0.5 bg-slate-800/80 rounded-full overflow-hidden mt-1 relative">
+        <div className="w-20 h-0.5 bg-slate-800/80 rounded-full overflow-hidden mt-2 relative">
           <div className="absolute inset-y-0 w-1/2 bg-emerald-500/80 rounded-full animate-[shimmer_1.2s_ease-in-out_infinite]" />
         </div>
       </div>

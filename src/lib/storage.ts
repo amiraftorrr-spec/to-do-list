@@ -66,12 +66,20 @@ export function saveWeeklyReviewsToStorage(reviews: WeeklyScore[]): void {
 
 export function isSaturdayModalDismissed(weekId: string): boolean {
   if (typeof window === 'undefined') return false;
-  return localStorage.getItem(DISMISSED_SAT_KEY) === weekId;
+  try {
+    return localStorage.getItem(DISMISSED_SAT_KEY) === weekId;
+  } catch {
+    return false;
+  }
 }
 
 export function setSaturdayModalDismissed(weekId: string): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(DISMISSED_SAT_KEY, weekId);
+  try {
+    localStorage.setItem(DISMISSED_SAT_KEY, weekId);
+  } catch {
+    // ignore
+  }
 }
 
 /**

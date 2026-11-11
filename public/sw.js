@@ -1,5 +1,5 @@
-// Service Worker for tedlist
-const CACHE_NAME = 'tedlist-v2.8.2';
+// Service Worker for tedlist PWA (Web only)
+const CACHE_NAME = 'tedlist-v2.8.4';
 const STATIC_ASSETS = [
   '/',
   '/?source=pwa',
@@ -38,6 +38,13 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  // Never intercept capacitor:// or ionic:// or chrome-extension:// schemes
+  const url = event.request.url || '';
+  if (url.startsWith('capacitor:') || url.startsWith('ionic:')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -54,7 +61,7 @@ self.addEventListener('fetch', (event) => {
         if (event.request.mode === 'navigate') {
           return caches.match('/');
         }
-        throw err;
+        return new Response('', { status: 408, statusText: 'Request timed out' });
       });
     })
   );

@@ -169,14 +169,33 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const t = useMemo(() => translations[lang], [lang]);
   const dir = useMemo(() => (lang === 'fa' ? 'rtl' : 'ltr'), [lang]);
 
+  // Safe localStorage helper to avoid unhandled DOMExceptions in restricted WebViews
+  const safeGetItem = useCallback((key: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const safeSetItem = useCallback((key: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Ignore storage restrictions
+    }
+  }, []);
+
   const setLang = useCallback((newLang: Language) => {
     setLangState(newLang);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_lang', newLang);
+      safeSetItem('tedlist_lang', newLang);
       document.documentElement.dir = newLang === 'fa' ? 'rtl' : 'ltr';
       document.documentElement.lang = newLang;
     }
-  }, []);
+  }, [safeSetItem]);
 
   const toggleLanguage = useCallback(() => {
     setLang(lang === 'en' ? 'fa' : 'en');
@@ -187,7 +206,7 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   const setTheme = useCallback((newTheme: 'dark' | 'light') => {
     setThemeState(newTheme);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_theme', newTheme);
+      safeSetItem('tedlist_theme', newTheme);
       if (newTheme === 'dark') {
         document.documentElement.classList.add('dark');
         document.documentElement.classList.remove('light');
@@ -195,12 +214,16 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
         document.documentElement.classList.remove('dark');
         document.documentElement.classList.add('light');
       }
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#090d16' : '#f8fafc');
+      try {
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#090d16' : '#f8fafc');
+        }
+      } catch {
+        // ignore
       }
     }
-  }, []);
+  }, [safeSetItem]);
 
   const toggleTheme = useCallback(
     (event?: React.MouseEvent | { clientX?: number; clientY?: number; currentTarget?: any }) => {
@@ -289,151 +312,151 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
 
   // Initial load on client
   useEffect(() => {
-    const today = getTodayString();
-    const tomorrow = getTomorrowString();
-    const isSat = isTodaySaturday();
-    const prevRange = getPreviousWeekRange();
-    const curRange = getCurrentWeekRange();
+    // Safety fallback: ensure isMounted is always true promptly
+    const safetyMountTimer = setTimeout(() => {
+      setIsMounted(true);
+    }, 250);
 
-    setTodayStr(today);
-    setTomorrowStr(tomorrow);
-    setIsSaturdayToday(isSat);
-    setPrevWeekRange(prevRange);
-    setCurrentWeekRange(curRange);
-    setModalDefaultDate(today);
+    try {
+      const today = getTodayString();
+      const tomorrow = getTomorrowString();
+      const isSat = isTodaySaturday();
+      const prevRange = getPreviousWeekRange();
+      const curRange = getCurrentWeekRange();
 
-    // Load theme preference (default to dark)
-    const savedTheme = (localStorage.getItem('tedlist_theme') as 'dark' | 'light') || 'dark';
-    setTheme(savedTheme);
+      setTodayStr(today);
+      setTomorrowStr(tomorrow);
+      setIsSaturdayToday(isSat);
+      setPrevWeekRange(prevRange);
+      setCurrentWeekRange(curRange);
+      setModalDefaultDate(today);
 
-    // Load language preference
-    const savedLang = localStorage.getItem('tedlist_lang') as Language;
-    if (savedLang === 'fa' || savedLang === 'en') {
-      setLangState(savedLang);
-      document.documentElement.dir = savedLang === 'fa' ? 'rtl' : 'ltr';
-      document.documentElement.lang = savedLang;
-    } else {
-      setLangState('fa');
-      document.documentElement.dir = 'rtl';
-      document.documentElement.lang = 'fa';
-    }
+      // Load theme preference (default to dark)
+      const savedTheme = (safeGetItem('tedlist_theme') as 'dark' | 'light') || 'dark';
+      setTheme(savedTheme);
 
-    const loaded = loadTasksFromStorage();
-
-    // Check if any recurring habit task was completed in the past and should roll over for today
-    let modified = false;
-    const refreshed = loaded.map((task) => {
-      if (task.recurrence && task.recurrence !== 'none' && task.completed && task.dueDate < today) {
-        modified = true;
-        return {
-          ...task,
-          completed: false,
-          dueDate: today,
-          updatedAt: new Date().toISOString(),
-        };
+      // Load language preference
+      const savedLang = safeGetItem('tedlist_lang') as Language;
+      if (savedLang === 'fa' || savedLang === 'en') {
+        setLangState(savedLang);
+        document.documentElement.dir = savedLang === 'fa' ? 'rtl' : 'ltr';
+        document.documentElement.lang = savedLang;
+      } else {
+        setLangState('fa');
+        document.documentElement.dir = 'rtl';
+        document.documentElement.lang = 'fa';
       }
-      return task;
-    });
 
-    if (modified) {
-      saveTasksToStorage(refreshed);
-      setTasks(refreshed);
-    } else {
-      setTasks(loaded);
-    }
+      const loaded = loadTasksFromStorage();
 
-    const reviews = loadWeeklyReviewsFromStorage();
-    setWeeklyReviews(reviews);
-
-    // Saturday Review popup: If today is Saturday and user logged tasks during the week, show review modal
-    if (isSat) {
-      const hasWeekTasks = loaded.some(
-        (t) => t.dueDate >= prevRange.start && t.dueDate <= prevRange.end
-      );
-      const dismissed = isSaturdayModalDismissed(prevRange.start);
-      if (hasWeekTasks && !dismissed) {
-        setIsSaturdayReviewModalOpen(true);
-      }
-    }
-
-    // First-time onboarding: Tutorial first, then APK prompt
-    const tutorialSeen = localStorage.getItem('tedlist_tutorial_seen_v1');
-    if (!tutorialSeen) {
-      setIsTutorialOpen(true);
-    }
-
-    const native = isNativeApk();
-    setIsNative(native);
-
-    // Check for updates & show What's New / Update popup for users coming from older versions (including legacy 2.3.3+)
-    const checkVersionAndUpdates = async () => {
-      // 1. Identify previous version from localStorage
-      const lastSeenVersion = localStorage.getItem('tedlist_seen_version');
-      const dismissedUpdate = localStorage.getItem('tedlist_dismissed_update_version');
-
-      // Indicators of an existing user from older releases (like 2.3.3, 2.4.0, 2.5.0) where seen_version was not saved
-      const hasLegacyData = !!(
-        localStorage.getItem('tedlist_tasks_v1') ||
-        localStorage.getItem('tedlist_tutorial_seen_v1') ||
-        localStorage.getItem('tedlist_pwa_prompted') ||
-        localStorage.getItem('tedlist_weekly_reviews_v1')
-      );
-
-      // User came from an older version (e.g. '2.3.3', '2.6.0', etc.) OR had legacy data without seen_version:
-      const isLegacyOrPreviousUser =
-        (lastSeenVersion && lastSeenVersion !== CURRENT_APP_VERSION) ||
-        (!lastSeenVersion && hasLegacyData);
-
-      // 2. Primary check: tedlist.vercel.app/version.json, fallback: GitHub package.json
-      let remoteVersion: string | null = null;
-      try {
-        const res = await fetch('https://tedlist.vercel.app/version.json?t=' + Date.now()).catch(() => null);
-        if (res && res.ok) {
-          const data = await res.json();
-          remoteVersion = data?.version;
+      // Check if any recurring habit task was completed in the past and should roll over for today
+      let modified = false;
+      const refreshed = loaded.map((task) => {
+        if (task.recurrence && task.recurrence !== 'none' && task.completed && task.dueDate && task.dueDate < today) {
+          modified = true;
+          return {
+            ...task,
+            completed: false,
+            dueDate: today,
+            updatedAt: new Date().toISOString(),
+          };
         }
-      } catch {
-        // fallback below
+        return task;
+      });
+
+      if (modified) {
+        saveTasksToStorage(refreshed);
+        setTasks(refreshed);
+      } else {
+        setTasks(loaded);
       }
 
-      if (!remoteVersion) {
+      const reviews = loadWeeklyReviewsFromStorage();
+      setWeeklyReviews(reviews);
+
+      // Saturday Review popup: If today is Saturday and user logged tasks during the week, show review modal
+      if (isSat) {
+        const hasWeekTasks = loaded.some(
+          (t) => t.dueDate >= prevRange.start && t.dueDate <= prevRange.end
+        );
+        const dismissed = isSaturdayModalDismissed(prevRange.start);
+        if (hasWeekTasks && !dismissed) {
+          setIsSaturdayReviewModalOpen(true);
+        }
+      }
+
+      // First-time onboarding: Tutorial first, then APK prompt
+      const tutorialSeen = safeGetItem('tedlist_tutorial_seen_v1');
+      if (!tutorialSeen) {
+        setIsTutorialOpen(true);
+      }
+
+      const native = isNativeApk();
+      setIsNative(native);
+
+      // Check for updates & show What's New / Update popup for users coming from older versions
+      const checkVersionAndUpdates = async () => {
         try {
-          const ghRes = await fetch(
-            'https://raw.githubusercontent.com/amiraftorrr-spec/to-do-list/main/package.json?t=' + Date.now()
-          ).catch(() => null);
-          if (ghRes && ghRes.ok) {
-            const ghData = await ghRes.json();
-            remoteVersion = ghData?.version;
+          const lastSeenVersion = safeGetItem('tedlist_seen_version');
+          const dismissedUpdate = safeGetItem('tedlist_dismissed_update_version');
+
+          const hasLegacyData = !!(
+            safeGetItem('tedlist_tasks_v1') ||
+            safeGetItem('tedlist_tutorial_seen_v1') ||
+            safeGetItem('tedlist_pwa_prompted') ||
+            safeGetItem('tedlist_weekly_reviews_v1')
+          );
+
+          const isLegacyOrPreviousUser =
+            (lastSeenVersion && lastSeenVersion !== CURRENT_APP_VERSION) ||
+            (!lastSeenVersion && hasLegacyData);
+
+          let remoteVersion: string | null = null;
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 2500);
+
+          try {
+            const res = await fetch('https://tedlist.vercel.app/version.json?t=' + Date.now(), {
+              signal: controller.signal,
+            }).catch(() => null);
+            if (res && res.ok) {
+              const data = await res.json();
+              remoteVersion = data?.version;
+            }
+          } catch {
+            // fallback
+          } finally {
+            clearTimeout(timer);
+          }
+
+          const hasRemoteUpdate = remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION);
+          if (hasRemoteUpdate) {
+            setAvailableUpdateVersion(remoteVersion);
+          }
+
+          if (hasRemoteUpdate && dismissedUpdate !== remoteVersion) {
+            setTimeout(() => {
+              setIsReleaseNotesOpen(true);
+            }, 700);
+          } else if (isLegacyOrPreviousUser && dismissedUpdate !== CURRENT_APP_VERSION) {
+            setTimeout(() => {
+              setIsReleaseNotesOpen(true);
+            }, 700);
           }
         } catch {
-          // ignore
+          // Ignore network or parsing update errors
         }
-      }
+      };
 
-      const hasRemoteUpdate = remoteVersion && isNewerVersion(remoteVersion, CURRENT_APP_VERSION);
-      if (hasRemoteUpdate) {
-        setAvailableUpdateVersion(remoteVersion);
-      }
+      checkVersionAndUpdates();
+    } catch (err) {
+      console.error('Error during initial mount of TodoContext:', err);
+    } finally {
+      setIsMounted(true);
+    }
 
-      // Show update popup:
-      // Case A: A newer version is available remotely and user hasn't dismissed it
-      if (hasRemoteUpdate && dismissedUpdate !== remoteVersion) {
-        setTimeout(() => {
-          setIsReleaseNotesOpen(true);
-        }, 700);
-      }
-      // Case B: User upgraded from an older version (like 2.3.3, 2.5.0, 2.7.0) and hasn't seen the current release notes
-      else if (isLegacyOrPreviousUser && dismissedUpdate !== CURRENT_APP_VERSION) {
-        setTimeout(() => {
-          setIsReleaseNotesOpen(true);
-        }, 700);
-      }
-    };
-
-    checkVersionAndUpdates();
-
-    setIsMounted(true);
-  }, []);
+    return () => clearTimeout(safetyMountTimer);
+  }, [safeGetItem]);
 
   const openReleaseNotes = useCallback(() => {
     setIsReleaseNotesOpen(true);
@@ -441,11 +464,9 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
 
   const closeReleaseNotes = useCallback(() => {
     setIsReleaseNotesOpen(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_seen_version', CURRENT_APP_VERSION);
-      localStorage.setItem('tedlist_dismissed_update_version', availableUpdateVersion || CURRENT_APP_VERSION);
-    }
-  }, [availableUpdateVersion]);
+    safeSetItem('tedlist_seen_version', CURRENT_APP_VERSION);
+    safeSetItem('tedlist_dismissed_update_version', availableUpdateVersion || CURRENT_APP_VERSION);
+  }, [availableUpdateVersion, safeSetItem]);
 
   const openTutorial = useCallback(() => {
     setIsTutorialOpen(true);
@@ -459,24 +480,20 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
 
   const completeTutorial = useCallback(() => {
     setIsTutorialOpen(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_tutorial_seen_v1', 'true');
-      const pwaPrompted = localStorage.getItem('tedlist_pwa_prompted');
-      // Only open APK download prompt on web browsers, not inside native app or installed PWA
-      if (!pwaPrompted && !isAppInstalledOrNative()) {
-        setTimeout(() => {
-          setIsPwaPromptOpen(true);
-        }, 400);
-      }
+    safeSetItem('tedlist_tutorial_seen_v1', 'true');
+    const pwaPrompted = safeGetItem('tedlist_pwa_prompted');
+    // Only open APK download prompt on web browsers, not inside native app or installed PWA
+    if (!pwaPrompted && !isAppInstalledOrNative()) {
+      setTimeout(() => {
+        setIsPwaPromptOpen(true);
+      }, 400);
     }
-  }, []);
+  }, [safeSetItem, safeGetItem]);
 
   const dismissPwaPrompt = useCallback(() => {
     setIsPwaPromptOpen(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tedlist_pwa_prompted', 'true');
-    }
-  }, []);
+    safeSetItem('tedlist_pwa_prompted', 'true');
+  }, [safeSetItem]);
 
   const installPwa = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -813,21 +830,25 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isMounted || typeof window === 'undefined') return;
 
-    const curToday = todayStr || getTodayString();
-    const todayTasks = tasks.filter((t) => t.dueDate === curToday);
-    const todayPending = todayTasks.filter((t) => !t.completed);
-    const todayCompletedCount = todayTasks.filter((t) => t.completed).length;
+    try {
+      const curToday = todayStr || getTodayString();
+      const todayTasks = tasks.filter((t) => t.dueDate === curToday);
+      const todayPending = todayTasks.filter((t) => !t.completed);
+      const todayCompletedCount = todayTasks.filter((t) => t.completed).length;
 
-    // 1. Sync native Android widget
-    syncNativeWidget(todayTasks, todayCompletedCount);
+      // 1. Sync native Android widget
+      syncNativeWidget(todayTasks, todayCompletedCount).catch(() => {});
 
-    // 2. Schedule 23:00 Tehran nightly reminder
-    scheduleNightlyReminder(todayPending);
+      // 2. Schedule 23:00 Tehran nightly reminder
+      scheduleNightlyReminder(todayPending).catch(() => {});
 
-    // 3. Schedule 20:00 (8 PM Tehran) advance reminder for tomorrow's scheduled tasks
-    const curTomorrow = tomorrowStr || getTomorrowString();
-    const tomorrowTasks = tasks.filter((t) => t.dueDate === curTomorrow && !t.completed);
-    scheduleTomorrowPreviewReminder(tomorrowTasks);
+      // 3. Schedule 20:00 (8 PM Tehran) advance reminder for tomorrow's scheduled tasks
+      const curTomorrow = tomorrowStr || getTomorrowString();
+      const tomorrowTasks = tasks.filter((t) => t.dueDate === curTomorrow && !t.completed);
+      scheduleTomorrowPreviewReminder(tomorrowTasks).catch(() => {});
+    } catch {
+      // Graceful fallback
+    }
   }, [tasks, todayStr, tomorrowStr, isMounted]);
 
   // Listen for Notification Action Buttons (e.g. Complete All)
