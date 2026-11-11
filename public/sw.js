@@ -1,5 +1,5 @@
 // Service Worker for tedlist PWA (Web only)
-const CACHE_NAME = 'tedlist-v2.8.4';
+const CACHE_NAME = 'tedlist-v2.8.5';
 const STATIC_ASSETS = [
   '/',
   '/?source=pwa',

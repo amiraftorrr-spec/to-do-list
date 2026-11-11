@@ -51,10 +51,10 @@ export function ReleaseNotesModal({
     {
       icon: Zap,
       color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-      title: isRtl ? 'رفع مشکل اجرای اولیه و لودینگ برنامه' : 'Instant Startup & Workspace Loading Fix',
+      title: isRtl ? 'رفع گیرکردن برنامه هنگام اجرا' : 'Fixed startup loading hang',
       desc: isRtl
-        ? 'بهینه‌سازی لود اولیه، حذف لودینگ‌های زائد، عملکرد ۱۰۰٪ آفلاین و سازگاری کامل با انواع گوشی‌های شیائومی، سامسونگ و اندروید ۱۲ تا ۱۴.'
-        : 'Optimized initial launch, removed redundant loading states, 100% offline reliability, and full compatibility across Android 12 to 14.',
+        ? 'نمایش مستقیم برنامه هنگام اجرا و حذف صفحهٔ بارگذاری مسدودکننده؛ همراه با به‌روزرسانی نسخهٔ برنامه.'
+        : 'The app now opens directly without a blocking startup screen, with an updated app version.',
     },
     {
       icon: Smartphone,

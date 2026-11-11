@@ -13,7 +13,6 @@ import { OnboardingTutorialModal } from '@/components/tutorial/OnboardingTutoria
 import { PwaInstallPromptModal } from '@/components/pwa/PwaInstallPromptModal';
 import { ReleaseNotesModal } from '@/components/release/ReleaseNotesModal';
 import { QuickAddBar } from '@/components/todos/QuickAddBar';
-import { AppLoadingScreen } from '@/components/ui/AppLoadingScreen';
 import { getTodayString, isOverdue } from '@/lib/date-utils';
 import { CURRENT_APP_VERSION } from '@/constants/version';
 import {
@@ -32,7 +31,6 @@ import {
 
 export function TodoDashboard() {
   const {
-    isMounted,
     todayStr,
     tasks,
     viewMode,
@@ -119,9 +117,6 @@ export function TodoDashboard() {
 
   return (
     <div className="flex h-screen h-[100dvh] overflow-hidden bg-[var(--color-background)]">
-      {/* Premium App Initial Loading Screen */}
-      <AppLoadingScreen isMounted={isMounted} lang={lang} />
-
       {/* Desktop Sidebar */}
       <div className="hidden md:flex h-full">
         <Sidebar />
